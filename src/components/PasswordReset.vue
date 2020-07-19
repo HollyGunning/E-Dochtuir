@@ -1,21 +1,25 @@
 <template>
 
 
-  <!-- <div class="modal"> -->
     <div class="modal-content">
-      <div @click="$emit('close')" class="close">close</div>
-      <h3>Reset Password</h3>
-      <div v-if="!showSuccess">
-        <p>Enter your email to reset your password</p>
-    
-    
+      
+      
+      <v-card v-if="!showSuccess">
+        
         <v-form @submit.prevent>
-
-            <v-card-title class="text-uppercase">Forgot Password</v-card-title>
-
+            <v-col class="text-right">
+                <v-btn class="mx-2" @click="$emit('close')" fab dark small color="primary">
+                    <v-icon class="material-icons">close</v-icon>
+                </v-btn>
+            </v-col >
+            
+            <v-card-title class="text-uppercase mt-n14">Forgot Password</v-card-title>
+            
             <v-divider class="mx4"></v-divider>
             <v-card-text>
-                <v-row>
+                <h3 class="text-center">Enter your email to reset your password</h3>
+               
+                <v-row class="mt-4">
                     <v-col class="mt-n2" cols="12" md="12">
                     <v-text-field 
                     type="email" 
@@ -27,8 +31,11 @@
                     </v-text-field>
                     </v-col>
                 </v-row>
+                <v-row>
+                     <p v-if="errorMsg !== ''" class="error">{{ errorMsg }}</p>
+                </v-row>
                 <v-card-actions>            
-                    <v-row>
+                    <v-row class="mt-n2">
                         <v-btn 
                         type="submit"
                         block 
@@ -42,12 +49,14 @@
         </v-form>
 
     
-        <p v-if="errorMsg !== ''" class="error">{{ errorMsg }}</p>
-        <button @click="resetPassword()" class="button">Reset</button>
-      </div>
-      <p v-else>Success! Check your email for a reset link.</p>
+        <!-- <p v-if="errorMsg !== ''" class="error">{{ errorMsg }}</p> -->
+
+      </v-card>
+
+
+    <p v-else>Success! Check your email for a reset link.</p>
     </div>
-  <!-- </div> -->
+
 </template>
 
 

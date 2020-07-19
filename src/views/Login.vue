@@ -2,7 +2,7 @@
     <v-container>
        
  <div id="login">
-     <PasswordReset v-if="showPasswordReset" @close="togglePasswordReset()"></PasswordReset>
+     <PasswordReset v-if="showPasswordReset" @close="togglePasswordReset()" ></PasswordReset>
 
       <div :class="{ 'signup-form': !showLoginForm }" class="col2">
         <v-card class="mt-4">
