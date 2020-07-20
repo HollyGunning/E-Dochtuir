@@ -24,6 +24,12 @@ export default new Vuex.Store({
       // fetch user profile and set in state
       dispatch('fetchUserProfile', user)
     },
+    async logout({ commit  }){
+      await fb.auth.signOut()
+      // clear userProfile and redirect to /login
+      commit('setUserProfile', {})
+      router.push('/login')
+    },
     async fetchUserProfile({ commit }, user) {
       // fetch user profile
       const userProfile = await fb.usersCollection.doc(user.uid).get()
@@ -32,7 +38,9 @@ export default new Vuex.Store({
       commit('setUserProfile', userProfile.data())
       
       // change route to dashboard
-      router.push('/')
+      if (router.currentRoute.path === '/login') {
+        router.push('/')
+      }
     },
     async signup({ dispatch }, form) {
       // sign user up
@@ -40,8 +48,13 @@ export default new Vuex.Store({
     
       // create user profile object in userCollections
       await fb.usersCollection.doc(user.uid).set({
+        firstname: form.firstname,
+        surname: form.surname,
+        date: form.date,
+        ppsn: form.ppsn,
         email: form.email,
-        
+        mobile: form.mobile,
+   
       })
     
       // fetch user profile and set in state

@@ -9,7 +9,7 @@ import vuetify from './plugins/vuetify';
 Vue.config.productionTip = false
 
 let app
-auth.onAuthStateChanged(() => {
+auth.onAuthStateChanged(user => {
   if(!app){
     app = new Vue({
       router,
@@ -18,4 +18,9 @@ auth.onAuthStateChanged(() => {
       render: h => h(App)
     }).$mount('#app')
   }
+
+  if (user) {
+    store.dispatch('fetchUserProfile', user)
+  }
+
 })
