@@ -1,5 +1,5 @@
 <template>
-  <v-app> <!-- Route Vuetify Component --> 
+  <v-app> <!-- Route Vuetify Component use only once to wrap everything else --> 
 
     <!-- Navigation will be loaded above content --> 
     <Navbar v-if="showNavbar"/>

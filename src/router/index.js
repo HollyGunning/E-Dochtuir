@@ -2,9 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import Dashboard from '@/views/Dashboard.vue'
+import Profile from '@/views/Profile.vue'
 import Medication from '@/views/Medication.vue'
 import Appointments from '@/views/Appointments.vue'
-// import Signup from '@/views/Signup.vue'
 import Login from '@/views/Login.vue'
 
 import { auth } from '../firebase'
@@ -18,6 +18,14 @@ const routes = [
     path: '/',
     name: 'dashboard',
     component: Dashboard,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
     meta: {
       requiresAuth: true
     }
@@ -43,11 +51,6 @@ const routes = [
     name: 'Login',
     component: Login
   },
-  // {
-  //   path: '/signup',
-  //   name: 'Signup',
-  //   component: Signup
-  // }
 ]
 
 const router = new VueRouter({

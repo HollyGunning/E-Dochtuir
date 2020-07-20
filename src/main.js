@@ -9,7 +9,9 @@ import vuetify from './plugins/vuetify';
 Vue.config.productionTip = false
 
 let app
+// wait for auth to init before creating the app
 auth.onAuthStateChanged(user => {
+  // init app if not already created
   if(!app){
     app = new Vue({
       router,

@@ -3,7 +3,7 @@
         <!-- Toolbar -->
         <v-app-bar app class="primary">
             <v-app-bar-nav-icon large class="grey--text" @click="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title class="grey--text text-uppercase">Title</v-toolbar-title> 
+            <v-toolbar-title class="grey--text text-uppercase">E-Dochtúir</v-toolbar-title> 
         <v-spacer></v-spacer> <!-- Anything after the spacer will align to the right of the page -->
         <v-btn depressed class="primary grey--text" @click="logout()">
             <span>Log Out</span>
@@ -13,12 +13,12 @@
         <!-- Navigation Drawer -->
         <v-navigation-drawer app v-model="drawer" temporary class="teal darken-3">
             <v-list>
-                <v-list-item>
+                <v-list-item   route-link :to="{ name: 'profile'}">
                     <v-list-item-avatar>
                         <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                        <v-list-item-title class="white--text">Name</v-list-item-title>
+                        <v-list-item-title class="white--text">My Profile</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
                 <v-divider></v-divider>

@@ -40,7 +40,7 @@ export default new Vuex.Store({
       // change route to dashboard
       if (router.currentRoute.path === '/login') {
         router.push('/')
-      }
+      } 
     },
     async signup({ dispatch }, form) {
       // sign user up
