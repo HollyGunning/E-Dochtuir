@@ -5,7 +5,7 @@
             <v-app-bar-nav-icon large class="grey--text" @click="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title class="grey--text text-uppercase">Title</v-toolbar-title> 
         <v-spacer></v-spacer> <!-- Anything after the spacer will align to the right of the page -->
-        <v-btn depressed class="primary grey--text">
+        <v-btn depressed class="primary grey--text" @click="logout()">
             <span>Log Out</span>
             <v-icon right> exit_to_app </v-icon>
         </v-btn>
@@ -37,17 +37,23 @@
 
 <script>
 export default {
-    data(){
-        return{
-            drawer: false,
-            links: [
-                { icon: 'dashboard', text: 'Dashboard', route: '/' },
-                { icon: 'fa-pills', text: 'Medication', route: '/medication' },
-                { icon: 'fa-user-md', text: 'Appointments', route: '/appointments' },  
-            ]
-        }
+data(){
+    return{
+        drawer: false,
+        links: [
+            { icon: 'dashboard', text: 'Dashboard', route: '/' },
+            { icon: 'fa-pills', text: 'Medication', route: '/medication' },
+            { icon: 'fa-user-md', text: 'Appointments', route: '/appointments' },  
+        ]
+    }
+},
+methods: {
+    logout() {
+        this.$store.dispatch('logout')
     }
 }
+}
+
 </script>
 
 <style>
