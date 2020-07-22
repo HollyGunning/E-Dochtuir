@@ -2,8 +2,6 @@
     <v-container>
     <div class="profile">
 
-
-
         <v-row>
             <v-col cols="12" s="12" sm="6" md="4" lg="4">
                 <v-card width="600" height="300">
