@@ -32,7 +32,7 @@
                             </v-text-field>
                         </v-col>
                                          
-                    <!-- TODO: ADD ERROR MESSAGE-->
+
 
                         <v-col></v-col>
                         <v-col class="mt-n8 text-right" cols="12" md="6">                 
@@ -121,6 +121,9 @@
                         </v-card-actions>
                 </v-form>
 
+
+
+
                 <!-- SignUp Form -->
                 <v-form class="px-2" v-else @submit.prevent>
                     <v-card-title class="text-uppercase">Sign Up</v-card-title>
@@ -128,15 +131,19 @@
                     <v-card-text>
                         <v-row>
                             <v-col class="mt-n2" cols="12" md="6">
+ 
                                 <v-text-field 
                                 type="text"
+                                pattern="[A-Za-z]"
                                 name="firstname"
                                 v-model.trim="signupForm.firstname" 
-                                
+                                :rules="nameRules"
                                 :counter="15" label="First Name" 
                                 outlined 
                                 required>
                                 </v-text-field>
+
+
                             </v-col>
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
@@ -263,18 +270,17 @@
 </template>
 
 <script>
-// import PasswordReset from '@/components/PasswordReset'
 import { auth } from '@/firebase'
+// import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 
 export default {
-  components: {
-
-  },
-  data() {
+   data() {
     return {
+
+ 
       dialog: false,
       menu: false,
       date: '',
@@ -284,7 +290,10 @@ export default {
       email: '',
       showSuccess: false,
       errorMsg: '',
+      
+      nameRules: [
 
+      ],
       loginForm: {
         email: '',
         password: ''
@@ -292,7 +301,6 @@ export default {
       signupForm: {
         firstname: '',
         surname: '',
-        // date: '',
         ppsn: '',
         email: '',
         mobile: '',
@@ -301,10 +309,12 @@ export default {
         checkbox: '',
       },
       showLoginForm: true,
-      showPasswordReset: false
-      
+      showPasswordReset: false 
     }
-  },
+    },
+    validations: {
+   
+    },
   methods: {
     async resetPassword() {
       this.errorMsg = ''
