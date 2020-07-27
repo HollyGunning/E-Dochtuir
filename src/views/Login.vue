@@ -5,30 +5,37 @@
             <div :class="{ 'signup-form': !showLoginForm }" class="col2">
             <v-card flat class="mt-0">
                 <!-- Login Form -->
-                <v-form class="px-2" v-if="showLoginForm" @submit.prevent> 
+                <v-form class="px-2" v-if="showLoginForm" @submit.prevent="login"> 
                     <v-card-title class="text-uppercase">Login</v-card-title>
                     <v-divider class="mx4"></v-divider>
                     <v-card-text>
                         <v-row>
                         <v-col class="mt-n2" cols="12" md="6">
-                            <v-text-field 
-                            type="email" 
-                            name="email" 
-                            v-model.trim="loginForm.email"
-                            
-                            label="E-Mail Address" 
-                            outlined 
-                            required>
-                            </v-text-field>
+                        <v-text-field
+                        type="email"
+                        name="email"
+                        v-model="loginForm.email"
+                        :error-messages="loginEmailErrors"
+                        label="E-mail Address"
+                        required
+                        outlined
+                        @input="$v.loginForm.email.$touch()"
+                        @blur="$v.loginForm.email.$touch()"
+                            >
+                        </v-text-field>
                         </v-col>
                         <v-col class="mt-n2" cols="12" md="6">
                             <v-text-field 
                             type="password" 
                             name="password" 
-                            v-model.trim="loginForm.password" 
+                            v-model.trim="loginForm.password"
+                            :error-messages="loginPasswordErrors"
                             label="Password" 
+                            required
                             outlined 
-                            required>
+                            @input="$v.loginForm.password.$touch()"
+                            @blur="$v.loginForm.password.$touch()"
+                            >
                             </v-text-field>
                         </v-col>
                                          
@@ -271,7 +278,9 @@
 
 <script>
 import { auth } from '@/firebase'
-// import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+
+import { required, email, maxLength } from "vuelidate/lib/validators"
+
 
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
@@ -313,45 +322,65 @@ export default {
     }
     },
     validations: {
-   
-    },
-  methods: {
-    async resetPassword() {
-      this.errorMsg = ''
-      try {
-        await auth.sendPasswordResetEmail(this.email)
-        this.showSuccess = true
-      } catch (err) {
-        this.errorMsg = err.message
-      }
-    },
-    toggleForm() {
-      this.showLoginForm = !this.showLoginForm
-    },
-    login() {
-      this.$store.dispatch('login', {
-        email: this.loginForm.email,
-        password: this.loginForm.password
-      })
-    },
-    signup() {
-      this.$store.dispatch('signup', {
-        firstname: this.signupForm.firstname,
-        surname: this.signupForm.surname,
-        date: this.date,
-        ppsn: this.signupForm.ppsn,
-        email: this.signupForm.email,
-        mobile: this.signupForm.mobile,
-        password: this.signupForm.password,
+        loginForm: {
+            email: { required, email },
+            password: {required, maxLength: maxLength(15)},
+        },
         
-      })
+
+    },
+    methods: {
+        async resetPassword() {
+        this.errorMsg = ''
+        try {
+            await auth.sendPasswordResetEmail(this.email)
+            this.showSuccess = true
+        } catch (err) {
+            this.errorMsg = err.message
+        }
+        },
+        toggleForm() {
+        this.showLoginForm = !this.showLoginForm
+        },
+        login() {
+        this.$v.$touch()
+        this.$store.dispatch('login', {
+            email: this.loginForm.email,
+            password: this.loginForm.password
+        })
+        },
+        signup() {
+        this.$store.dispatch('signup', {
+            firstname: this.signupForm.firstname,
+            surname: this.signupForm.surname,
+            date: this.date,
+            ppsn: this.signupForm.ppsn,
+            email: this.signupForm.email,
+            mobile: this.signupForm.mobile,
+            password: this.signupForm.password,
+            
+        })
+        }
+    },
+    computed: {
+        formattedDate () {
+        console.log(this.date)
+        return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
+        },
+        loginEmailErrors () {
+          const errors = []
+          if (!this.$v.loginForm.email.$dirty) return errors
+            !this.$v.loginForm.email.email && errors.push('Must be valid e-mail')
+            !this.$v.loginForm.email.required && errors.push('E-mail is required')
+          return errors
+        },
+        loginPasswordErrors () {
+          const errors = []
+          if (!this.$v.loginForm.password.$dirty) return errors
+             !this.$v.loginForm.password.maxLength && errors.push('Password exceeds maximum length of 15 characters')
+            !this.$v.loginForm.password.required && errors.push('Password is required')
+          return errors
+        },
     }
-  },
-  computed: {
-    formattedDate () {
-    console.log(this.date)
-    return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
-    }  
-  }
 }
 </script>
