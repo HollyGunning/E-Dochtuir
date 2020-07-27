@@ -11,36 +11,37 @@
                     <v-card-text>
                         <v-row>
                         <v-col class="mt-n2" cols="12" md="6">
-                        <v-text-field
-                        type="email"
-                        name="email"
-                        v-model="loginForm.email"
-                        :error-messages="loginEmailErrors"
-                        label="E-mail Address"
-                        required
-                        outlined
-                        @input="$v.loginForm.email.$touch()"
-                        @blur="$v.loginForm.email.$touch()"
+                            <v-text-field
+                            type="email"
+                            name="email"
+                            v-model.trim="loginForm.email"
+                            :error-messages="loginEmailErrors"
+                            label="E-mail Address"
+                            required
+                            outlined
+                            @input="$v.loginForm.email.$touch()"
+                            @blur="$v.loginForm.email.$touch()"
                             >
                         </v-text-field>
                         </v-col>
                         <v-col class="mt-n2" cols="12" md="6">
                             <v-text-field 
-                            type="password" 
-                            name="password" 
+                            
+                            name="password"
+                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                             v-model.trim="loginForm.password"
                             :error-messages="loginPasswordErrors"
-                            label="Password" 
+                            label="Password"
+                            :type="showPassword ? 'text' : 'password'"
                             required
                             outlined 
+                            @click:append="showPassword = !showPassword"
                             @input="$v.loginForm.password.$touch()"
                             @blur="$v.loginForm.password.$touch()"
                             >
                             </v-text-field>
                         </v-col>
                                          
-
-
                         <v-col></v-col>
                         <v-col class="mt-n8 text-right" cols="12" md="6">                 
                             <v-dialog v-model="dialog" max-width="500px">   
@@ -132,36 +133,39 @@
 
 
                 <!-- SignUp Form -->
-                <v-form class="px-2" v-else @submit.prevent>
+                <v-form class="px-2" v-else @submit.prevent="signup">
                     <v-card-title class="text-uppercase">Sign Up</v-card-title>
                     <v-divider class="mx4"></v-divider>
                     <v-card-text>
                         <v-row>
                             <v-col class="mt-n2" cols="12" md="6">
- 
                                 <v-text-field 
                                 type="text"
-                                pattern="[A-Za-z]"
                                 name="firstname"
                                 v-model.trim="signupForm.firstname" 
-                                :rules="nameRules"
-                                :counter="15" label="First Name" 
+                                :error-messages="signupFirstNameErrors"
+                                label="First Name" 
+                                :counter="15" 
+                                required
                                 outlined 
-                                required>
+                                @input="$v.signupForm.firstname.$touch()"
+                                @blur="$v.signupForm.firstname.$touch()"
+                                >
                                 </v-text-field>
-
-
                             </v-col>
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
                                 type="text"
                                 name="surname"
                                 v-model.trim="signupForm.surname" 
-                                
-                                :counter="15" 
+                                :error-messages="signupSurnameErrors"
                                 label="Surname" 
-                                outlined 
-                                required>
+                                :counter="15" 
+                                required
+                                outlined
+                                @input="$v.signupForm.surname.$touch()"
+                                @blur="$v.signupForm.surname.$touch()"
+                                >
                                 </v-text-field>
                             </v-col> 
                             <v-col class="mt-n2" cols="12" md="6">
@@ -174,17 +178,23 @@
                                 <v-text-field
                                 :value="formattedDate"
                                 clearable
+                                :error-messages="dateErrors"
                                 label="Date of Birth"
                                 readonly
                                 v-bind="attrs"
                                 v-on="on"
                                 @click:clear="date = null"
-                                outlined>
+                                required
+                                outlined
+                                @input="$v.date.$touch()"
+                                @blur="$v.date.$touch()"
+                                >
                                 </v-text-field>
                                 </template>
                                 <v-date-picker
                                 v-model.trim="date"
-                                @change="menu = false">
+                                @change="menu = false"  
+                                >
                                 </v-date-picker>
                                 </v-menu>
                             </v-col>
@@ -192,40 +202,58 @@
                                 <v-text-field 
                                 type="text"
                                 name="ppsn"
-                                v-model.trim="signupForm.ppsn" 
+                                hint="7 numerical characters, followed by either 1 or 2 letters E.g. 1234567RW"
+                                v-model.trim="signupForm.ppsn"
+                                :error-messages="signupPPSNErrors" 
                                 label="PPSN" 
+                                required
                                 outlined 
-                                required>
+                                @input="$v.signupForm.ppsn.$touch()"
+                                @blur="$v.signupForm.ppsn.$touch()"
+                                >
                                 </v-text-field>
                             </v-col>                                                                                                         
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
                                 type="email" 
                                 name="email" 
-                                v-model.trim="signupForm.email"                    
+                                v-model.trim="signupForm.email"  
+                                :error-messages="signupEmailErrors"            
                                 label="E-Mail Address" 
+                                required
                                 outlined 
-                                required>
+                                @input="$v.signupForm.email.$touch()"
+                                @blur="$v.signupForm.email.$touch()"
+                                >
                                 </v-text-field>
                             </v-col>
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
-                                type="number"
                                 name="mobile"
-                                v-model.trim="signupForm.mobile" 
+                                v-model.trim="signupForm.mobile"
+                                :error-messages="signupMobileErrors"
                                 label="Mobile Number" 
+                                required
                                 outlined 
-                                required>
+                                @input="$v.signupForm.mobile.$touch()"
+                                @blur="$v.signupForm.mobile.$touch()"
+                                >
                                 </v-text-field>
                             </v-col>                            
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
                                 type="password" 
-                                name="password" 
+                                name="password"
+                                hint="At least 8 characters"
                                 v-model.trim="signupForm.password" 
-                                label="Password" 
+                                :error-messages="signupPasswordErrors"
+                                label="Password"
+                                :counter="16" 
+                                required
                                 outlined 
-                                required>
+                                @input="$v.signupForm.password.$touch()"
+                                @blur="$v.signupForm.password.$touch()"
+                                >
                                 </v-text-field>
                             </v-col>
                             <v-col class="mt-n2" cols="12" md="6">
@@ -233,17 +261,27 @@
                                 type="password" 
                                 name="confirmPassword" 
                                 v-model.trim="signupForm.confirmPassword" 
+                                :error-messages="signupConfirmErrors"
                                 label="Confirm Password" 
+                                required
                                 outlined 
-                                required></v-text-field>
+                                @input="$v.signupForm.confirmPassword.$touch()"
+                                @blur="$v.signupForm.confirmPassword.$touch()"
+                                >
+                                </v-text-field>
                             </v-col>
                             <v-col class="mt-n8" cols="12" md="6">
                                 <v-checkbox 
                                 type="checkbox" 
                                 name="checkbox" 
                                 v-model.trim="signupForm.checkbox" 
+                                :error-messages="checkboxErrors"
                                 label="I have read and agree to the terms and conditions"
-                                required></v-checkbox>
+                                required
+                                @input="$v.signupForm.checkbox.$touch()"
+                                @blur="$v.signupForm.checkbox.$touch()" 
+                                >
+                                </v-checkbox>
                             </v-col>
                         </v-row>
                         <v-card-actions>
@@ -279,7 +317,7 @@
 <script>
 import { auth } from '@/firebase'
 
-import { required, email, maxLength } from "vuelidate/lib/validators"
+import { required, email, maxLength, minLength, alpha, numeric, sameAs } from "vuelidate/lib/validators"
 
 
 import format from 'date-fns/format'
@@ -288,8 +326,7 @@ import parseISO from 'date-fns/parseISO'
 export default {
    data() {
     return {
-
- 
+      showPassword: false,
       dialog: false,
       menu: false,
       date: '',
@@ -300,9 +337,6 @@ export default {
       showSuccess: false,
       errorMsg: '',
       
-      nameRules: [
-
-      ],
       loginForm: {
         email: '',
         password: ''
@@ -315,7 +349,7 @@ export default {
         mobile: '',
         password: '',
         confirmPassword: '',
-        checkbox: '',
+        checkbox: false,
       },
       showLoginForm: true,
       showPasswordReset: false 
@@ -324,8 +358,26 @@ export default {
     validations: {
         loginForm: {
             email: { required, email },
-            password: {required, maxLength: maxLength(15)},
+            password: { required, maxLength: maxLength(16) },
         },
+        signupForm: {
+            firstname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
+            surname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
+            ppsn: { 
+                required,
+                ppsnValidate(ppsn){
+                    return (
+                        /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
+                    );
+                },
+            },
+            email: { required, email },
+            mobile: { required, numeric, minLength: minLength(9), maxLength: maxLength(14) },
+            password: { required, minLength: minLength(8), maxLength: maxLength(16)},
+            confirmPassword: { required, sameAs: sameAs(function () { return this.signupForm.password})},
+            checkbox: {checked (val) {return val}},
+        },
+        date: { required },
         
 
     },
@@ -341,6 +393,17 @@ export default {
         },
         toggleForm() {
         this.showLoginForm = !this.showLoginForm
+         this.$v.$reset()
+            this.loginForm.email = ''
+            this.loginForm.password = ''
+            this.signupForm.firstname = ''
+            this.signupForm.surname = ''
+            this.signupForm.ppsn = ''
+            this.signupForm.email = ''
+            this.signupForm.mobile = ''
+            this.signupForm.password = ''
+            this.signupForm.confirmPassword = ''
+            this.signupForm.checkbox = false
         },
         login() {
         this.$v.$touch()
@@ -350,6 +413,11 @@ export default {
         })
         },
         signup() {
+        this.$v.$touch()
+        if(this.$v.$invalid){
+            console.log("Invalid form")
+        }
+        else {
         this.$store.dispatch('signup', {
             firstname: this.signupForm.firstname,
             surname: this.signupForm.surname,
@@ -361,6 +429,17 @@ export default {
             
         })
         }
+        // this.$store.dispatch('signup', {
+        //     firstname: this.signupForm.firstname,
+        //     surname: this.signupForm.surname,
+        //     date: this.date,
+        //     ppsn: this.signupForm.ppsn,
+        //     email: this.signupForm.email,
+        //     mobile: this.signupForm.mobile,
+        //     password: this.signupForm.password,
+            
+        // })
+        }
     },
     computed: {
         formattedDate () {
@@ -370,16 +449,84 @@ export default {
         loginEmailErrors () {
           const errors = []
           if (!this.$v.loginForm.email.$dirty) return errors
-            !this.$v.loginForm.email.email && errors.push('Must be valid e-mail')
+            !this.$v.loginForm.email.email && errors.push('Invalid Email Address')
             !this.$v.loginForm.email.required && errors.push('E-mail is required')
           return errors
         },
         loginPasswordErrors () {
           const errors = []
           if (!this.$v.loginForm.password.$dirty) return errors
-             !this.$v.loginForm.password.maxLength && errors.push('Password exceeds maximum length of 15 characters')
+            !this.$v.loginForm.password.maxLength && errors.push('Password exceeds maximum length of 15 characters')
             !this.$v.loginForm.password.required && errors.push('Password is required')
           return errors
+        },
+        signupFirstNameErrors () {
+          const errors = []
+          if (!this.$v.signupForm.firstname.$dirty) return errors
+            !this.$v.signupForm.firstname.alpha && errors.push('Alphabetical characters only')
+            !this.$v.signupForm.firstname.minLength && errors.push('First Name must be at least 3 characters long')
+            !this.$v.signupForm.firstname.maxLength && errors.push('First Name should not exceed 15 characters') 
+            !this.$v.signupForm.firstname.required && errors.push('First Name is required')
+          return errors  
+        },
+        signupSurnameErrors () {
+            const errors = []
+            if (!this.$v.signupForm.surname.$dirty) return errors
+                !this.$v.signupForm.surname.alpha && errors.push('Alphabetical characters only')
+                !this.$v.signupForm.surname.minLength && errors.push('Surname must be at least 3 characters long')
+                !this.$v.signupForm.surname.maxLength && errors.push('Surname should not exceed 15 characters')
+                !this.$v.signupForm.surname.required && errors.push('Surname is required')
+          return errors  
+        },
+        signupEmailErrors () {
+          const errors = []
+          if (!this.$v.signupForm.email.$dirty) return errors
+            !this.$v.signupForm.email.email && errors.push('Invalid Email Address')
+            !this.$v.signupForm.email.required && errors.push('E-mail is required')
+          return errors
+        },
+        signupMobileErrors () {
+          const errors = []
+          if (!this.$v.signupForm.mobile.$dirty) return errors
+            !this.$v.signupForm.mobile.numeric && errors.push('Numerical values only')
+            !this.$v.signupForm.mobile.minLength && errors.push('Mobile number appears too short')
+            !this.$v.signupForm.mobile.maxLength && errors.push('Mobile number appears too long')
+            !this.$v.signupForm.mobile.required && errors.push('Mobile number is required')
+          return errors
+        },
+        signupPasswordErrors () {
+        const errors = []
+        if (!this.$v.signupForm.password.$dirty) return errors
+            !this.$v.signupForm.password.minLength && errors.push('Password must be at least 8 characters long')
+            !this.$v.signupForm.password.maxLength && errors.push('Password should not exceed 16 characters')
+            !this.$v.signupForm.password.required && errors.push('Password is required')
+        return errors
+        },
+        signupConfirmErrors () {
+        const errors = []
+        if (!this.$v.signupForm.confirmPassword.$dirty) return errors
+            !this.$v.signupForm.confirmPassword.sameAs && errors.push('Passwords do not match')
+            !this.$v.signupForm.confirmPassword.required && errors.push('Password is required')
+        return errors
+        },
+        dateErrors () {
+        const errors = []
+        if (!this.$v.date.$dirty) return errors
+            !this.$v.date.required && errors.push('Date of Birth is required')
+        return errors
+        },
+        signupPPSNErrors () {
+        const errors = []
+        if (!this.$v.signupForm.ppsn.$dirty) return errors
+            !this.$v.signupForm.ppsn.required && errors.push('PPSN is required')
+            !this.$v.signupForm.ppsn.ppsnValidate && errors.push('PPSN is invalid')
+        return errors   
+        },
+        checkboxErrors () {
+        const errors = []
+        if (!this.$v.signupForm.checkbox.$dirty) return errors
+         !this.$v.signupForm.checkbox.checked && errors.push('You must agree to continue!')
+        return errors
         },
     }
 }
