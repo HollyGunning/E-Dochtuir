@@ -37,11 +37,6 @@
                 >
               </v-text-field>
             </v-col>
-       
-              <!-- <div class="form-error mt-n6 red-text" v-if="$v.firstname.$dirty">
-                <div v-if="!$v.firstname.required">Please enter your first name</div>
-                <div v-if="!$v.firstname.minLength">First name must have at least {{$v.firstname.$params.minLength.min}} letters.</div>
-              </div> -->
 
           </v-row>
 

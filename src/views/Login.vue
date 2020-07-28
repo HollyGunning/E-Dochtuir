@@ -26,7 +26,6 @@
                         </v-col>
                         <v-col class="mt-n2" cols="12" md="6">
                             <v-text-field 
-                            
                             name="password"
                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                             v-model.trim="loginForm.password"
@@ -40,8 +39,7 @@
                             @blur="$v.loginForm.password.$touch()"
                             >
                             </v-text-field>
-                        </v-col>
-                                         
+                        </v-col>                
                         <v-col></v-col>
                         <v-col class="mt-n8 text-right" cols="12" md="6">                 
                             <v-dialog v-model="dialog" max-width="500px">   
@@ -58,7 +56,7 @@
                                 </template>
                                  <!-- Dialog box for forgot password -->
                                 <v-card v-if="!showSuccess">
-                                    <v-form class="px-2" @submit.prevent>              
+                                    <v-form class="px-2" @submit.prevent="resetPassword">              
                                         <v-card-title class="text-uppercase mt-2">Forgot Password</v-card-title>
                                         <v-divider class="mx4"></v-divider>
                                         <v-card-text>
@@ -68,18 +66,19 @@
                                                 <v-text-field 
                                                 type="email" 
                                                 name="email" 
-                                                v-model.trim="email"
+                                                v-model.trim="forgotForm.email"
+                                                :error-messages="emailErrors"
                                                 label="E-Mail Address" 
+                                                required
                                                 outlined 
-                                                required>
+                                                @input="$v.forgotForm.email.$touch()"
+                                                @blur="$v.forgotForm.email.$touch()"
+                                                >
                                                 </v-text-field>
-                                                </v-col>
-                                                <v-col class="mt-n8" cols="12" md="12">
-                                                <h3 v-if="errorMsg !== ''" class="text-justified error">{{ errorMsg }}</h3>
                                                 </v-col>
                                             </v-row>
                                             <v-card-actions>            
-                                                <v-row class="mt-2">
+                                                <v-row class="mt-n2">
                                                     <v-btn 
                                                     type="submit"
                                                     block 
@@ -89,6 +88,16 @@
                                                     </v-btn> 
                                                 </v-row>
                                             </v-card-actions>
+
+                                            <v-div v-if="errorMsg !== ''"> 
+                                            <v-row>
+                                            <v-col class="mt-0" cols="12" md="12">           
+                                                <h4 @click="clear" class="pa-2 d-flex justify-center red--text">{{ errorMsg }}
+                                                <v-icon right @click="clear">fa-times-circle</v-icon>    
+                                                </h4>
+                                            </v-col>
+                                            </v-row>
+                                            </v-div>
                                         </v-card-text>
                                     </v-form> 
                                 </v-card>
@@ -99,7 +108,7 @@
                                     <v-card-text>
                                         <v-row>
                                             <v-col class="mt-n2" cols="12" md="12">
-                                            <h2 class="text-center mt-2">Check your email for a reset link.</h2>
+                                            <h2 class="pa-2 d-flex justify-center mt-2">Check your email for a reset link.</h2>
                                         </v-col>
                                         </v-row>
                                     </v-card-text>
@@ -117,6 +126,7 @@
                                 </v-btn> 
                             </v-row>
                         </v-card-actions>
+
                     </v-card-text>
                     <v-divider class="mt-2"></v-divider>
                         <v-card-actions>
@@ -242,8 +252,9 @@
                             </v-col>                            
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
-                                type="password" 
                                 name="password"
+                                :append-icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                :type="showPassword2 ? 'text' : 'password'"
                                 hint="At least 8 characters"
                                 v-model.trim="signupForm.password" 
                                 :error-messages="signupPasswordErrors"
@@ -251,6 +262,7 @@
                                 :counter="16" 
                                 required
                                 outlined 
+                                @click:append="showPassword2 = !showPassword2"
                                 @input="$v.signupForm.password.$touch()"
                                 @blur="$v.signupForm.password.$touch()"
                                 >
@@ -258,13 +270,15 @@
                             </v-col>
                             <v-col class="mt-n2" cols="12" md="6">
                                 <v-text-field 
-                                type="password" 
-                                name="confirmPassword" 
+                                name="confirmPassword"
+                                :append-icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                :type="showPassword2 ? 'text' : 'password'"
                                 v-model.trim="signupForm.confirmPassword" 
                                 :error-messages="signupConfirmErrors"
                                 label="Confirm Password" 
                                 required
-                                outlined 
+                                outlined
+                                @click:append="showPassword2 = !showPassword2"
                                 @input="$v.signupForm.confirmPassword.$touch()"
                                 @blur="$v.signupForm.confirmPassword.$touch()"
                                 >
@@ -289,11 +303,22 @@
                                 <v-btn 
                                     type="submit"
                                     block class="primary white--text"
-                                    @click="signup()">
+                                    @click.prevent="signup()">
                                     <span>Sign Up</span>
                                 </v-btn> 
                             </v-row>
                         </v-card-actions>
+
+                        <v-div v-if="errorMsgReg !== ''"> 
+                        <v-row>
+                        <v-col class="mt-0" cols="12" md="12">           
+                            <h4 @click="clear" class="pa-2 d-flex justify-center red--text">{{ errorMsgReg }}
+                            <v-icon right @click="clear">fa-times-circle</v-icon>    
+                            </h4>
+                        </v-col>
+                        </v-row>
+                        </v-div>
+
                     </v-card-text>
                     <v-divider class="mt-2"></v-divider>
                         <v-card-actions>
@@ -327,19 +352,27 @@ export default {
    data() {
     return {
       showPassword: false,
+      showPassword2: false,
       dialog: false,
       menu: false,
       date: '',
-      notifications: false,
-      sound: true,
-      widgets: false,
-      email: '',
+      
+      uiState: "submit not clicked", 
+      errors: false,
+      empty: true,
+
+    
       showSuccess: false,
       errorMsg: '',
+      errorMsgReg: '',
       
+      forgotForm: {
+        email: '',
+      },
       loginForm: {
         email: '',
         password: ''
+        
       },
       signupForm: {
         firstname: '',
@@ -350,6 +383,7 @@ export default {
         password: '',
         confirmPassword: '',
         checkbox: false,
+        
       },
       showLoginForm: true,
       showPasswordReset: false 
@@ -378,18 +412,25 @@ export default {
             checkbox: {checked (val) {return val}},
         },
         date: { required },
+        forgotForm: {
+            email: { required, email },
+        },
         
 
     },
     methods: {
         async resetPassword() {
         this.errorMsg = ''
-        try {
-            await auth.sendPasswordResetEmail(this.email)
-            this.showSuccess = true
-        } catch (err) {
-            this.errorMsg = err.message
-        }
+        this.$v.$touch()
+        
+            try {
+                await auth.sendPasswordResetEmail(this.forgotForm.email)
+                this.showSuccess = true
+            } catch (err) {
+                this.errorMsg = err.message
+            }
+        
+
         },
         toggleForm() {
         this.showLoginForm = !this.showLoginForm
@@ -404,6 +445,10 @@ export default {
             this.signupForm.password = ''
             this.signupForm.confirmPassword = ''
             this.signupForm.checkbox = false
+            this.forgotForm.email = ''
+        },
+        clear() {
+            this.errorMsg = ''
         },
         login() {
         this.$v.$touch()
@@ -413,38 +458,38 @@ export default {
         })
         },
         signup() {
+        
         this.$v.$touch()
-        if(this.$v.$invalid){
-            console.log("Invalid form")
-        }
-        else {
-        this.$store.dispatch('signup', {
+
+        this.formTouched = !this.$v.signupForm.$anyDirty
+        this.errors = this.$v.signupForm.$anyError
+        this.uiState = "submit clicked"
+        if (this.errors === false && this.formTouched === false){
+            // send users registered info into a collection
+            this.$store.dispatch('signup', {
             firstname: this.signupForm.firstname,
             surname: this.signupForm.surname,
             date: this.date,
             ppsn: this.signupForm.ppsn,
             email: this.signupForm.email,
             mobile: this.signupForm.mobile,
-            password: this.signupForm.password,
-            
+            password: this.signupForm.password,   
         })
         }
-        // this.$store.dispatch('signup', {
-        //     firstname: this.signupForm.firstname,
-        //     surname: this.signupForm.surname,
-        //     date: this.date,
-        //     ppsn: this.signupForm.ppsn,
-        //     email: this.signupForm.email,
-        //     mobile: this.signupForm.mobile,
-        //     password: this.signupForm.password,
-            
-        // })
         }
     },
     computed: {
         formattedDate () {
         console.log(this.date)
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
+        },
+        emailErrors () {
+          const errors = []
+          if (!this.$v.forgotForm.email.$dirty) return errors
+            !this.$v.forgotForm.email.email && errors.push('Invalid Email Address')
+            !this.$v.forgotForm.email.required && errors.push('E-mail is required')
+          return errors
+
         },
         loginEmailErrors () {
           const errors = []
@@ -456,7 +501,7 @@ export default {
         loginPasswordErrors () {
           const errors = []
           if (!this.$v.loginForm.password.$dirty) return errors
-            !this.$v.loginForm.password.maxLength && errors.push('Password exceeds maximum length of 15 characters')
+            !this.$v.loginForm.password.maxLength && errors.push('Password exceeds maximum length of 16 characters')
             !this.$v.loginForm.password.required && errors.push('Password is required')
           return errors
         },
@@ -531,3 +576,11 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+.textCss input {
+    text-transform: capitalize;
+}
+
+</style>

@@ -43,22 +43,41 @@ export default new Vuex.Store({
       } 
     },
     async signup({ dispatch }, form) {
-      // sign user up
-      const { user } = await fb.auth.createUserWithEmailAndPassword(form.email, form.password)
-    
-      // create user profile object in userCollections
-      await fb.usersCollection.doc(user.uid).set({
-        firstname: form.firstname,
-        surname: form.surname,
-        date: form.date,
-        ppsn: form.ppsn,
-        email: form.email,
-        mobile: form.mobile,
-   
-      })
-    
-      // fetch user profile and set in state
-      dispatch('fetchUserProfile', user)
+      this.errorMsgReg = ''
+
+      try {
+        // create user using the email and password
+        // const response = await firebase.auth().createUserWithEmailAndPassword(email, password)
+        // update the user to add his username
+        // await response.user.updateProfile({
+        //   displayName: username
+        // })
+        // return response.user
+
+        // sign user up
+        const { user } = await fb.auth.createUserWithEmailAndPassword(form.email, form.password)
+        // create user profile object in userCollections
+        await fb.usersCollection.doc(user.uid).set({
+          firstname: form.firstname,
+          surname: form.surname,
+          date: form.date,
+          ppsn: form.ppsn,
+          email: form.email,
+          mobile: form.mobile,
+        })
+        // fetch user profile and set in state
+        dispatch('fetchUserProfile', user)
+
+
+      } catch (error) {
+        // alert any error that occurred in the process
+        alert(error)
+        this.errorMsgReg = error.message
+      }
+
+
+
+
     }
   },
   modules: {
