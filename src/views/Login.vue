@@ -88,16 +88,12 @@
                                                     </v-btn> 
                                                 </v-row>
                                             </v-card-actions>
-
-                                            <v-div v-if="errorMsg !== ''"> 
-                                            <v-row>
-                                            <v-col class="mt-0" cols="12" md="12">           
-                                                <h4 @click="clear" class="pa-2 d-flex justify-center red--text">{{ errorMsg }}
-                                                <v-icon right @click="clear">fa-times-circle</v-icon>    
-                                                </h4>
-                                            </v-col>
-                                            </v-row>
-                                            </v-div>
+                                                <v-flex v-if="errorMsg !== ''">
+                                                <v-alert type="error" dismissible v-model="alert3">
+                                                    {{ errorMsg }}
+                                                </v-alert>
+                                                </v-flex>
+    
                                         </v-card-text>
                                     </v-form> 
                                 </v-card>
@@ -126,7 +122,11 @@
                                 </v-btn> 
                             </v-row>
                         </v-card-actions>
-
+                        <v-flex>
+                        <v-alert type="error" dismissible v-model="alert2">
+                            {{ loginError }}
+                        </v-alert>
+                        </v-flex>
                     </v-card-text>
                     <v-divider class="mt-2"></v-divider>
                         <v-card-actions>
@@ -140,9 +140,7 @@
                 </v-form>
 
 
-
-
-                <!-- SignUp Form -->
+                <!-- SIGNUP FORM -->
                 <v-form class="px-2" v-else @submit.prevent="signup">
                     <v-card-title class="text-uppercase">Sign Up</v-card-title>
                     <v-divider class="mx4"></v-divider>
@@ -302,23 +300,18 @@
                             <v-row>
                                 <v-btn 
                                     type="submit"
+                                    :disabled="loading"
                                     block class="primary white--text"
                                     @click.prevent="signup()">
                                     <span>Sign Up</span>
                                 </v-btn> 
                             </v-row>
                         </v-card-actions>
-
-                        <v-div v-if="errorMsgReg !== ''"> 
-                        <v-row>
-                        <v-col class="mt-0" cols="12" md="12">           
-                            <h4 @click="clear" class="pa-2 d-flex justify-center red--text">{{ errorMsgReg }}
-                            <v-icon right @click="clear">fa-times-circle</v-icon>    
-                            </h4>
-                        </v-col>
-                        </v-row>
-                        </v-div>
-
+                        <v-flex>
+                        <v-alert type="error" dismissible v-model="alert1">
+                            {{ registerError }}
+                        </v-alert>
+                        </v-flex>
                     </v-card-text>
                     <v-divider class="mt-2"></v-divider>
                         <v-card-actions>
@@ -351,21 +344,28 @@ import parseISO from 'date-fns/parseISO'
 export default {
    data() {
     return {
+    //icons to show password
       showPassword: false,
       showPassword2: false,
+      // dialog and menu for forgot password
       dialog: false,
       menu: false,
+      // date for dob 
       date: '',
       
-      uiState: "submit not clicked", 
-      errors: false,
-      empty: true,
-
-    
-      showSuccess: false,
-      errorMsg: '',
-      errorMsgReg: '',
       
+    //   errors: false,
+    //   empty: true,
+
+      showSuccess: false,
+      errorMsg: {},
+
+
+
+      alert1: false,
+      alert2: false,
+      alert3: false,
+
       forgotForm: {
         email: '',
       },
@@ -382,8 +382,7 @@ export default {
         mobile: '',
         password: '',
         confirmPassword: '',
-        checkbox: false,
-        
+        checkbox: false,   
       },
       showLoginForm: true,
       showPasswordReset: false 
@@ -426,8 +425,8 @@ export default {
             try {
                 await auth.sendPasswordResetEmail(this.forgotForm.email)
                 this.showSuccess = true
-            } catch (err) {
-                this.errorMsg = err.message
+            } catch (error) {
+                this.errorMsg = error.message
             }
         
 
@@ -446,10 +445,12 @@ export default {
             this.signupForm.confirmPassword = ''
             this.signupForm.checkbox = false
             this.forgotForm.email = ''
+            this.alert1 = false
+            this.alert2 = false
         },
-        clear() {
-            this.errorMsg = ''
-        },
+        // clear() {
+        //     this.errorMsg = ''
+        // },
         login() {
         this.$v.$touch()
         this.$store.dispatch('login', {
@@ -458,12 +459,9 @@ export default {
         })
         },
         signup() {
-        
         this.$v.$touch()
-
         this.formTouched = !this.$v.signupForm.$anyDirty
         this.errors = this.$v.signupForm.$anyError
-        this.uiState = "submit clicked"
         if (this.errors === false && this.formTouched === false){
             // send users registered info into a collection
             this.$store.dispatch('signup', {
@@ -478,11 +476,55 @@ export default {
         }
         }
     },
+    watch: {
+            // Register firebase error alert
+            registerError (value) {
+            if (value) {
+                this.alert1 = true
+            }
+            },
+            alert (value) {
+            if (!value) {
+                this.$store.commit('setregisterError', null)
+            }
+            },
+            // Login firebase error alert
+            loginError (value){
+                if (value){
+                    this.alert2 = true
+                }
+            },
+            alert2 (value){
+                if (!value){
+                    this.$store.commit('setLoginError', null)
+                }
+            },
+            // Forgot Password firebase error alert
+            errorMsg (value) {
+               if (!value) {
+                   this.alert3 = true
+               }
+            },
+    },
     computed: {
+        // Returning the state of the errors
+        registerError () {
+            return this.$store.state.registerError
+        },
+        loginError () {
+            return this.$store.state.loginError
+        },
+        loading () {
+            return this.$store.state.loading
+        },
+
+
         formattedDate () {
-        console.log(this.date)
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
         },
+
+
+        // VALIDATION ERROR MESSAGES
         emailErrors () {
           const errors = []
           if (!this.$v.forgotForm.email.$dirty) return errors
