@@ -6,6 +6,7 @@ import Profile from '@/views/Profile.vue'
 import Medication from '@/views/Medication.vue'
 import Appointments from '@/views/Appointments.vue'
 import Login from '@/views/Login.vue'
+import NotFound from '../components/404.vue'
 
 import { auth } from '../firebase'
 
@@ -51,6 +52,11 @@ const routes = [
     name: 'Login',
     component: Login
   },
+  { 
+    path: '*', 
+    name: 'NotFound',
+    component: NotFound 
+  }
 ]
 
 const router = new VueRouter({

@@ -46,11 +46,13 @@ export default new Vuex.Store({
           email: payload.email,
           mobile: payload.mobile,
         });
-
+        
+        
       }).then(user => {
 
         // commit('setUser', {email: cred.user.email})
         commit('setLoading', false)
+
         // fetch user profile and set in state
         commit('fetchUserProfile', user)
       }).catch(registerError => {
@@ -60,22 +62,13 @@ export default new Vuex.Store({
       })
 
 
-      // fb.usersCollection.doc(user.uid).set({
-      //       firstname: payload.firstname,
-      //       surname: payload.surname,
-      //       date: payload.date,
-      //       ppsn: payload.ppsn,
-      //       email: payload.email,
-      //       mobile: payload.mobile,
+      
       // }).then(user => {
       //   commit('setUser', {email: user.email})
       //   commit('setLoading', false)
       //   router.push('/dashboard')
       // }).catch(error => {
-      //   commit('setError', error.message)
-      //   alert("Error")
-      //   commit('setLoading', false)
-      // })
+
 
 
 
@@ -115,7 +108,7 @@ export default new Vuex.Store({
       await fb.auth.signInWithEmailAndPassword(payload.email, payload.password).then( cred => {
         commit('setUser', cred.user.email)
         commit('setLoading', false)
-        commit('setLoginError', {})
+        
        
       }).catch(loginError => {
         console.log(loginError.message)
@@ -133,7 +126,9 @@ export default new Vuex.Store({
     //   // fetch user profile and set in state
     //   dispatch('fetchUserProfile', user)
     // },
-
+    // autoSignIn ({commit}, payload) {
+    //   commit('setUser', {email: payload.email})
+    //  },
 
     async logout({ commit  }){
       await fb.auth.signOut()

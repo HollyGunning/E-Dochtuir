@@ -116,6 +116,7 @@
                             <v-row>
                                 <v-btn 
                                     type="submit"
+                                    :disabled="loading"
                                     block class="primary white--text"
                                     @click="login()">
                                     <span>Login</span>
