@@ -422,15 +422,12 @@ export default {
         async resetPassword() {
         this.errorMsg = ''
         this.$v.$touch()
-        
             try {
                 await auth.sendPasswordResetEmail(this.forgotForm.email)
                 this.showSuccess = true
             } catch (error) {
                 this.errorMsg = error.message
             }
-        
-
         },
         toggleForm() {
         this.showLoginForm = !this.showLoginForm
