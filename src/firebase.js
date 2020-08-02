@@ -21,11 +21,11 @@ const auth = firebase.auth()
 
 // collections
 const usersCollection = db.collection('users')
-const profilesCollection = db.collection('profiles')
+
 
 export{
     db,
     auth, 
     usersCollection,
-    profilesCollection
+
 }

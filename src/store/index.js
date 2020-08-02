@@ -11,7 +11,7 @@ export default new Vuex.Store({
   state: {
     userProfile: {},
 
-    user: {},
+    // user: {},
     registerError: {},
     loginError: {},
     loading: false,
@@ -24,9 +24,9 @@ export default new Vuex.Store({
       state.userProfile = payload
     },
 
-    setUser(state, payload){
-      state.user = payload
-    },
+    // setUser(state, payload){
+    //   state.user = payload
+    // },
     setRegisterError(state, payload){
       state.registerError = payload
     },
@@ -46,13 +46,13 @@ export default new Vuex.Store({
       await fb.auth.createUserWithEmailAndPassword(payload.email, payload.password).then(user => {
         commit('setLoading', false)
         
-        const newUser = {
-          id: user.uid,
-          name: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL
-        }
-        commit('setUser', newUser)
+        // const newUser = {
+        //   id: user.uid,
+        //   name: user.displayName,
+        //   email: user.email,
+        //   photoURL: user.photoURL
+        // }
+        // commit('setUser', newUser)
         // fetch user profile and set in state
         commit('fetchUserProfile', user)
 
@@ -81,14 +81,15 @@ export default new Vuex.Store({
       await fb.auth.signInWithEmailAndPassword(payload.email, payload.password).then( user => {
        
         commit('setLoading', false)
+        console.log(user)
         // commit('setUser', user.user.uid)
-        const newUser = {
-          id: user.uid,
-          name: user.displayName,
-          email: user.email,
-          photoUrl: user.photoURL
-        }
-        commit('setUser', newUser)
+        // const newUser = {
+        //   id: user.uid,
+        //   name: user.displayName,
+        //   email: user.email,
+        //   photoUrl: user.photoURL
+        // }
+        // commit('setUser', newUser)
        
         
         // change route to dashboard
@@ -120,20 +121,20 @@ export default new Vuex.Store({
       router.push('/login')
     },    
 
-    async autoSignIn ({commit}, payload) {
+    // async autoSignIn ({commit}, payload) {
       
-      commit('setUser', {
-        id: payload.uid,
-        name: payload.displayName,
-        email: payload.email,
-        photoUrl: payload.photoURL
-      })
+    //   commit('setUser', {
+    //     id: payload.uid,
+    //     name: payload.displayName,
+    //     email: payload.email,
+    //     photoUrl: payload.photoURL
+    //   })
 
-      if (router.currentRoute.path === '/login') {
-        router.push('/')
-      }
+    //   if (router.currentRoute.path === '/login') {
+    //     router.push('/')
+    //   }
       
-    },
+    // },
 
     async fetchUserProfile({ commit }, user){
 
@@ -143,7 +144,7 @@ export default new Vuex.Store({
       // set user profile in state
       commit('setUserProfile', userProfile.data())
       
-      
+
       // change route to dashboard
       if (router.currentRoute.path === '/login') {
         router.push('/')

@@ -2,9 +2,9 @@
   <v-app> <!-- Route Vuetify Component use only once to wrap everything else --> 
 
     <!-- Navigation will be loaded above content --> 
-    <!-- <Navbar v-if="showNavbar"/> -->
+    <Navbar v-if="showNavbar"/>
 
-    <Navbar v-if="userIsAuthenticated"/>
+    <!-- <Navbar v-if="userIsAuthenticated"/> -->
 
     <v-main class="mx-2 mb-4"> <!-- All page content will be loaded here --> 
        <router-view></router-view> <!-- This will load the specific route the user is on e.g. Home, About etc. -->
@@ -28,13 +28,13 @@ export default {
   },
   computed: {
     ...mapState(['userProfile']),
-    // showNavbar(){
-    //   return Object.keys(this.userProfile).length > 1
-    // },
+    showNavbar(){
+      return Object.keys(this.userProfile).length > 1
+    },
 
-    userIsAuthenticated(){
-      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-    }
+    // userIsAuthenticated(){
+    //   return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+    // }
   }
 };
 </script>

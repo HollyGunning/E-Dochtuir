@@ -27,7 +27,7 @@ auth.onAuthStateChanged(user => {
 
   if (user) {
     // User is signed in 
-    store.dispatch('autoSignIn', user)
+    // store.dispatch('autoSignIn', user)
 
     store.dispatch('fetchUserProfile', user)
   }

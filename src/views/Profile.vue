@@ -17,17 +17,17 @@
                 </v-card-title>
                     <v-divider></v-divider>
                     <v-row>
-                    <v-col cols="6" md="4">
+                    <v-col cols="12" md="4">
                         <v-list-item>
                             <v-list-item-content>
                             <v-list-item-title class="overline grey--text">Full Name</v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-col>
-                    <v-col cols="6" md="4">
+                    <v-col cols="12" md="4">
                         <v-list-item>
                             <v-list-item-content>
-                            <v-list-item-title>{{userProfile.firstname}} {{userProfile.surname}}</v-list-item-title>
+                            <v-list-item-title class="subtitle-1">{{userProfile.firstname}} {{userProfile.surname}}</v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-col>
@@ -36,17 +36,17 @@
                     </v-card>
                     <v-card flat>  <!-- Date of Birth -->
                     <v-row>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
                                 <v-list-item-title class="overline grey--text">Date of Birth</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
-                                <v-list-item-title class="h2">{{userProfile.date}}</v-list-item-title>
+                                <v-list-item-title class="subtitle-1">{{formattedDate}}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
@@ -56,17 +56,17 @@
 
                     <v-card flat>  <!-- PPSN -->
                     <v-row>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
                                 <v-list-item-title class="overline grey--text">PPSN</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
-                                <v-list-item-title class="h2">{{userProfile.ppsn}}</v-list-item-title>
+                                <v-list-item-title class="subtitle-1">{{userProfile.ppsn}}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
@@ -76,17 +76,17 @@
 
                     <v-card flat> <!-- EMAIL -->
                     <v-row>
-                        <v-col cols="6" md="4">
+                    <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
                                 <v-list-item-title class="overline grey--text">Email</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="6">
                             <v-list-item>
                                 <v-list-item-content>
-                                <v-list-item-title class="h2">{{userProfile.email}}</v-list-item-title>
+                                <v-list-item-title class="subtitle-1">{{userProfile.email}}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
@@ -96,17 +96,17 @@
 
                     <v-card flat> <!-- MOBILE -->
                     <v-row>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
                                 <v-list-item-title class="overline grey--text">Mobile</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
-                        <v-col cols="6" md="4">
+                        <v-col cols="12" md="4">
                             <v-list-item>
                                 <v-list-item-content>
-                                <v-list-item-title class="h2">{{userProfile.mobile}}</v-list-item-title>
+                                <v-list-item-title class="subtitle-1">{{userProfile.mobile}}</v-list-item-title>
                                 </v-list-item-content>
                             </v-list-item>
                         </v-col>
@@ -156,7 +156,6 @@
 
                     <v-col class="mt-n2" cols="12" md="4" lg="4">
                         <v-menu
-                        
                         v-model="menu"
                         :close-on-content-click="false"
                         max-width="290"
@@ -165,6 +164,7 @@
                         <v-text-field
                         label="Date of Birth"
                         :value="formattedDate"
+                        
                         :placeholder="userProfile.date"
                         clearable
                         readonly
@@ -313,41 +313,8 @@ import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 
 export default {
-  data() {
-    //
-    return{
-
-
-        // firstname: firstname(),
-        firstname: '',
-        surname: '',
-        date: '',
-        ppsn: mapState.ppsn,
-        mobile: '',
-
-        menu: false,
-        showEditForm: true,
-    }
-  },
-  validations: {
-        firstname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
-        surname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
-        ppsn: { 
-            ppsnValidate(ppsn){
-                return (
-                    /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
-                );
-            },
-        },
-        mobile: {numeric, minLength: minLength(9), maxLength: maxLength(14)},
-
-  },
-  computed: {
-        ...mapState(['userProfile']),
-
-        // firstname() {
-        //     return this.$userProfile.firstname,
-        // },
+    computed: {
+    ...mapState(['userProfile']),
 
         user () {
             return this.$store.getters.user
@@ -358,6 +325,7 @@ export default {
         formattedDate () {
             return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
         },
+      
 
         // VALIDATION ERROR MESSAGES
         firstNameErrors () {
@@ -391,15 +359,44 @@ export default {
             return errors
         },
     },
+  data() {
+    //
+    return{
+        firstname: this.$store.state.userProfile.firstname,
+        surname: this.$store.state.userProfile.surname,
+        date: this.$store.state.userProfile.date,
+        ppsn: this.$store.state.userProfile.ppsn,
+        mobile: this.$store.state.userProfile.mobile,
+        menu: false,
+        showEditForm: true,
+    }
+  },
+  validations: {
+        firstname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
+        surname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
+        ppsn: { 
+            ppsnValidate(ppsn){
+                return (
+                    /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
+                );
+            },
+        },
+        mobile: {numeric, minLength: minLength(9), maxLength: maxLength(14)},
+
+  },
   methods: {
+      viewDOB () {
+          return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
+      },
       toggleEditProfile(){
           this.showEditForm = !this.showEditForm
-        //   this.$v.$reset()
-            // this.firstname = ''
-            // this.surname = ''
-            // this.date = ''
-            // this.ppsn = ''
-            // this.mobile = ''
+          this.$v.$reset()
+
+            this.firstname = this.$store.state.userProfile.firstname
+            this.surname = this.$store.state.userProfile.surname
+            this.date = this.$store.state.userProfile.date
+            this.ppsn = this.$store.state.userProfile.ppsn
+            this.mobile = this.$store.state.userProfile.mobile
       },
       updateProfile(){
         this.$v.$touch()
@@ -413,17 +410,11 @@ export default {
             date: this.date !== '' ? this.date : this.userProfile.date,
             ppsn: this.ppsn !== '' ? this.ppsn : this.userProfile.ppsn,
             mobile: this.mobile !== '' ? this.mobile : this.userProfile.mobile,
+        }).then ( () =>{ 
+        this.showEditForm = !this.showEditForm
         })
-        }
-
-        // this.showEditForm = !this.showEditForm
-        
-
-
-        
-        
+        } 
       },
   } 
-
 };
 </script>
