@@ -111,7 +111,7 @@
                             </v-list-item>
                         </v-col>
                     </v-row> 
-                    </v-card> 
+                    </v-card>
             </v-card-text>
     
 

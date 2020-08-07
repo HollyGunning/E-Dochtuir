@@ -28,8 +28,22 @@ export default {
   },
   computed: {
     ...mapState(['userProfile']),
+    
     showNavbar(){
       return Object.keys(this.userProfile).length > 1
+      
+
+      // firebase.auth().onAuthStateChanged(userAuth => {
+      //   if (userAuth) {
+      //   firebase.auth().currentUser.getIdTokenResult()
+      //     .then(function ({claims}) {
+      //       if (claims.admin ) {
+      //         return 
+      //       }
+      //     })
+        
+      //   }
+      // })
     },
 
     // userIsAuthenticated(){

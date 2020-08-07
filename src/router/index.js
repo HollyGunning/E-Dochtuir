@@ -1,6 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+
+import firebase from 'firebase/app'
+import Admin from '@/views/Admin.vue'
+import Doctor from '@/views/Doctor.vue'
+
 import Dashboard from '@/views/Dashboard.vue'
 import Profile from '@/views/Profile.vue'
 import Medication from '@/views/Medication.vue'
@@ -8,13 +13,37 @@ import Appointments from '@/views/Appointments.vue'
 import Login from '@/views/Login.vue'
 import NotFound from '../components/404.vue'
 
-import { auth } from '../firebase'
+// import { auth } from '../firebase'
 
 
 
 Vue.use(VueRouter)
 
+
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: Admin,
+    meta: {
+      requiresAuth: true, 
+    }
+  },
+  {
+    path: '/doctor',
+    name: 'doctor',
+    component: Doctor,
+    meta: {
+      requiresAuth: true
+    }
+  },
+
+
   {
     path: '/',
     name: 'dashboard',
@@ -47,11 +76,6 @@ const routes = [
       requiresAuth: true
     }
   },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
   { 
     path: '*', 
     name: 'NotFound',
@@ -66,16 +90,64 @@ const router = new VueRouter({
 })
 
 
-// navigation guard to check for logged in users
+// navigation guard to check for logged in users (ORIGINAL)
+// router.beforeEach((to, from, next) => {
+//   const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
+
+  
+//   if (requiresAuth && !auth.currentUser) {
+//     next('/login')
+//   } else {
+//     next()
+//   }
+// })
+
+
+
 router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
 
-  if (requiresAuth && !auth.currentUser) {
-    next('/login')
-  } else {
-    next()
-  }
+  firebase.auth().onAuthStateChanged(user => {
+
+    if (user) {
+      firebase.auth().currentUser.getIdTokenResult()
+        .then(function ({claims}) {
+
+          if (claims.patient) {
+            if (to.path == '/admin')
+              return next ({
+                path: './'
+              })
+
+          } else if (claims.admin) {
+            if (to.path != '/admin')
+              return next ({
+                path: './admin'
+              })
+
+          } else if (claims.doctor) {
+            if (to.path == '/admin')
+            return next ({
+              path: './doctor'
+            })
+
+          }
+        })
+    } 
+    else {
+      if (to.matched.some(record => record.meta.auth)) {
+        next({
+          path: '/login',
+          query: {
+            redirect: to.fullPath
+          }
+        })
+      } 
+      else {
+        next()
+      }
+    }
+  })
+  next()
 })
-
 
 export default router

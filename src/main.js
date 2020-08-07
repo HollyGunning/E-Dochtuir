@@ -11,7 +11,6 @@ Vue.config.productionTip = false
 
 Vue.use(Vuelidate)
 
-
 let app
 // wait for auth to init before creating the app
 auth.onAuthStateChanged(user => {
@@ -25,7 +24,14 @@ auth.onAuthStateChanged(user => {
     }).$mount('#app')
   }
 
+
   if (user) {
+
+    // Get the token of the user to see if they are admin or not
+    auth.currentUser.getIdTokenResult().then( tokenResult=> {
+      console.log(tokenResult.claims)
+    })
+    
     // User is signed in 
     // store.dispatch('autoSignIn', user)
 

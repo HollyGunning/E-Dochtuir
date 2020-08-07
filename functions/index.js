@@ -5,35 +5,48 @@ admin.initializeApp() //Initialise admin server side
 const db = admin.firestore()
 
 exports.AddUserRole = functions.auth.user().onCreate(async (user) => {
-    // Access the user and returns a promise so a value can be returned to the user
-    return admin.auth().getUserByEmail(user.email).then(user => {
-        // With the user selected, set a custom claim for admin status
-        const customClaims = {
-            patient: true
-        }
-        try{
-            admin.auth().setCustomUserClaims(user.uid, customClaims)
 
-           return db.collection("roles").doc(user.uid).set({
+    if (user.email) {
+        const customClaims = {
+          patient: true,
+        };
+
+        // const customClaims = {
+        //   role: 'patient',
+        // };
+
+        try {
+          var _ = await admin.auth().setCustomUserClaims(user.uid, customClaims)
+    
+          return db.collection("roles").doc(user.uid).set({
             email: user.email,
             role: customClaims
-            
-            }).catch(error => {
-                console.log("Custom claim error is ", error)
-            })
-        } 
-        finally{
-            console.log("All Done")
+          })
+    
+        } catch (error) {
+          console.log(error)
         }
-        // return admin.auth().setCustomUserClaims(user.uid, customClaims, {
-        //     admin: true,
-        //     // role: customClaims
-        // });
-    // }).then(() => {
-        // const customClaims = {
-        //     admin: true,
-        // }
+    
+    
+      }
 
 
-    })
 })
+
+exports.setUserRole = functions.https.onCall(async (data, context) => {
+
+    if (!context.auth.token.admin) return
+  
+  
+    try {
+      var _ = await admin.auth().setCustomUserClaims(data.uid, data.role)
+  
+      return db.collection("roles").doc(data.uid).update({
+        role: data.role
+      })
+  
+    } catch (error) {
+      console.log(error)
+    }
+  
+  });

@@ -389,6 +389,8 @@ export default {
       showPasswordReset: false 
     }
     },
+
+
     validations: {
         loginForm: {
             email: { required, email },
@@ -446,9 +448,6 @@ export default {
             this.alert1 = false
             this.alert2 = false
         },
-        // clear() {
-        //     this.errorMsg = ''
-        // },
         login() {
         this.$v.$touch()
         this.$store.dispatch('login', {
@@ -460,19 +459,19 @@ export default {
         this.$v.$touch()
         this.formTouched = !this.$v.signupForm.$anyDirty
         this.errors = this.$v.signupForm.$anyError
-        if (this.errors === false && this.formTouched === false){
-            // send users registered info into a collection
-            this.$store.dispatch('signup', {
-            firstname: this.signupForm.firstname,
-            surname: this.signupForm.surname,
-            date: this.date,
-            ppsn: this.signupForm.ppsn,
-            email: this.signupForm.email,
-            mobile: this.signupForm.mobile,
-            password: this.signupForm.password,   
-        })
-        }
-        }
+            if (this.errors === false && this.formTouched === false){
+                // send users registered info into a collection
+                this.$store.dispatch('signup', {
+                firstname: this.signupForm.firstname,
+                surname: this.signupForm.surname,
+                date: this.date,
+                ppsn: this.signupForm.ppsn,
+                email: this.signupForm.email,
+                mobile: this.signupForm.mobile,
+                password: this.signupForm.password,   
+            })
+            }
+        },
     },
     watch: {
             // Register firebase error alert
