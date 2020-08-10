@@ -113,7 +113,7 @@ router.beforeEach((to, from, next) => {
         .then(function ({claims}) {
 
           if (claims.patient) {
-            if (to.path == '/admin')
+            if (to.path == '/admin' && to.path == '/doctor')
               return next ({
                 path: './'
               })
@@ -125,7 +125,7 @@ router.beforeEach((to, from, next) => {
               })
 
           } else if (claims.doctor) {
-            if (to.path == '/admin')
+            if (to.path != '/admin')
             return next ({
               path: './doctor'
             })
