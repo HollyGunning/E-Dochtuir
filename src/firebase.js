@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 
 import 'firebase/auth'
 import 'firebase/firestore'
+import 'firebase/functions'
 
 const firebaseConfig = {
     apiKey: "AIzaSyAuaVEBK2WfHRjQj60JaDIuaMlDut7XRbk",
@@ -19,6 +20,8 @@ firebase.initializeApp(firebaseConfig)
 // utils
 const db = firebase.firestore()
 const auth = firebase.auth()
+const functions = firebase.functions()
+
 
 // collections
 const usersCollection = db.collection('users')
@@ -27,8 +30,8 @@ const rolesCollection = db.collection('roles')
 
 export{
     db,
-    auth, 
+    auth,
+    functions,
     usersCollection,
     rolesCollection,
-
 }

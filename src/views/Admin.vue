@@ -53,7 +53,6 @@
                 <v-select 
                 :key="item.id"
                 v-model="item.currentRole"
-                
                 :items="items"
                 item-text="roleName"
                 item-value="value"
@@ -68,7 +67,8 @@
     </v-container>
 </template>
 <script>
-import firebase from "firebase";
+
+import {auth, db, functions} from '../firebase'
 import AdminNavbar from '../components/AdminNavbar'
 
 export default {
@@ -94,11 +94,11 @@ export default {
     },
     created() {
         var self = this;
-        firebase.auth().onAuthStateChanged(function(user) {
+        auth.onAuthStateChanged(function(user) {
             self.user = user;
         });
         this.users = [];
-        firebase.firestore().collection("roles").get().then(snap => {
+        db.collection("roles").get().then(snap => {
             snap.forEach(doc => {
                 var user = doc.data();
                 user.id = doc.id;
@@ -112,7 +112,7 @@ export default {
      
         changeRole(uid, event) {
             console.log("Hello" + uid)
-            var addMessage = firebase.functions().httpsCallable("setUserRole");
+            var addMessage = functions.httpsCallable("setUserRole");
             var data = { uid: uid, role: { [event]: true } };
             addMessage(data)
                 .then(function(result) {
