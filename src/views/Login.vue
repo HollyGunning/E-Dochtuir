@@ -191,12 +191,12 @@
                                 label="Date of Birth"
                                 readonly
                                 v-bind="attrs"
-                                v-on="on"
-                                @click:clear="date = null"
+                                v-on="on" 
                                 required
                                 outlined
                                 @input="$v.date.$touch()"
                                 @blur="$v.date.$touch()"
+                                @click:clear="date = null"
                                 >
                                 </v-text-field>
                                 </template>
@@ -294,8 +294,47 @@
                                 @input="$v.signupForm.checkbox.$touch()"
                                 @blur="$v.signupForm.checkbox.$touch()" 
                                 >
+                                    <template v-slot:label>
+                                       
+                                        <span>I have read and agree to the 
+                                            <a @click.stop.prevent="dialog2 = true">Terms of Service</a>
+                                        </span>
+                                           
+                                    </template>
                                 </v-checkbox>
                             </v-col>
+
+                             <v-dialog
+                                v-model="dialog2"
+                                absolute
+                                max-width="400"
+                                persistent
+                            >
+                            
+                          
+                                <v-card>
+                                <v-card-title class="text-uppercase">Terms & Conditions</v-card-title>
+                                    <TsAndCs />
+                                <v-divider></v-divider>
+                                <v-card-actions>
+                                    <v-btn
+                                    text
+                                    @click="signupForm.checkbox = false, dialog2 = false"
+                                    >
+                                    No
+                                    </v-btn>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                    class="white--text"
+                                    color="primary"
+                                    @click="signupForm.checkbox = true, dialog2 = false"
+                                    >
+                                    Yes
+                                    </v-btn>
+                                </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+
                         </v-row>
                         <v-card-actions>
                             <v-row>
@@ -338,11 +377,15 @@ import { auth } from '@/firebase'
 
 import { required, email, maxLength, minLength, alpha, numeric, sameAs } from "vuelidate/lib/validators"
 
-
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 
+import TsAndCs from '../components/TsAndCs'
+
 export default {
+    components: {
+        TsAndCs,
+    },
    data() {
     return {
     //icons to show password
@@ -350,6 +393,7 @@ export default {
       showPassword2: false,
       // dialog and menu for forgot password
       dialog: false,
+      dialog2: false,
       menu: false,
       // date for dob 
       date: '',
