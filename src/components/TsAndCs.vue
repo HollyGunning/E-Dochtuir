@@ -1,6 +1,6 @@
 <template>
     
-      <v-card-text>
+      <v-card-text class="mt-3">
 
         <p>Welcome to E-DOCHTÚIR!</p>
 

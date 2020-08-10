@@ -309,13 +309,11 @@
                                 absolute
                                 max-width="400"
                                 persistent
-                            >
-                            
-                          
+                            >          
                                 <v-card>
                                 <v-card-title class="text-uppercase">Terms & Conditions</v-card-title>
-                                    <TsAndCs />
                                 <v-divider></v-divider>
+                                    <TsAndCs />
                                 <v-card-actions>
                                     <v-btn
                                     text
