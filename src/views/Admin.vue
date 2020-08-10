@@ -1,102 +1,95 @@
 <template>
-    <section>
-        <div class="ui middle aligned center aligned grid">
-            <div class="column">
-                <h1>Admin</h1>
-                <p v-if="user">User:{{user.email}}</p>
+    <v-container >
+ <AdminNavbar />
+
+    <v-row>
+    <v-col cols="12" s="12" sm="12" md="12" lg="12">
+        <v-col class="mt-n4">
+        <v-card outlined>
+            <v-row>
+            <v-col cols="12" md="4">
+                <v-list-item>
+                <v-list-item-content>
+                <v-list-item-title class="overline grey--text">Admin</v-list-item-title>
+                </v-list-item-content>
+                </v-list-item>
+            </v-col>
+            <v-col cols="12" md="8">
+                <v-list-item>
+                <v-list-item-content>
+                <v-list-item-title class="subtitle-1" v-if="user">{{user.email}}</v-list-item-title>
+                </v-list-item-content>
+                </v-list-item>
+            </v-col>
+            </v-row>
+        </v-card>
+      </v-col>
+     
+
+        <v-card shaped>
+            <!--Title and Search -->
+            <v-card-title class="text-uppercase grey--text text--darken-1">
+            User Management
+            <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+            
+            <!-- Table -->
+            <v-data-table
+            :headers="headers"
+            :items="users"
+            :search="search"
+            :items-per-page="5"
+           class="elevation-8"
+            >
+            <!-- selector for the user role -->
+            <template v-slot:[`item.role`]="{item}"> 
+                <v-select 
+                :key="item.id"
+                v-model="item.currentRole"
                 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Role</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="user in users" :key="user.id">
-                            <td data-label="Name">{{user.email}}</td>
-                            <select @change="changeRole(user.id, $event)">
-                                <option :selected="user.role.patient" value="patient">Patient</option>
-                                <option :selected="user.role.doctor" value="doctor">Doctor</option>
-                            </select>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-<!-- 
-<v-card flat>
-      <v-card-title>
-        User Management
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-      <v-data-table
-      :headers="headers"
-      :items="users"
-      :search="search"
-      :items-per-page="5"
-      class="elevation-1"
-      >
-   
-      <template v-slot:items="{ items }"> 
-          <v-select 
-          :key="user.id"
-          v-model="select"
-          :items="items"
-          item-text="roleName"
-          item-value="role"
-          @change="changeRole(user.id, $event)"
-          >
-        
-        
-      </template>
-      </v-data-table>
-    </v-card> -->
-
-    </section>
+                :items="items"
+                item-text="roleName"
+                item-value="value"
+                @change="changeRole(item.id, $event)"
+                ></v-select>                    
+            </template>
+            </v-data-table>
+        </v-card>
+      
+    </v-col>
+    </v-row>
+    </v-container>
 </template>
 <script>
 import firebase from "firebase";
+import AdminNavbar from '../components/AdminNavbar'
+
 export default {
+  components: {
+    AdminNavbar,
+  },
     data() {
         return {
             users: [],
             user: null,
-
-          
-
-
             search: '',
-                headers: [
-                    { text: 'User Email', align: 'start', value: 'email' },
-                    
-                    { text: 'User Role  ', value: 'items', width: '300' },
-                ],
+            headers: [
+                { text: 'User Email', align: 'start', value: 'email' },
+                { text: 'User Role  ', value: 'role', width: '300' },
+            ],
            
-        
-           
-            setSelect: null,
-            fetchValue: '',
-
-           select: {roleName: 'Patient'},
+            select: {roleName: 'Patient'},
             items : [
                 { roleName: 'Patient', role:'patient', value: 'patient'},
                 { roleName: 'Doctor', role: 'doctor', value: 'doctor'}
             ],
-
-
-
-
-
-
         };
     },
     created() {
@@ -105,27 +98,22 @@ export default {
             self.user = user;
         });
         this.users = [];
-        firebase
-            .firestore()
-            .collection("roles")
-            .get()
-            .then(snap => {
-                snap.forEach(doc => {
-                    var user = doc.data();
-                    user.id = doc.id;
-                  
-                    console.log(doc.data());
-                    console.log(user)
-                    if (!user.role.admin) this.users.push(user);
-               
-                });
+        firebase.firestore().collection("roles").get().then(snap => {
+            snap.forEach(doc => {
+                var user = doc.data();
+                user.id = doc.id;
+                user.currentRole = user.role.patient ? "patient" : "doctor";
+                if (!user.role.admin) this.users.push(user);
             });
+            console.log(this.users)
+        });
     },
     methods: {
      
         changeRole(uid, event) {
+            console.log("Hello" + uid)
             var addMessage = firebase.functions().httpsCallable("setUserRole");
-            var data = { uid: uid, role: { [event.target.value]: true } };
+            var data = { uid: uid, role: { [event]: true } };
             addMessage(data)
                 .then(function(result) {
                     console.log(result);
@@ -134,7 +122,6 @@ export default {
                     console.log(error);
                 });
         },
-
     }
 };
 </script>
@@ -143,22 +130,18 @@ export default {
    .mobile {
       color: #333;
     }
-
     @media screen and (max-width: 768px) {
       .mobile table.v-table tr {
         max-width: 100%;
         position: relative;
         display: block;
       }
-
       .mobile table.v-table tr:nth-child(odd) {
         border-left: 6px solid deeppink;
       }
-
       .mobile table.v-table tr:nth-child(even) {
         border-left: 6px solid cyan;
       }
-
       .mobile table.v-table tr td {
         display: flex;
         width: 100%;
@@ -166,14 +149,12 @@ export default {
         height: auto;
         padding: 10px;
       }
-
       .mobile table.v-table tr td ul li:before {
         content: attr(data-label);
         padding-right: .5em;
         text-align: left;
         display: block;
         color: #999;
-
       }
       .v-datatable__actions__select
       {
@@ -184,7 +165,6 @@ export default {
       .mobile .theme--light.v-table tbody tr:hover:not(.v-datatable__expand-row) {
         background: transparent;
       }
-
     }
     .flex-content {
       padding: 0;
@@ -194,7 +174,6 @@ export default {
       flex-wrap: wrap;
       width: 100%;
     }
-
     .flex-item {
       padding: 5px;
       width: 50%;
