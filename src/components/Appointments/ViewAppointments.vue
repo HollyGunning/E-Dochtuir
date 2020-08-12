@@ -56,21 +56,35 @@ export default {
         // Set current user to the currently logged in user
         var currentUser = auth.currentUser.uid
         // Query the db to identify any appointments connected to that user
-        db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").get().then(snap => {
-            snap.forEach(doc => {
-                let appointment = doc.data()
-                appointment.id = doc.id
-                
-                this.appointments.push(appointment)
-                
+
+        
+        db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").onSnapshot(snap => {
+            let appointment = snap.docChanges()
+            appointment.forEach(appointment => {
+                // realtime add document to appointments list
+                if(appointment.type == "added"){   
+                    appointment.id = appointment.doc.id   
+                    this.appointments.push(appointment.doc.data())  
+                }
+                else if(appointment.type == "removed"){
+                    console.log("The following record has been removed ", appointment.doc.data())
+                    this.appointments.delete(appointment.doc.data())
+                }
             })
         })
 
-    
-    
+        // db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").get().then(snap => {
+        //     snap.forEach(doc => {
+        //         let appointment = doc.data()
+        //         appointment.id = doc.id
+                
+        //         this.appointments.push(appointment)
+                
+        //     })
+        // })
 
     
-    
+   
 
     },
 }
