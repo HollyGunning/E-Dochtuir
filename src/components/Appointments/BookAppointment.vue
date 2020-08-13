@@ -94,18 +94,33 @@
             <v-row>
             <!-- Appointment Doctor -->
             <v-col class="mt-n0" cols="12" md="6">
-                <v-select 
+                <!-- <v-select 
                 name="selectDoctor"
                 :items="doctors"
                 item-text="name"
                 item-value="value"
+                
+                v-model="chosenDoc"
+
                 label="Select a Doctor"
                 :error-messages="selectDoctorError"
                 outlined
                 @change="onDropdownChanged($event)"
                 @input="$v.selectDoctor.$touch()"
                 @blur="$v.selectDoctor.$touch()"
-                ></v-select>         
+                ></v-select>          -->
+                <v-select 
+                name="selectDoctor"
+                :items="doctors"
+                item-text="name"
+                item-value="value"
+             
+                label="Select a Doctor"
+                
+                outlined
+                @change="onDropdownChanged($event)"
+                
+                ></v-select>  
             </v-col>
             <!-- Appointment Date -->
             <v-col class="mt-n0" cols="12" md="6">
@@ -266,6 +281,10 @@ export default {
         panel: 1,
         // Menu for picking the appointment date
         menu2: false,
+
+        //
+        
+
         // Doctors array contains a list of doctors 
         doctors: [],
         // Chosen Doc stores the value of the selected doctor to be passed to the db
@@ -279,7 +298,7 @@ export default {
       }
     },
     validations: {
-      selectDoctor: { required },
+      // selectDoctor: { required },
       appointmentDate: { required },
       additionalDetails: { maxLength: maxLength (150) }
     },
@@ -308,7 +327,7 @@ export default {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
       checkTime () {
-        // db.collection("appointments").where("")
+        // TODO: QUERY TIMES TO SEE IF TIME SLOT IS ALREADY TAKEN AND DETERMINE WHETHER CHIP IS SELECTABLE OR NOT
       },
       bookAppointment () {
         this.$v.$touch()
@@ -331,30 +350,14 @@ export default {
           }
           db.collection("appointments").doc().set(document);
           
-          // this.selectDoctor = ''
-          // this.appointmentDate = '',
-          // this.additionalDetails = '',
+          // TODO: RESET APPOINTMENT DETAILS AFTER FORM IS SUBMITTED
+
+          // TODO: REDIRECT TO VIEW APPOINTMENTS
 
         }
         else{
           console.log("Appointment could not be booked")
         }
-
-        // var document = {
-        //   patientID: this.currentUser,
-        //   firstname: this.$store.state.userProfile.firstname,       
-        //   surname: this.$store.state.userProfile.surname,
-        //   date: this.$store.state.userProfile.date,
-        //   email: this.$store.state.userProfile.email,
-        //   ppsn: this.$store.state.userProfile.ppsn,
-        //   mobile: this.$store.state.userProfile.mobile,
-
-        //   doctorID: this.chosenDoc,
-        //   appointmentDate: this.appointmentDate,
-        //   // appointmentTime: 
-        //   appointmentDetails: this.additionalDetails
-        // }
-        // db.collection("appointments").doc().set(document);
       },
 
       onDropdownChanged(value) {

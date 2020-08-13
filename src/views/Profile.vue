@@ -261,11 +261,11 @@
         <v-col cols="12" s="12" sm="6" md="4" lg="4">
       
             <v-card width="600" height="300">
-            <v-row justify="space-around" class="pt-3">
+            <!-- <v-row justify="space-around" class="pt-3">
             <v-avatar size="150" class="grey lighten-2">
                 <img src="https://cdn.vuetifyjs.com/images/cards/mountain.jpg">
             </v-avatar>
-            </v-row>
+            </v-row> -->
             <v-card-text class="text-center">
                 <v-row>
                 <!-- <v-layout column align-center> -->

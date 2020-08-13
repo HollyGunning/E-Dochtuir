@@ -2,7 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
-import firebase from 'firebase/app'
+import {auth} from '../firebase'
+// import firebase from 'firebase/app'
 import Admin from '@/views/Admin.vue'
 import Doctor from '@/views/Doctor.vue'
 
@@ -106,17 +107,18 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
 
-  firebase.auth().onAuthStateChanged(user => {
+  auth.onAuthStateChanged(user => {
 
     if (user) {
-      firebase.auth().currentUser.getIdTokenResult()
+      auth.currentUser.getIdTokenResult()
         .then(function ({claims}) {
 
           if (claims.patient) {
-            if (to.path == '/admin' && to.path == '/doctor')
+            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/medication')
               return next ({
                 path: './'
               })
+            
 
           } else if (claims.admin) {
             if (to.path != '/admin')
