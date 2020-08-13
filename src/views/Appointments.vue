@@ -6,7 +6,7 @@
 
      <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
         <template v-slot:activator="{ on, attrs }">
-          
+          <!-- Viewing of appointments occurs here --> 
           <v-card flat>
             <v-card-title class="primary lighten-1 white--text">Appointments
             <v-spacer></v-spacer>
@@ -29,19 +29,24 @@
       
 
 
-
+        <!-- Book appointment form appears here -->
         </template>
-        <v-card>
-          
-          <v-toolbar dark color="primary">
+        <v-card>   
+        <v-card-title class="primary white--text">
+          Book Appointment
+            <v-spacer></v-spacer>
             <v-btn icon dark @click="dialog = false">
               <v-icon>mdi-close</v-icon>
             </v-btn>
-            <v-toolbar-title>Cancel</v-toolbar-title>
-            
-          </v-toolbar>
-   
+            Cancel
+        </v-card-title>
+        <v-divider class="mx4"></v-divider>
+        
           <BookAppointment />
+    
+          
+
+
 
         </v-card>
       </v-dialog>

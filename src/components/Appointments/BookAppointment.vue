@@ -1,184 +1,181 @@
 <template>
 
+
+
     <v-form @submit.prevent="bookAppointment">
-    <v-card-title class="text-uppercase">Book Appointment</v-card-title>
-    <v-divider class="mx4"></v-divider>
     <v-card-text>
-
-        <v-subheader  class="overline ml-n2">Personal Details
-          <v-divider></v-divider>
-        </v-subheader>
-        <v-row>   
-        <v-col class="mt-n0" cols="12" md="6" lg="6">
-          <v-text-field 
-          type="text"
-          name="firstname"
-          label="First Name"
+      <v-row>     
+        <v-expansion-panels flat accordion v-model="panel">
+          <!-- Personal Details -->
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <v-subheader  class="overline ml-n5">Personal Details
+                <v-divider></v-divider>
+              </v-subheader>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+              <!-- Firstname -->        
+              <v-col class="mt-n0" cols="12" md="4" lg="4">
+                <v-text-field 
+                type="text"
+                name="firstname"
+                label="First Name"  
+                v-model.trim="firstname" 
+                readonly
+                outlined  
+                ></v-text-field>
+              </v-col>
+              <!-- Surname --> 
+              <v-col class="mt-n0" cols="12" md="4" lg="4">
+                <v-text-field 
+                type="text"
+                name="surname"
+                label="Surname"
+                v-model.trim="surname"
+                readonly
+                outlined   
+                ></v-text-field>
+              </v-col>
+              <!-- Date of Birth -->
+              <v-col class="mt-n0" cols="12" md="4" lg="4">
+                <v-text-field
+                label="Date of Birth"
+                :value="formattedDate"
+                readonly         
+                outlined
+                ></v-text-field>
+              </v-col>
+              <!-- Email --> 
+              <v-col class="mt-n2" cols="12" md="4" lg="4">
+                <v-text-field 
+                type="email"
+                name="email"
+                label="Email"
+                v-model.trim="email"
+                readonly
+                outlined   
+                ></v-text-field>
+              </v-col>
+              <!-- PPSN -->
+              <v-col class="mt-n2" cols="12" md="4" lg="4">
+                <v-text-field 
+                type="text"
+                name="ppsn"
+                label="PPSN"
+                v-model.trim="ppsn"
+                readonly
+                outlined        
+                ></v-text-field>
+              </v-col>
+              <!-- Mobile -->
+              <v-col class="mt-n2" cols="12" md="4" lg="4">
+                <v-text-field 
+                type="text"
+                name="mobile"
+                label="Mobile"
+                v-model.trim="mobile"
+                readonly
+                outlined  
+                ></v-text-field>
+              </v-col> 
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
           
-          :counter="15" 
-          v-model.trim="firstname" 
-          
-          :placeholder="userProfile.firstname"
-          outlined
-          
-          >
-          </v-text-field>
-        </v-col>
-        <v-col class="mt-n0" cols="12" md="6" lg="6">
-          <v-text-field 
-          type="text"
-          name="surname"
-          label="Surname"
-          :counter="15" 
-          v-model.trim="surname"
-      
-          :placeholder="userProfile.surname"
-          outlined 
-        
-          >
-          </v-text-field>
-        </v-col>
-
-        <!-- Date of Birth -->
-        <v-col class="mt-n2" cols="12" md="4" lg="4">
+          <!-- Account Details -->
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <v-subheader  class="overline ml-n5">Appointment Details
+              <v-divider></v-divider>
+              </v-subheader>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+            <v-row>
+            <!-- Appointment Doctor -->
+            <v-col class="mt-n0" cols="12" md="6">
+                <v-select 
+                name="selectDoctor"
+                :items="doctors"
+                item-text="name"
+                item-value="value"
+                label="Select a Doctor"
+                :error-messages="selectDoctorError"
+                outlined
+                @change="onDropdownChanged($event)"
+                @input="$v.selectDoctor.$touch()"
+                @blur="$v.selectDoctor.$touch()"
+                ></v-select>         
+            </v-col>
+            <!-- Appointment Date -->
+            <v-col class="mt-n0" cols="12" md="6">
             <v-menu
-            v-model="menu"
-            :close-on-content-click="false"
-            max-width="290"
-            >
-            <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-            label="Date of Birth"
-            :value="formattedDate"
-            
-            :placeholder="userProfile.date"
-            clearable
-            readonly
-            v-bind="attrs"
-            v-on="on"
-            @click:clear="date = null"
-            outlined
-            >
-            </v-text-field>
-            </template>
-            <v-date-picker
-            v-model.trim="date"
-            @change="menu = false"  
-            >
-            </v-date-picker>
-            </v-menu>
-        </v-col>
-        <v-col class="mt-n2" cols="12" md="4" lg="4">
-          <v-text-field 
-          type="text"
-          name="ppsn"
-          label="PPSN"
-          hint="7 numerical characters, followed by either 1 or 2 letters E.g. 1234567RW"
-          v-model.trim="ppsn"
-          
-          :placeholder="userProfile.ppsn"
-          outlined
-        
-          >
-          </v-text-field>
-        </v-col>
-        <v-col class="mt-n2" cols="12" md="4" lg="4">
-            <v-text-field 
-            type="text"
-            name="mobile"
-            label="Mobile"
-            v-model.trim="mobile"
-            
-            :placeholder="userProfile.mobile"
-            outlined
-           
-            >
-            </v-text-field>
-        </v-col> 
-
-      </v-row>
-
-      <v-subheader class="overline ml-n2">Appointment Details
-        <v-divider></v-divider>
-      </v-subheader>
-      <v-row>
-  
-        <v-col class="mt-n0" cols="12" md="6">
-            <v-select 
-              :items="doctors"
-              item-text="name"
-              item-value="value"
-              label="Choose a Doctor"
-              @change="onDropdownChanged($event)"
-              outlined
-            ></v-select>         
-        </v-col>
-
-
-          <v-col class="mt-n0" cols="12" md="6">
- 
-          <v-menu
             v-model="menu2"
             :close-on-content-click="false"
             max-width="290"
-          >
+            >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                label="Appointment Date"
-                readonly
-                clearable
-                :value="formattedAppointmentDate"
-                
-                v-bind="attrs"
-                v-on="on"
-                required
-                outlined
-                @click:clear="appointmentDate = null"
-              
+              label="Select Date"
+              :error-messages="selectDateError"
+              readonly
+              clearable
+              :value="formattedAppointmentDate"
+              v-bind="attrs"
+              v-on="on"
+              required
+              outlined
+              @input="$v.appointmentDate.$touch()"
+              @blur="$v.appointmentDate.$touch()"
+              @click:clear="appointmentDate = null"
               ></v-text-field>
             </template>
-              <v-date-picker 
-              v-model="appointmentDate" 
-              @input="menu2 = false"
-              
-              >
-              </v-date-picker>
-          </v-menu>
-
-          </v-col>
-
-
-          <v-col class="mt-0" cols="12" md="12">
+            <v-date-picker 
+            v-model="appointmentDate" 
+            @input="menu2 = false"
+            >
+            </v-date-picker>
+            </v-menu>
+            </v-col>
+            <!-- Appointment Details -->
+            <v-col cols="12" md="6">
+            <v-textarea
+            auto-grow
+            rows="1"
+            name="additionalDetails"
+            label="Additional Details"
+            :error-messages="additionalDetailsError"
+            v-model="additionalDetails"
+            :counter="150" 
+            outlined
+            @input="$v.additionalDetails.$touch()"
+            @blur="$v.additionalDetails.$touch()"
+            ></v-textarea>
+            </v-col>
+            <!-- Appointment Time -->
+            <v-col class="mt-0" cols="12" md="12">
             <v-card flat>
-                <v-card-text class="mt-n4">
-                <span class="subheading">Select Appointment Time</span>
-
-                <v-chip-group
-                column
-                v-model="selectedTime"
-                mandatory
-                active-class="primary--text"
-                >
-                  <v-chip class="mr-5" outlined default v-for="tag in tags" :key="tag">
-                    {{ tag }}
-                  </v-chip>
-                </v-chip-group>
+              <v-card-text class="mt-n4">
+              <span class="subheading">Select Appointment Time</span>
+              <v-chip-group
+              column
+              v-model="selectedTime"
+              mandatory
+              active-class="primary--text"
+              >
+              <v-chip class="mr-5" outlined default v-for="time in timeSlots" :key="time">
+                {{ time }}
+              </v-chip>
+              </v-chip-group>
               </v-card-text>
-              </v-card>
-          </v-col>
-
-          <v-col cols="12" md="6">
-          <v-textarea
-          outlined
-          auto-grow
-          rows="2"
-          name="additionalDetails"
-          label="Additional Details"
-          v-model="additionalDetails"
-          ></v-textarea>
-          </v-col>
-
+            </v-card>
+            </v-col>
+            </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>    
+        </v-expansion-panels>    
       </v-row>
+
       <v-card-actions>
       <v-row>
           <v-btn
@@ -192,59 +189,99 @@
       </v-card-actions>
 
     </v-card-text>
-  </v-form>
+    </v-form>
+
+
+  
+
+
+    
+ 
+
+
+
+
 
 </template>
 
 <script>
- import { format, parseISO } from 'date-fns'
- import { mapState } from 'vuex'
- import {auth, db} from '../../firebase'
+import { mapState } from 'vuex'
+import {auth, db} from '../../firebase'
+import { format, parseISO } from 'date-fns'
+import { required, maxLength } from "vuelidate/lib/validators"
+
 
 export default {
   computed: {
     ...mapState(['userProfile']),
-    // user () {
-    //     return this.$store.getters.user
-    // },
     
     loading () {
         return this.$store.state.loading
     },
+
     formattedDate () {
       return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
     },
+
     formattedAppointmentDate () {
       return this.appointmentDate ? format(parseISO(this.appointmentDate), 'do MMM yyyy') : ''
-    }
+    },
+
+    // VALIDATION ERROR MESSAGES
+    selectDoctorError () {
+      const errors = []
+      if(!this.$v.selectDoctor.$dirty) return errors
+        !this.$v.selectDoctor.required && errors.push('Please select a doctor to book appointment with')
+      return errors
+    },
+    selectDateError () {
+      const errors = []
+      if(!this.$v.appointmentDate.$dirty) return errors
+        !this.$v.appointmentDate.required && errors.push('Please select a date for your appointment')
+      return errors
+    },
+    additionalDetailsError () {
+      const errors = []
+      if(!this.$v.additionalDetails.$dirty) return errors
+        !this.$v.additionalDetails.maxLength && errors.push('Cannot exceed 150 characters')
+      return errors
+    },
+
   },
     data () {
       return {
-        currentUser: null,
         firstname: this.$store.state.userProfile.firstname,       
         surname: this.$store.state.userProfile.surname,
         date: this.$store.state.userProfile.date,
+        email: this.$store.state.userProfile.email,
         ppsn: this.$store.state.userProfile.ppsn,
         mobile: this.$store.state.userProfile.mobile,
-        chosenDoc: null,
+        
+        // currentUser is used for the patientID
+        currentUser: null,
         appointmentDate: '',
         additionalDetails: '',
 
-        menu: false,
+        // Appointment panel is open by default
+        panel: 1,
+        // Menu for picking the appointment date
         menu2: false,
-
-        
-        
-        doctor: null,
+        // Doctors array contains a list of doctors 
         doctors: [],
+        // Chosen Doc stores the value of the selected doctor to be passed to the db
+        chosenDoc: null,
 
-
-        // items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
         selectedTime: '',
-        tags: [
-          '9.00', '10.00', '11.00', '1.00', '2.00', '3.00', '4.00'
+        timeSlots: [
+          '9.00', '9.30', '10.00', '10.30', '11.00', '11.30', '1.00', 
+          '1.30', '2.00', '2.30', '3.00', '3.30', '4.00', '4.30'
         ],
       }
+    },
+    validations: {
+      selectDoctor: { required },
+      appointmentDate: { required },
+      additionalDetails: { maxLength: maxLength (150) }
     },
     created() {
       db.collection("roles").where("role.doctor", "==", true).get().then(snap => {
@@ -270,19 +307,62 @@ export default {
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
-      
-      bookAppointment () {
-        var document = {
-          patientID: this.currentUser,
-          doctorID: this.chosenDoc,
-          appointmentDate: this.appointmentDate,
-          // appointmentTime: 
-          appointmentDetails: this.additionalDetails
-        }
-        db.collection("appointments").doc().set(document);
+      checkTime () {
+        // db.collection("appointments").where("")
       },
+      bookAppointment () {
+        this.$v.$touch()
+        this.formTouched = !this.$v.$anyDirty
+        this.errors = this.$v.$anyError
+        if (this.errors === false && this.formTouched === false){ 
+          var document = {
+            patientID: this.currentUser,
+            firstname: this.$store.state.userProfile.firstname,       
+            surname: this.$store.state.userProfile.surname,
+            dob: this.$store.state.userProfile.date,
+            email: this.$store.state.userProfile.email,
+            ppsn: this.$store.state.userProfile.ppsn,
+            mobile: this.$store.state.userProfile.mobile,
+
+            doctorID: this.chosenDoc,
+            appointmentDate: this.appointmentDate,
+            // appointmentTime: 
+            appointmentDetails: this.additionalDetails
+          }
+          db.collection("appointments").doc().set(document);
+          
+          // this.selectDoctor = ''
+          // this.appointmentDate = '',
+          // this.additionalDetails = '',
+
+        }
+        else{
+          console.log("Appointment could not be booked")
+        }
+
+        // var document = {
+        //   patientID: this.currentUser,
+        //   firstname: this.$store.state.userProfile.firstname,       
+        //   surname: this.$store.state.userProfile.surname,
+        //   date: this.$store.state.userProfile.date,
+        //   email: this.$store.state.userProfile.email,
+        //   ppsn: this.$store.state.userProfile.ppsn,
+        //   mobile: this.$store.state.userProfile.mobile,
+
+        //   doctorID: this.chosenDoc,
+        //   appointmentDate: this.appointmentDate,
+        //   // appointmentTime: 
+        //   appointmentDetails: this.additionalDetails
+        // }
+        // db.collection("appointments").doc().set(document);
+      },
+
       onDropdownChanged(value) {
         this.chosenDoc = value;
+      },
+
+      onAppointmentChosen(value) {
+        this.chosenApp = value
       }
     }, 
 }

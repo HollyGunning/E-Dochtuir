@@ -68,24 +68,10 @@ export default {
                 }
                 else if(appointment.type == "removed"){
                     console.log("The following record has been removed ", appointment.doc.data())
-                    this.appointments.delete(appointment.doc.data())
+                    // this.appointments.delete(appointment.doc.data())
                 }
             })
         })
-
-        // db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").get().then(snap => {
-        //     snap.forEach(doc => {
-        //         let appointment = doc.data()
-        //         appointment.id = doc.id
-                
-        //         this.appointments.push(appointment)
-                
-        //     })
-        // })
-
-    
-   
-
     },
 }
 </script>
