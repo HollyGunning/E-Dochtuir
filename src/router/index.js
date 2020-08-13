@@ -14,9 +14,6 @@ import Appointments from '@/views/Appointments.vue'
 import Login from '@/views/Login.vue'
 import NotFound from '../components/404.vue'
 
-// import { auth } from '../firebase'
-
-
 
 Vue.use(VueRouter)
 

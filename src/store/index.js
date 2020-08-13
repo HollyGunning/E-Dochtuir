@@ -134,9 +134,6 @@ export default new Vuex.Store({
   }, // actions end
 
   getters: {
-    // user (state) {
-    //   return state.user
-    // },
     userProfile (state) {
       return state.userProfile
     },
