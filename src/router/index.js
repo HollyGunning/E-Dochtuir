@@ -104,6 +104,16 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
 
+  const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
+
+  
+  if (requiresAuth && !auth.currentUser) {
+    next('/login')
+  } else {
+    next()
+  }
+
+
   auth.onAuthStateChanged(user => {
 
     if (user) {
