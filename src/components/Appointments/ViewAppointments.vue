@@ -35,6 +35,12 @@
                             {{appointment.appointmentDetails}}
                         </v-list-item-content>
                     </v-item>
+                    <v-item>
+                        <v-list-item-content>
+                            <v-list-item-title>Time</v-list-item-title>
+                            {{appointment.appointmentTime}}
+                        </v-list-item-content>
+                    </v-item>
                     </v-item-group>
                 </v-list>
             </v-card-text>
@@ -65,6 +71,12 @@
                         <v-list-item-content>
                             <v-list-item-title>Description</v-list-item-title>
                             {{appointment.appointmentDetails}}
+                        </v-list-item-content>
+                    </v-item>
+                    <v-item>
+                        <v-list-item-content>
+                            <v-list-item-title>Time</v-list-item-title>
+                            {{appointment.appointmentTime}}
                         </v-list-item-content>
                     </v-item>
                     </v-item-group>
@@ -109,13 +121,9 @@ export default {
         
         //Get the current date
         var currentDate = new Date()
-        // console.log(currentDate)
         //date.get year returns the amount of years since 1900
         var currentDateStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
        
-
-        
-
         // Set current user to the currently logged in user
         var currentUser = auth.currentUser.uid
         // Query the db to identify any appointments connected to that user
@@ -149,13 +157,20 @@ export default {
     },
     methods: {
         toggleCancelAppointment (id) {
+            // Upcoming Appointments
             db.collection("appointments").doc(id).delete().then(() => {
-                this.appointments = this.appointments.filter(appointment =>{
+                this.appointments = this.appointments.filter(appointment => {
                     return appointment.id != id
                 })
             })
-
+            // Past Appointments
+            db.collection("appointments").doc(id).delete().then(() => {
+                this.oldAppointments = this.oldAppointments.filter(appointment => {
+                    return appointment.id !=id
+                })
+            })
         },
+
         
     }
 }
