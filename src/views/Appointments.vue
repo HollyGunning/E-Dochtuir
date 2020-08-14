@@ -181,7 +181,8 @@
                 <v-date-picker 
                 v-model="appointmentDate" 
                 @input="menu2 = false"
-                 @change="onDropdownChanged($event)"
+                @change="getAvailableTimes()"
+                :min="nowDate"
                 >
                 </v-date-picker>
                 </v-menu>
@@ -202,14 +203,9 @@
                 ></v-textarea>
                 </v-col>
 
-                <v-col>
-                  <v-btn @click="getAvailableTimes()">
-                    Get Times
-                  </v-btn>
-                </v-col>
-
                 <!-- Appointment Time -->
                 <v-col class="mt-0" cols="12" md="12">
+                  <v-row>
                 <v-card flat v-if="showSelectTime">
 
                   <v-card-text class="mt-n4">
@@ -230,7 +226,12 @@
 
                   </v-card-text>
                 </v-card>
+                </v-row>
                 </v-col>
+
+
+
+
                 </v-row>
                 </v-expansion-panel-content>
               </v-expansion-panel>    
@@ -282,7 +283,7 @@ export default {
       loading () {
           return this.$store.state.loading
       },
-
+   
       formattedDate () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
@@ -307,8 +308,6 @@ export default {
     },
     data () {
       return {
-        // showAppointments: true,
-        // showBookAppointment: false,
         showSelectTime: false,
         dialog: false,
 
@@ -322,7 +321,9 @@ export default {
         
         // currentUser is used for the patientID
         currentUser: null,
-        appointmentDate: '',
+        // Limits the date picker to only dates from current date onwards
+        nowDate: new Date().toISOString().slice(0,10),
+        appointmentDate: null,
         additionalDetails: '',
 
         // Appointment panel is open by default
@@ -356,24 +357,6 @@ export default {
       additionalDetails: { maxLength: maxLength (150) }
     },
     created() {
-
-      // Check times for doctos
-
-      // db.collection("appointments").get().then(snap => {
-      //   snap.forEach(doc => {
- 
-      //     var doctorID = doc.data().doctorID
-      //     var date = doc.data().appointmentDate
-      //     var time = doc.data().appointmentTime
-      //     console.log("DOCID", doctorID, "DATE ", date, "TIME ", time)
-
-     
-      //   })
-      // })
-
-
-
-
       // This gets the list of users whos role is doctor
       db.collection("roles").where("role.doctor", "==", true).get().then(snap => {
         snap.forEach(doc => {
@@ -393,29 +376,31 @@ export default {
         })
       });
 
-
       auth.onAuthStateChanged(userID => { this.currentUser = userID.uid;});
 
     },
     methods: {
       getAvailableTimes () {
-
-  
-      db.collection("appointments").where("appointmentDate", "==", this.appointmentDate).where("doctorID", "==", this.chosenDoc).get().then(snap => {
-              var appointments = []
-              snap.forEach(doc => appointments.push(doc.data()))
-              console.log(appointments);
-              this.displayedTimeSlots = this.timeSlots.filter(time => {
-                return appointments.find(item => item.appointmentTime == time) == null
-              })
-              this.showSelectTime = !this.showSelectTime
+      // appointment date and chosen doctor isnt null then check where the appointments under each doctor
+      if(this.appointmentDate != null && this.chosenDoc != null) {
+        this.showSelectTime = false
+        db.collection("appointments").where("appointmentDate", "==", this.appointmentDate).where("doctorID", "==", this.chosenDoc).get().then(snap => {
+          // Made an array of appointments to convert it from a firebase doc to a standard doc
+          var appointments = []
+          snap.forEach(doc => appointments.push(doc.data()))
+          console.log(appointments);
+          // set displayedtimeslots to the filtered version of timeslots, where any appointments that are pre existing are filtered out
+          // out of the list
+          this.displayedTimeSlots = this.timeSlots.filter(time => {
+            return appointments.find(item => item.appointmentTime == time) == null
           })
-          //Filter times array based on which appointment times exist
-
-          
+          this.showSelectTime = true
+        })
+      }else {
+          this.showSelectTime = false
+      } 
       },    
 
-        
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
@@ -463,13 +448,9 @@ export default {
 
       onDropdownChanged(value) {
         this.chosenDoc = value;
-        this.showSelectTime = false
+        this.getAvailableTimes()
       },
 
-      // onAppointmentChosen(value) {
-      //   this.chosenApp = value
-      //   this.showSelectTime = !this.showSelectTime
-      // }
   }
 }
 </script>
