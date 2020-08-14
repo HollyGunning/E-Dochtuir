@@ -26,9 +26,7 @@
 
           </v-card>
 
-      
-
-
+    
         <!-- Book appointment form appears here -->
         </template>
         <v-card>   
@@ -133,27 +131,12 @@
                 <v-row>
                 <!-- Appointment Doctor -->
                 <v-col class="mt-n0" cols="12" md="6">
-                    <!-- <v-select 
-                    name="selectDoctor"
-                    :items="doctors"
-                    item-text="name"
-                    item-value="value"
-                    
-                    v-model.lazy="chosenDoc"
-
-                    label="Select a Doctor"
-                    :error-messages="selectDoctorError"
-                    outlined
-                    @change="onDropdownChanged($event)"
-                    @input="$v.chosenDoc.$touch()"
-                    @blur="$v.chosenDoc.$touch()"
-                    ></v-select>          -->
                     <v-select 
                     name="selectDoctor"
                     :items="doctors"
                     item-text="name"
                     item-value="value"
-                  
+
                     label="Select a Doctor"
                     
                     outlined
@@ -161,10 +144,13 @@
                     
                     ></v-select>  
 
-                    <!-- <v-snackbar
+                    <v-snackbar
+                      color="error"
                       v-model="snackbar"
-                    ></v-snackbar> -->
-
+                      :timeout="timeout"
+                      :multi-line="multiLine"
+                    >{{ snackbarText }}
+                    </v-snackbar>
 
                 </v-col>
                 <!-- Appointment Date -->
@@ -173,6 +159,7 @@
                 v-model="menu2"
                 :close-on-content-click="false"
                 max-width="290"
+               
                 >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
@@ -188,11 +175,13 @@
                   @input="$v.appointmentDate.$touch()"
                   @blur="$v.appointmentDate.$touch()"
                   @click:clear="appointmentDate = null"
+                  
                   ></v-text-field>
                 </template>
                 <v-date-picker 
                 v-model="appointmentDate" 
                 @input="menu2 = false"
+                 @change="onDropdownChanged($event)"
                 >
                 </v-date-picker>
                 </v-menu>
@@ -212,13 +201,18 @@
                 @blur="$v.additionalDetails.$touch()"
                 ></v-textarea>
                 </v-col>
+
+                <v-col>
+                  <v-btn @click="getAvailableTimes()">
+                    Get Times
+                  </v-btn>
+                </v-col>
+
                 <!-- Appointment Time -->
                 <v-col class="mt-0" cols="12" md="12">
-                <v-card flat>
+                <v-card flat v-if="showSelectTime">
 
                   <v-card-text class="mt-n4">
-
-
 
                   <span class="subheading">Select Appointment Time</span>
                   <v-chip-group
@@ -227,7 +221,7 @@
                   mandatory
                   active-class="primary--text"
                   >
-                  <v-chip class="mr-5" outlined default v-for="time in timeSlots" :key="time" :value="time">
+                  <v-chip class="mr-5" outlined default v-for="time in displayedTimeSlots" :key="time" :value="time">
                     {{ time }}
                   </v-chip>
                   </v-chip-group>
@@ -298,12 +292,6 @@ export default {
       },
 
       // VALIDATION ERROR MESSAGES
-      selectDoctorError () {
-        const errors = []
-        if(!this.$v.selectDoctor.$dirty) return errors
-          !this.$v.selectDoctor.required && errors.push('Please select a doctor to book appointment with')
-        return errors
-      },
       selectDateError () {
         const errors = []
         if(!this.$v.appointmentDate.$dirty) return errors
@@ -319,8 +307,9 @@ export default {
     },
     data () {
       return {
-        showAppointments: true,
-        showBookAppointment: false,
+        // showAppointments: true,
+        // showBookAppointment: false,
+        showSelectTime: false,
         dialog: false,
 
         // BOOK APPOINTMENT STUFF
@@ -343,7 +332,9 @@ export default {
 
         //
         snackbar: false,
-        snackbarText: "You got issues",
+        multiLine: true,
+        snackbarText: "You forgot to select a doctor!",
+         timeout: 5000,
 
         // Doctors array contains a list of doctors 
         doctors: [],
@@ -355,17 +346,12 @@ export default {
           '9.00', '9.30', '10.00', '10.30', '11.00', '11.30', '1.00', 
           '1.30', '2.00', '2.30', '3.00', '3.30', '4.00', '4.30'
         ], 
+
+        displayedTimeSlots: [],
       
       }
     },
     validations: {
-      // selectDoctor: { required
-      //   // selectionValidate(chosenDoc){
-          
-      //   //   if(chosenDoc != 'none')
-      //   //   return chosenDoc
-      //   // }
-      // },
       appointmentDate: { required },
       additionalDetails: { maxLength: maxLength (150) }
     },
@@ -376,19 +362,12 @@ export default {
       // db.collection("appointments").get().then(snap => {
       //   snap.forEach(doc => {
  
-      //   var doctorID = doc.data().doctorID
-      //   var date = doc.data().appointmentDate
-      //   var time = doc.data().appointmentTime
-      //   console.log(doctorID, date, time)
+      //     var doctorID = doc.data().doctorID
+      //     var date = doc.data().appointmentDate
+      //     var time = doc.data().appointmentTime
+      //     console.log("DOCID", doctorID, "DATE ", date, "TIME ", time)
 
-      //   db.collection("appointments").where(date, "==", date).get().then(snap => {
-      //   snap.forEach(doc => {
-      //    console.log("Same ", doc.data())
-      //   })
-    
-      // })
-
-
+     
       //   })
       // })
 
@@ -419,11 +398,24 @@ export default {
 
     },
     methods: {
-      toggleBookAppointment (){
-        this.showAppointments =!this.showAppointments
-        this.showBookAppointment =!this.showBookAppointment
-      },
+      getAvailableTimes () {
 
+  
+      db.collection("appointments").where("appointmentDate", "==", this.appointmentDate).where("doctorID", "==", this.chosenDoc).get().then(snap => {
+              var appointments = []
+              snap.forEach(doc => appointments.push(doc.data()))
+              console.log(appointments);
+              this.displayedTimeSlots = this.timeSlots.filter(time => {
+                return appointments.find(item => item.appointmentTime == time) == null
+              })
+              this.showSelectTime = !this.showSelectTime
+          })
+          //Filter times array based on which appointment times exist
+
+          
+      },    
+
+        
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
@@ -436,7 +428,7 @@ export default {
         this.errors = this.$v.$anyError
 
         if(this.chosenDoc == null){
-          // this.snackbar == true,
+          this.snackbar = true
         }
         else{
           if (this.errors === false && this.formTouched === false){ 
@@ -457,15 +449,11 @@ export default {
             db.collection("appointments").doc().set(document).then(() => {
               // Reset any form error messages and inputs upon completion of booking
               this.$v.$reset()
-              this.chosenDoc = null
-              this.selectDoctor = ''
-              // this.selectDoctor.item.text = ''
-               // TODO: RESET Doctor select
-            
               this.appointmentDate = ''
               this.additionalDetails = ''
               this.selectedTime = ''
               this.dialog = false
+              this.showSelectTime = !this.showSelectTime
             })
           }else{
             console.log("Appointment booked")
@@ -475,11 +463,13 @@ export default {
 
       onDropdownChanged(value) {
         this.chosenDoc = value;
+        this.showSelectTime = false
       },
 
-      onAppointmentChosen(value) {
-        this.chosenApp = value
-      }
+      // onAppointmentChosen(value) {
+      //   this.chosenApp = value
+      //   this.showSelectTime = !this.showSelectTime
+      // }
   }
 }
 </script>
