@@ -1,9 +1,9 @@
 <template>
 <v-container >
-
-
   <v-row><v-col cols="12" s="12" sm="12" md="12" lg="12">
-
+    
+    <!-- V-Dialog is used to encompass the view page so that when the appointment add button is 
+    pressed a full dialog with the form opens --> 
      <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
         <template v-slot:activator="{ on, attrs }">
           <!-- Viewing of appointments occurs here --> 
@@ -20,23 +20,24 @@
               <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-card-title>
-
-
+              <!-- View Appointments Component import here --> 
               <ViewAppointments />
-
           </v-card>
 
-    
         <!-- Book appointment form appears here -->
         </template>
         <v-card>   
         <v-card-title class="primary white--text">
           Book Appointment
             <v-spacer></v-spacer>
-            <v-btn icon dark @click="dialog = false">
+
+            <v-btn class="mr-4" icon dark @click="dialog = false">
+              
               <v-icon>mdi-close</v-icon>
+              <span>Cancel</span>
             </v-btn>
-            Cancel
+            
+
         </v-card-title>
         <v-divider class="mx4"></v-divider>
         <v-form @submit.prevent="bookAppointment">
@@ -179,6 +180,9 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker 
+                full-width
+                scrollable
+                show-current
                 v-model="appointmentDate" 
                 @input="menu2 = false"
                 @change="getAvailableTimes()"
