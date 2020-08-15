@@ -35,7 +35,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
-                            Doctor name here 
+                            {{appointment.docName}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -45,7 +45,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Date</v-list-item-title>
-                            {{appointment.appointmentDate}}
+                        {{appointment.appointmentDate}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -55,7 +55,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Time</v-list-item-title>
-                            {{appointment.appointmentTime}}
+                        {{appointment.appointmentTime}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -65,7 +65,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Details</v-list-item-title>
-                            {{appointment.appointmentDetails}}
+                        {{appointment.appointmentDetails}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -88,8 +88,8 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title class="overline grey--text">Appointment ID</v-list-item-title>
-                            {{appointment.id}}
+                        <v-list-item-title class="overline grey--text">Appointment ID</v-list-item-title>
+                        {{appointment.id}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -99,7 +99,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
-                            Doctor name here 
+                        {{appointment.docName}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -109,7 +109,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Date</v-list-item-title>
-                            {{appointment.appointmentDate}}
+                        {{appointment.appointmentDate}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -119,7 +119,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Time</v-list-item-title>
-                            {{appointment.appointmentTime}}
+                        {{appointment.appointmentTime}}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -177,9 +177,9 @@ export default {
         var currentDate = new Date()
         //date.get year returns the amount of years since 1900
         var currentDateStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-       
         // Set current user to the currently logged in user
         var currentUser = auth.currentUser.uid
+
         // Query the db to identify any appointments connected to that user
         db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").onSnapshot(snap => {
             let appointment = snap.docChanges()
