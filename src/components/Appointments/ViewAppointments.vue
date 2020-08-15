@@ -12,75 +12,129 @@
 
     <v-tabs-items v-model="tab">
         <v-tab-item>
-         
             <v-card v-for="appointment in appointments" :key="appointment.id"
             outlined class="mt-2">
             <v-card-title class="text-uppercase">      
                 <v-spacer></v-spacer>
                 <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
             </v-card-title>
-
             <v-card-text>
+            <v-row class="mt-n8">
+            <v-col cols="12" md="4">
                 <v-list>
-                    <v-item-group>
-                    <v-item>
+                    <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title>Date</v-list-item-title>
+                            <v-list-item-title class="overline grey--text">Appointment ID</v-list-item-title>
+                            {{appointment.id}}
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
+                            Doctor name here 
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text">Date</v-list-item-title>
                             {{appointment.appointmentDate}}
                         </v-list-item-content>
-                    </v-item>
-                    <v-item>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title>Description</v-list-item-title>
-                            {{appointment.appointmentDetails}}
-                        </v-list-item-content>
-                    </v-item>
-                    <v-item>
-                        <v-list-item-content>
-                            <v-list-item-title>Time</v-list-item-title>
+                        <v-list-item-title class="overline grey--text">Time</v-list-item-title>
                             {{appointment.appointmentTime}}
                         </v-list-item-content>
-                    </v-item>
-                    </v-item-group>
+                    </v-list-item>
                 </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text">Details</v-list-item-title>
+                            {{appointment.appointmentDetails}}
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            </v-row>
             </v-card-text>
             </v-card>
-
-         
-          
         </v-tab-item>
-        <v-tab-item>
 
+        <v-tab-item>
             <v-card v-for="appointment in oldAppointments" :key="appointment.id"
             outlined class="mt-2">
             <v-card-title class="text-uppercase">      
                 <v-spacer></v-spacer>
                 <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
             </v-card-title>
-
             <v-card-text>
+            <v-row class="mt-n8">
+            <v-col cols="12" md="4">
                 <v-list>
-                    <v-item-group>
-                    <v-item>
+                    <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title>Date</v-list-item-title>
+                            <v-list-item-title class="overline grey--text">Appointment ID</v-list-item-title>
+                            {{appointment.id}}
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
+                            Doctor name here 
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text">Date</v-list-item-title>
                             {{appointment.appointmentDate}}
                         </v-list-item-content>
-                    </v-item>
-                    <v-item>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title>Description</v-list-item-title>
-                            {{appointment.appointmentDetails}}
-                        </v-list-item-content>
-                    </v-item>
-                    <v-item>
-                        <v-list-item-content>
-                            <v-list-item-title>Time</v-list-item-title>
+                        <v-list-item-title class="overline grey--text">Time</v-list-item-title>
                             {{appointment.appointmentTime}}
                         </v-list-item-content>
-                    </v-item>
-                    </v-item-group>
+                    </v-list-item>
                 </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text">Details</v-list-item-title>
+                            {{appointment.appointmentDetails}}
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            </v-row>
             </v-card-text>
             </v-card>
 

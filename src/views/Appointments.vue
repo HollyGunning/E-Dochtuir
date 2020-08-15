@@ -167,7 +167,6 @@
                   label="Select Date"
                   :error-messages="selectDateError"
                   readonly
-                  clearable
                   :value="formattedAppointmentDate"
                   v-bind="attrs"
                   v-on="on"
@@ -392,7 +391,6 @@ export default {
           // Made an array of appointments to convert it from a firebase doc to a standard doc
           var appointments = []
           snap.forEach(doc => appointments.push(doc.data()))
-          console.log(appointments);
           // set displayedtimeslots to the filtered version of timeslots, where any appointments that are pre existing are filtered out
           // out of the list
           this.displayedTimeSlots = this.timeSlots.filter(time => {

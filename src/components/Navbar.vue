@@ -46,8 +46,9 @@ data(){
         drawer: false,
         links: [
             { icon: 'dashboard', text: 'Dashboard', route: '/' },
+            { icon: 'fa-book-medical', text: 'Medical Record', route: '/medicalRecord'},
             { icon: 'fa-pills', text: 'Medication', route: '/medication' },
-            { icon: 'fa-user-md', text: 'Appointments', route: '/appointments' },  
+            { icon: 'fa-user-md', text: 'Appointments', route: '/appointments' },
         ]
     }
 },

@@ -9,6 +9,7 @@ import Doctor from '@/views/Doctor.vue'
 
 import Dashboard from '@/views/Dashboard.vue'
 import Profile from '@/views/Profile.vue'
+import MedicalRecord from '@/views/MedicalRecord.vue'
 import Medication from '@/views/Medication.vue'
 import Appointments from '@/views/Appointments.vue'
 import Login from '@/views/Login.vue'
@@ -54,6 +55,14 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: Profile,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/medicalRecord',
+    name: 'medicalRecord',
+    component: MedicalRecord,
     meta: {
       requiresAuth: true
     }
@@ -121,7 +130,7 @@ router.beforeEach((to, from, next) => {
         .then(function ({claims}) {
 
           if (claims.patient) {
-            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/medication')
+            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/medication' && to.path != '/medicalRecord')
               return next ({
                 path: './'
               })
