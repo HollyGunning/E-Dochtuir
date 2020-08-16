@@ -224,17 +224,10 @@
                     {{ time }}
                   </v-chip>
                   </v-chip-group>
-
-
-
                   </v-card-text>
                 </v-card>
                 </v-row>
                 </v-col>
-
-
-
-
                 </v-row>
                 </v-expansion-panel-content>
               </v-expansion-panel>    
@@ -250,6 +243,13 @@
               @click.prevent="bookAppointment()">
               <span>Book Appointment</span>
               </v-btn>
+                <v-snackbar
+                  color="error"
+                  v-model="appointmentErrorSnack"
+                  :timeout="timeout"
+                  :multi-line="multiLine"
+                >{{ snackbarErrorText }}
+                </v-snackbar>
           </v-row>
           </v-card-actions>
 
@@ -338,12 +338,16 @@ export default {
         // Menu for picking the appointment date
         menu2: false,
 
-        //
+        //choose a doc snackbar
         snackbar: false,
         multiLine: true,
         snackbarText: "You forgot to select a doctor!",
         timeout: 5000,
-
+        
+        //maxAppointmentError
+        appointmentErrorSnack: false,
+        snackbarErrorText: "You have already booked an appointment on this day",
+        
         
         // Doctors array contains a list of doctors 
         doctors: [],
@@ -429,7 +433,7 @@ export default {
             this.getAvailableTimes()
           }
           else{
-            console.log("Already have an appointment for this date")
+            this.appointmentErrorSnack = true
           }
         })
       },
