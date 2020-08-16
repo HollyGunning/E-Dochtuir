@@ -137,6 +137,10 @@
                     :items="doctors"
                     item-text="name"
                     item-value="value"
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
                     label="Select a Doctor"
                     outlined
                     
@@ -182,9 +186,15 @@
                 show-current
                 v-model="appointmentDate" 
                 @input="menu2 = false"
+<<<<<<< HEAD
                 @change="onDateChanged()"
                 :min="getTomorrowsDate()"
                 :max="getLatestDate()"
+=======
+                @change="getAvailableTimes()"
+                :min="nowDate"
+                :max="toDate"
+>>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
                 >
                 </v-date-picker>
                 </v-menu>
@@ -327,8 +337,11 @@ export default {
         currentUser: null,
         // Limits the date picker to only dates from current date onwards
         nowDate: new Date().toISOString().slice(0,10),
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
         toDate: '2020-12-31',
         appointmentDate: null,
         additionalDetails: '',
@@ -386,6 +399,11 @@ export default {
           })
         })
       })
+<<<<<<< HEAD
+=======
+
+      auth.onAuthStateChanged(userID => { this.currentUser = userID.uid;});
+>>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
 
       
     },
@@ -475,6 +493,10 @@ export default {
               this.dialog = false
               this.showSelectTime = !this.showSelectTime
             
+<<<<<<< HEAD
+=======
+
+>>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
             })
 
           }else{
@@ -483,7 +505,14 @@ export default {
         }
       },
 
+<<<<<<< HEAD
 
+=======
+      onDropdownChanged(value) {
+        this.chosenDoc = value
+        this.getAvailableTimes()
+      },
+>>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
 
   }
 }
