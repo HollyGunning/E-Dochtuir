@@ -35,7 +35,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
-                            {{ appointment.doctorID }}
+                            {{ appointment.doctorName }}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -208,13 +208,21 @@ export default {
             })
         })
 
-        // db.collection("appointments").get().then( snap=> {
-        //     snap.forEach(doc => {
-        //         var doctorID = doc.data().doctorID
-        //         console.log(doctorID)
-        //     })
-        // })
+        // TODO: Got name now how to get it to user display?
+        db.collection("appointments").get().then( snap => {
+            snap.forEach(doc => {
+                let doctorID = doc.data().doctorID
        
+                db.collection("users").doc(doctorID).get().then( doc => {
+                  
+                        var doctorName = doc.data().firstname + ' ' + doc.data().surname
+                        console.log(doctorName)
+                        
+                })
+              
+            })
+        })
+    
     },
     methods: {
         toggleCancelAppointment (id) {

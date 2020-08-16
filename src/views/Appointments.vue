@@ -342,15 +342,11 @@ export default {
         snackbar: false,
         multiLine: true,
         snackbarText: "You forgot to select a doctor!",
-         timeout: 5000,
+        timeout: 5000,
 
+        
         // Doctors array contains a list of doctors 
         doctors: [],
-
-
-        // docName: '',
-
-
         // Chosen Doc stores the value of the selected doctor to be passed to the db
         chosenDoc: null,
 
@@ -435,15 +431,11 @@ export default {
               ppsn: this.$store.state.userProfile.ppsn,
               mobile: this.$store.state.userProfile.mobile,
               doctorID: this.chosenDoc,
-
-              // doctorName: this.docName,
-
               appointmentDate: this.appointmentDate,
               appointmentTime: this.selectedTime,
               appointmentDetails: this.additionalDetails
             }
             db.collection("appointments").doc().set(document).then(() => {
-              
               // Reset any form error messages and inputs upon completion of booking
               this.$v.$reset()
               this.appointmentDate = ''
@@ -451,6 +443,8 @@ export default {
               this.selectedTime = ''
               this.dialog = false
               this.showSelectTime = !this.showSelectTime
+            
+
             })
 
           }else{
