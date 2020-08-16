@@ -196,37 +196,16 @@ export default {
                     console.log("The following record has been removed ", deleted)
                     
                 }
+                    //Take in two params to compare, iterates over the array 
+                    var appointmentSort = (a,b) => {
+                    let aDate = new Date(a.appointmentDate)
+                    let bDate = new Date(b.appointmentDate)
+                    return aDate.getTime() - bDate.getTime()
+                    }
+                    this.appointments.sort(appointmentSort)
+                    this.oldAppointments.sort(appointmentSort)
             })
-
-            //Take in two params to compare, iterates over the array 
-            var appointmentSort = (a,b) => {
-                let aDate = new Date(a.appointmentDate)
-                let bDate = new Date(b.appointmentDate)
-                return aDate.getTime() - bDate.getTime()
-            }
-
-            this.appointments.sort(appointmentSort)
-            this.oldAppointments.sort(appointmentSort)
-            
-
-        })
-
-
-        // // TODO: Got name now how to get it to user display?
-        // db.collection("appointments").get().then( snap => {
-        //     snap.forEach(doc => {
-        //         let doctorID = doc.data().doctorID
-       
-        //         db.collection("users").doc(doctorID).get().then( doc => {
-                  
-        //         var doctorName = doc.data().firstname + ' ' + doc.data().surname
-        //         console.log(doctorName)
-                        
-        //         })
-              
-        //     })
-        // })
-    
+        })    
     },
     methods: {
         toggleCancelAppointment (id) {
