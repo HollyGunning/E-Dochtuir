@@ -153,7 +153,7 @@
                                 name="firstname"
                                 v-model.trim="signupForm.firstname" 
                                 :error-messages="signupFirstNameErrors"
-                                label="First Name" 
+                                label="First Name*" 
                                 :counter="15" 
                                 required
                                 outlined 
@@ -168,7 +168,7 @@
                                 name="surname"
                                 v-model.trim="signupForm.surname" 
                                 :error-messages="signupSurnameErrors"
-                                label="Surname" 
+                                label="Surname*" 
                                 :counter="15" 
                                 required
                                 outlined
@@ -188,7 +188,9 @@
                                 :value="formattedDate"
                                 clearable
                                 :error-messages="dateErrors"
-                                label="Date of Birth"
+                                label="Date of Birth*"
+                                hint="Date of Birth must be 16 or older"
+                                persistent-hint
                                 readonly
                                 v-bind="attrs"
                                 v-on="on" 
@@ -212,9 +214,10 @@
                                 type="text"
                                 name="ppsn"
                                 hint="7 numerical characters, followed by either 1 or 2 letters E.g. 1234567RW"
+                                persistent-hint
                                 v-model.trim="signupForm.ppsn"
                                 :error-messages="signupPPSNErrors" 
-                                label="PPSN" 
+                                label="PPSN*" 
                                 required
                                 outlined 
                                 @input="$v.signupForm.ppsn.$touch()"
@@ -228,7 +231,7 @@
                                 name="email" 
                                 v-model.trim="signupForm.email"  
                                 :error-messages="signupEmailErrors"            
-                                label="E-Mail Address" 
+                                label="E-Mail Address*" 
                                 required
                                 outlined 
                                 @input="$v.signupForm.email.$touch()"
@@ -241,7 +244,7 @@
                                 name="mobile"
                                 v-model.trim="signupForm.mobile"
                                 :error-messages="signupMobileErrors"
-                                label="Mobile Number" 
+                                label="Mobile Number*" 
                                 required
                                 outlined 
                                 @input="$v.signupForm.mobile.$touch()"
@@ -257,7 +260,7 @@
                                 hint="At least 8 characters"
                                 v-model.trim="signupForm.password" 
                                 :error-messages="signupPasswordErrors"
-                                label="Password"
+                                label="Password*"
                                 :counter="16" 
                                 required
                                 outlined 
@@ -274,7 +277,7 @@
                                 :type="showPassword2 ? 'text' : 'password'"
                                 v-model.trim="signupForm.confirmPassword" 
                                 :error-messages="signupConfirmErrors"
-                                label="Confirm Password" 
+                                label="Confirm Password*" 
                                 required
                                 outlined
                                 @click:append="showPassword2 = !showPassword2"
@@ -289,20 +292,18 @@
                                 name="checkbox" 
                                 v-model.trim="signupForm.checkbox" 
                                 :error-messages="checkboxErrors"
-                                label="I have read and agree to the terms and conditions"
+                                
                                 required
                                 @input="$v.signupForm.checkbox.$touch()"
                                 @blur="$v.signupForm.checkbox.$touch()" 
                                 >
-                                    <template v-slot:label>
-                                       
-                                        <span>I have read and agree to the 
-                                            <a @click.stop.prevent="dialog2 = true">Terms of Service</a>
-                                        </span>
-                                           
-                                    </template>
+                                <template v-slot:label>
+                                    <span>I have read and agree to the 
+                                        <a @click.stop.prevent="dialog2 = true">Terms of Service*</a>
+                                    </span>       
+                                </template>
                                 </v-checkbox>
-                            </v-col>
+                           </v-col>
 
                              <v-dialog
                                 v-model="dialog2"
@@ -332,7 +333,8 @@
                                 </v-card-actions>
                                 </v-card>
                             </v-dialog>
-
+                            <v-spacer></v-spacer>
+                            <caption class="mr-4">*indicates required field</caption>
                         </v-row>
                         <v-card-actions>
                             <v-row>
