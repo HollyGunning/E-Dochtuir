@@ -6,10 +6,11 @@ import router from './router'
 import store from './store'
 import { auth } from './firebase'
 import vuetify from './plugins/vuetify';
+import VueTextareaAutosize from 'vue-textarea-autosize'
 
 Vue.config.productionTip = false
 
-Vue.use(Vuelidate)
+Vue.use(Vuelidate, VueTextareaAutosize)
 
 let app
 // wait for auth to init before creating the app
