@@ -211,7 +211,6 @@ export default {
 
         })
 
-<<<<<<< HEAD
 
         // // TODO: Got name now how to get it to user display?
         // db.collection("appointments").get().then( snap => {
@@ -227,22 +226,6 @@ export default {
               
         //     })
         // })
-=======
-        // TODO: Got name now how to get it to user display?
-        db.collection("appointments").get().then( snap => {
-            snap.forEach(doc => {
-                let doctorID = doc.data().doctorID
-       
-                db.collection("users").doc(doctorID).get().then( doc => {
-                  
-                        var doctorName = doc.data().firstname + ' ' + doc.data().surname
-                        console.log(doctorName)
-                        
-                })
-              
-            })
-        })
->>>>>>> 29ad30b9936d1f236ec395a2ca2d419123d4e23c
     
     },
     methods: {
