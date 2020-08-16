@@ -35,7 +35,7 @@
                     <v-list-item>
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
-                            {{appointment.docName}}
+                            {{ appointment.doctorID }}
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -179,9 +179,8 @@ export default {
         var currentDateStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
         // Set current user to the currently logged in user
         var currentUser = auth.currentUser.uid
-
         // Query the db to identify any appointments connected to that user
-        db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").onSnapshot(snap => {
+        db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").orderBy("appointmentTime").onSnapshot(snap => {
             let appointment = snap.docChanges()
             appointment.forEach(appointment => {
                 // realtime add document to appointments list
@@ -208,6 +207,14 @@ export default {
                 }
             })
         })
+
+        // db.collection("appointments").get().then( snap=> {
+        //     snap.forEach(doc => {
+        //         var doctorID = doc.data().doctorID
+        //         console.log(doctorID)
+        //     })
+        // })
+       
     },
     methods: {
         toggleCancelAppointment (id) {

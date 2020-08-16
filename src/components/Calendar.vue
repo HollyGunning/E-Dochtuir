@@ -1,86 +1,151 @@
 <template>
-<v-row>
-<v-col cols="12" md="12">
+    <v-row class="fill-height">
+        <v-col>
 
-<!-- Contains the top toolbar with the today, prev, next btn options and a menu that switches the calendar view--> 
-<v-sheet height="64">
-    <v-toolbar  flat color="white">
-        <v-btn outlined color="primary" @click="setToday">Today</v-btn>
-        <v-btn fab text small color="primary" @click="prev">
-            <v-icon small >mdi-chevron-left</v-icon>
-        </v-btn>
-        <v-btn fab text small color="primary" @click="next">
-            <v-icon small>mdi-chevron-right</v-icon>
-        </v-btn>
-        <v-toolbar-title v-if="$refs.calendar">{{ $refs.calendar.title  }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-menu bottom right>
-            <template v-slot:activator="{ on, attrs }">
-                <v-btn 
-                outlined
-                color="primary"
-                v-bind="attrs"
-                v-on="on"
-                >
-                <span>{{ typeToLabel[type] }}</span>
-                <v-icon right>mdi-menu-down</v-icon>
+        <!-- Contains the top toolbar with the today, prev, next btn options and a menu that switches the calendar view--> 
+        <v-sheet height="64">
+            <v-toolbar  flat color="white">
+                <v-btn outlined color="primary" @click="setToday">Today</v-btn>
+                <v-btn fab text small color="primary" @click="prev">
+                    <v-icon small >mdi-chevron-left</v-icon>
                 </v-btn>
-            </template>
-                <v-list>
-                    <v-list-item @click="type = 'day'">
-                        <v-list-item-title>Day</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="type = 'week'">
-                        <v-list-item-title>Week</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="type = 'month'">
-                        <v-list-item-title>Month</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-        </v-menu>
-    </v-toolbar>
-</v-sheet>
+                <v-btn fab text small color="primary" @click="next">
+                    <v-icon small>mdi-chevron-right</v-icon>
+                </v-btn>
+                <v-toolbar-title v-if="$refs.calendar">{{ $refs.calendar.title  }}</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-menu bottom right>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn 
+                        outlined
+                        color="primary"
+                        v-bind="attrs"
+                        v-on="on"
+                        >
+                        <span>{{ typeToLabel[type] }}</span>
+                        <v-icon right>mdi-menu-down</v-icon>
+                        </v-btn>
+                    </template>
+                        <v-list>
+                            <v-list-item @click="type = 'day'">
+                                <v-list-item-title>Day</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="type = 'week'">
+                                <v-list-item-title>Week</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="type = 'month'">
+                                <v-list-item-title>Month</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                </v-menu>
+            </v-toolbar>
+        </v-sheet>
 
-<!-- Contains the main body of the caldendar -->
-<v-sheet height="600">
-    <v-calendar
-    ref="calendar"
-    v-model="focus"
-    color="primary"
-    :type="type"
-    :events="events"
-     @click:event="showEvent"
-    @click:date="viewDay"
-    >
-    </v-calendar>
-</v-sheet>
+        <v-sheet height="500">
+            <v-calendar
+            ref="calendar"
+            color="primary"
+            :type="type"
+            v-model="focus"
+            :events="events"
+            @click:date="viewDay"
+            @click:event="showEvent"
+            >
+            </v-calendar>
 
-</v-col>
-            
-</v-row>
+                <v-menu
+                v-model="selectedOpen"
+                :close-on-content-click="false"
+                :activator="selectedElement"
+                offset-x
+                >
+                <v-card
+                color="grey lighten-4"
+                min-width="350px"
+                flat
+                >
+                <v-toolbar
+                :color="selectedEvent.color"
+                dark
+                >
+                <v-btn icon>
+                <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                    <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+                    <v-spacer></v-spacer>
+                <v-btn icon>
+                <v-icon>mdi-heart</v-icon>
+                </v-btn>
+                <v-btn icon>
+                <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+                </v-toolbar>
+                <v-card-text>
+                <span v-html="selectedEvent.details"></span>
+                </v-card-text>
+                <v-card-actions>
+                <v-btn
+                text
+                color="secondary"
+                @click="selectedOpen = false"
+                >
+                Cancel
+                </v-btn>
+                </v-card-actions>
+                </v-card>
+                </v-menu>
+
+        </v-sheet>
+        </v-col>
+    </v-row>
 </template>
 
 <script>
+import { db } from '../firebase'
+
 export default {
-    data () {
-        return{
+    data() {
+        return {
             focus: '',
             type: 'month',
             typeToLabel: {
                 month: 'Month',
                 week: 'Week',
                 day: 'Day',
-            }
+            },
+
+            selectedEvent: {},
+            selectedElement: null,
+            selectedOpen: false,
+            events: [],
         }
     },
-    mounted () {
-        this.$refs.calendar.checkChange()
+    mounted() {
+        this.getAppointments()
     },
     methods: {
+        async getAppointments () {
+            db.collection("endmysuffering").onSnapshot( snap => {
+                let appointment = snap.docChanges()
+                appointment.forEach(appointment => {
+                    console.log("Records ", appointment.doc.data())
+                    let record = appointment.doc.data()
+                    record.id = appointment.doc.id
+
+                    this.events.push(record)
+                    console.log(record)
+                    // this.events.push({
+                    //     name: 'Appointment',
+                    //     details: record.appointmentDetails,
+                    // })
+                })
+            })
+        },
+
         viewDay ({ date }) {
             this.focus = date
             this.type = 'day'
-        },
+      },
         setToday () {
             this.focus = ''
         },
@@ -90,22 +155,23 @@ export default {
         next () {
             this.$refs.calendar.next()
         },
+
         showEvent ({ nativeEvent, event }) {
             const open = () => {
-                this.selectedEvent = event
-                this.selectedElement = nativeEvent.target
-                setTimeout(() => this.selectedOpen = true, 10)
+            this.selectedEvent = event
+            this.selectedElement = nativeEvent.target
+            setTimeout(() => this.selectedOpen = true, 10)
             }
 
             if (this.selectedOpen) {
-                this.selectedOpen = false
-                setTimeout(open, 10)
+            this.selectedOpen = false
+            setTimeout(open, 10)
             } else {
-                open()
+            open()
             }
 
             nativeEvent.stopPropagation()
-        },
+      },
     },
 }
 </script>

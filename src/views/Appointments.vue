@@ -137,7 +137,7 @@
                     :items="doctors"
                     item-text="name"
                     item-value="value"
-
+                    
                     label="Select a Doctor"
                     
                     outlined
@@ -186,6 +186,7 @@
                 @input="menu2 = false"
                 @change="getAvailableTimes()"
                 :min="nowDate"
+                :max="toDate"
                 >
                 </v-date-picker>
                 </v-menu>
@@ -199,7 +200,8 @@
                 label="Additional Details"
                 :error-messages="additionalDetailsError"
                 v-model="additionalDetails"
-                :counter="150" 
+                :counter="150"
+                required
                 outlined
                 @input="$v.additionalDetails.$touch()"
                 @blur="$v.additionalDetails.$touch()"
@@ -306,6 +308,7 @@ export default {
         const errors = []
         if(!this.$v.additionalDetails.$dirty) return errors
           !this.$v.additionalDetails.maxLength && errors.push('Cannot exceed 150 characters')
+          !this.$v.additionalDetails.required && errors.push('Please provide us with the details of your appointment')
         return errors
       },
     },
@@ -326,6 +329,7 @@ export default {
         currentUser: null,
         // Limits the date picker to only dates from current date onwards
         nowDate: new Date().toISOString().slice(0,10),
+        toDate: '2020-12-31',
         appointmentDate: null,
         additionalDetails: '',
 
@@ -342,13 +346,18 @@ export default {
 
         // Doctors array contains a list of doctors 
         doctors: [],
+
+
+        // docName: '',
+
+
         // Chosen Doc stores the value of the selected doctor to be passed to the db
         chosenDoc: null,
 
         selectedTime: null,
         timeSlots: [
-          '9.00', '9.30', '10.00', '10.30', '11.00', '11.30', '1.00', 
-          '1.30', '2.00', '2.30', '3.00', '3.30', '4.00', '4.30'
+          '09.00', '09.30', '10.00', '10.30', '11.00', '11.30', '13.00', 
+          '13.30', '14.00', '14.30', '15.00', '15.30', '16.00', '16.30'
         ], 
 
         displayedTimeSlots: [],
@@ -357,7 +366,7 @@ export default {
     },
     validations: {
       appointmentDate: { required },
-      additionalDetails: { maxLength: maxLength (150) }
+      additionalDetails: { required, maxLength: maxLength (150) }
     },
     created() {
       // This gets the list of users whos role is doctor
@@ -374,10 +383,11 @@ export default {
             this.doctors.push({
               name: doctorFirstName + " " + doctorSurname,
               value: docID
-            });
+            })
+            
           })
         })
-      });
+      })
 
       auth.onAuthStateChanged(userID => { this.currentUser = userID.uid;});
 
@@ -406,9 +416,6 @@ export default {
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
-      checkTime () {
-        // TODO: QUERY TIMES TO SEE IF TIME SLOT IS ALREADY TAKEN AND DETERMINE WHETHER CHIP IS SELECTABLE OR NOT
-      },
       bookAppointment () {
         this.$v.$touch()
         this.formTouched = !this.$v.$anyDirty
@@ -427,13 +434,16 @@ export default {
               email: this.$store.state.userProfile.email,
               ppsn: this.$store.state.userProfile.ppsn,
               mobile: this.$store.state.userProfile.mobile,
-
               doctorID: this.chosenDoc,
+
+              // doctorName: this.docName,
+
               appointmentDate: this.appointmentDate,
               appointmentTime: this.selectedTime,
               appointmentDetails: this.additionalDetails
             }
             db.collection("appointments").doc().set(document).then(() => {
+              
               // Reset any form error messages and inputs upon completion of booking
               this.$v.$reset()
               this.appointmentDate = ''
@@ -442,14 +452,15 @@ export default {
               this.dialog = false
               this.showSelectTime = !this.showSelectTime
             })
+
           }else{
-            console.log("Appointment booked")
+            console.log("Appointment not booked")
           }
         }
       },
 
       onDropdownChanged(value) {
-        this.chosenDoc = value;
+        this.chosenDoc = value
         this.getAvailableTimes()
       },
 
