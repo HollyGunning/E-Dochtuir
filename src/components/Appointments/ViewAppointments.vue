@@ -1,7 +1,7 @@
 <template>
-
 <v-row><v-col cols="12" s="12" sm="12" md="12" lg="12">
     <v-tabs v-model="tab">
+        <!-- Cycles through tab names -->
     <v-tab v-for="tab in tabs" :key="tab.tabName"> 
         {{ tab.tabName }} 
     </v-tab>
@@ -9,10 +9,12 @@
     <v-tabs-items v-model="tab">
         <!-- UPCOMING APPOINTMENTS FILTER HERE -->
         <v-tab-item>
+            <!-- For each appointment print out an appointment card with data corresponding to the appointmentID -->
             <v-card v-for="appointment in appointments" :key="appointment.id"
             outlined class="mt-2">
             <v-card-title class="text-uppercase">      
                 <v-spacer></v-spacer>
+                <!-- Cancel button for the appointments -->
                 <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
             </v-card-title>
             <v-card-text>
@@ -73,10 +75,12 @@
         </v-tab-item>
         <!-- OLD APPOINTMENTS FILTER HERE -->
         <v-tab-item>
+             <!-- For each old appointment print out an appointment card with data corresponding to the appointmentID -->
             <v-card v-for="appointment in oldAppointments" :key="appointment.id"
             outlined class="mt-2">
             <v-card-title class="text-uppercase">      
                 <v-spacer></v-spacer>
+                <!-- Cancel button for the appointments -->
                 <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
             </v-card-title>
             <v-card-text>
@@ -137,10 +141,9 @@
         </v-tab-item>
     </v-tabs-items>
 </v-col></v-row>
-
 </template>
 
-<script>
+<script> // Importing; mapState for profile details to populate personal details, auth and db for queries 
 import { mapState } from 'vuex'
 import {auth, db} from '../../firebase'
 
@@ -151,26 +154,25 @@ export default {
     },
     data() {
         return {
-
-        tab: null,
-        tabs: [
-          { tabName: 'Upcoming', content: 'Tab 1 Content' },
-          { tabName: 'Past', content: 'Tab 2 Content' },
-        ],
-          // every appointment is stored here so they can then be called by appointment.propertyName
-          appointments: [],
-          oldAppointments: [],
+            // Tabs for upcoming and past
+            tab: null,
+            tabs: [
+            { tabName: 'Upcoming' },
+            { tabName: 'Past' },
+            ],
+            // every appointment is stored here so they can then be called by appointment.propertyName
+            appointments: [],
+            oldAppointments: [],
         }
     },
-    created() {
-        
+    created() {     
         //Get the current date
         var currentDate = new Date()
-        //date.get year returns the amount of years since 1900
+        //date.get year returns the amount of years since 1900, using getFullYear instead
         var currentDateStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
         // Set current user to the currently logged in user
         var currentUser = auth.currentUser.uid
-        // Query the db to identify any appointments connected to that user
+        // Query the db to identify any appointments connected to that user, order by date and then time, onSnapshot listens for real time updates
         db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").orderBy("appointmentTime").onSnapshot(snap => {
             let appointment = snap.docChanges()
             appointment.forEach(async (appointment) => {
@@ -178,23 +180,22 @@ export default {
                 if(appointment.type == "added"){
                     let booked = appointment.doc.data()
                     booked.id = appointment.doc.id
+                    // Get the doctors name by querying the users collection with the doctorID from appointments collection
                     let doctorSnapshot = await db.collection("users").doc(booked.doctorID).get();
                     doctorSnapshot = doctorSnapshot.data();
                     booked.doctorName = doctorSnapshot.firstname + ' ' + doctorSnapshot.surname;
                     // Checking booked time against current time
                     var checkAppointmentDates = new Date(booked.appointmentDate)
-
-                    if(checkAppointmentDates < currentDateStart){
-                        this.oldAppointments.push(booked)
-                    }   
-                    else{
-                        this.appointments.push(booked) 
-                    }
+                        if(checkAppointmentDates < currentDateStart){
+                            this.oldAppointments.push(booked)
+                        }   
+                        else{
+                            this.appointments.push(booked) 
+                        }
                 }
                 else if(appointment.type == "removed"){
                     let deleted = appointment.doc.data()
-                    console.log("The following record has been removed ", deleted)
-                    
+                    console.log("The following record has been removed ", deleted)  
                 }
                     //Take in two params to compare, iterates over the array 
                     var appointmentSort = (a,b) => {
@@ -202,12 +203,15 @@ export default {
                     let bDate = new Date(b.appointmentDate)
                     return aDate.getTime() - bDate.getTime()
                     }
+                    // using the.sort method to sort the values in the string, to ensure that if a new appointment 
+                    // is added that it is populated in the correct appointment order in upcoming appointments
                     this.appointments.sort(appointmentSort)
                     this.oldAppointments.sort(appointmentSort)
             })
         })    
     },
     methods: {
+        // Delete appointments in real time, takes the id of the appointment and filters it out of the corresponding array
         toggleCancelAppointment (id) {
             // Upcoming Appointments
             db.collection("appointments").doc(id).delete().then(() => {
@@ -221,9 +225,7 @@ export default {
                     return appointment.id !=id
                 })
             })
-        },
-
-        
+        }, 
     }
 }
 </script>
