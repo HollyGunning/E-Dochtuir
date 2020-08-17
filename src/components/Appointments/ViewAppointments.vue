@@ -23,8 +23,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                            <v-list-item-title class="overline grey--text">Appointment ID</v-list-item-title>
-                            {{appointment.id}}
+                            <v-list-item-title class="overline grey--text mb-4">
+                                <v-icon>fa-id-card</v-icon>
+                                Appointment ID</v-list-item-title>
+                                <h3>{{ appointment.id }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -33,8 +35,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
-                            {{ appointment.doctorName }}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-user-md</v-icon>
+                            Doctor</v-list-item-title>
+                            <h3>{{ appointment.doctorName }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -43,8 +47,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Date</v-list-item-title>
-                        {{appointment.appointmentDate}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-calendar</v-icon>
+                            Date</v-list-item-title>
+                            <h3>{{ appointment.appointmentDate }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -53,8 +59,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Time</v-list-item-title>
-                        {{appointment.appointmentTime}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-clock</v-icon>
+                            Time</v-list-item-title>
+                           <h3>{{ appointment.appointmentTime }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -63,8 +71,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Details</v-list-item-title>
-                        {{appointment.appointmentDetails}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-info</v-icon>
+                            Details</v-list-item-title>
+                            <h3>{{ appointment.appointmentDetails }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -89,8 +99,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Appointment ID</v-list-item-title>
-                        {{appointment.id}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-id-card</v-icon>
+                            Appointment ID</v-list-item-title>
+                            <h3>{{ appointment.id }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -99,8 +111,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Doctor</v-list-item-title>
-                         {{ appointment.doctorName }}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-user-md</v-icon>
+                            Doctor</v-list-item-title>
+                            <h3>{{ appointment.doctorName }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -109,8 +123,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Date</v-list-item-title>
-                        {{appointment.appointmentDate}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                             <v-icon>fa-calendar</v-icon>
+                             Date</v-list-item-title>
+                            <h3>{{ appointment.appointmentDate }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -119,8 +135,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Time</v-list-item-title>
-                        {{appointment.appointmentTime}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-clock</v-icon>
+                            Time</v-list-item-title>
+                            <h3>{{ appointment.appointmentTime }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -129,8 +147,10 @@
                 <v-list>
                     <v-list-item>
                         <v-list-item-content>
-                        <v-list-item-title class="overline grey--text">Details</v-list-item-title>
-                            {{appointment.appointmentDetails}}
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-info</v-icon>
+                            Details</v-list-item-title>
+                            <h3>{{ appointment.appointmentDetails }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
