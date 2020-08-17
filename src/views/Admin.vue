@@ -67,9 +67,9 @@
     </v-container>
 </template>
 <script>
-
+import AdminNavbar from '../components/Navbars/AdminNavbar'
 import {auth, db, functions} from '../firebase'
-import AdminNavbar from '../components/AdminNavbar'
+
 
 export default {
   components: {
