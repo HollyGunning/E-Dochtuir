@@ -1,11 +1,9 @@
 <template>
 <v-container>
- <AdminNavbar />
+<DoctorNavbar />
 
  
-  <v-card id="AppointmentCalendar" flat>
-    <Calendar />
-  </v-card>
+
 
 </v-container>
 
@@ -15,13 +13,12 @@
 </template>
 
 <script>
-import AdminNavbar from '../components/AdminNavbar'
-import Calendar from "../components/Calendar"
+import DoctorNavbar from '../components/Navbars/DoctorNavbar'
+
 
 export default {
 components: {
-   AdminNavbar,
-   Calendar  
+   DoctorNavbar,
 },
 
   data: () => ({
