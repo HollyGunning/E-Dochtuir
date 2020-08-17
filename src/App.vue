@@ -1,10 +1,6 @@
 <template>
   <v-app> <!-- Route Vuetify Component use only once to wrap everything else --> 
 
-    <!-- Navigation will be loaded above content --> 
-    <Navbar v-if="showNavbar"/>
-
-    <!-- <Navbar v-if="userIsAuthenticated"/> -->
 
     <v-main class="mx-2 mb-4"> <!-- All page content will be loaded here --> 
        <router-view></router-view> <!-- This will load the specific route the user is on e.g. Home, About etc. -->
@@ -15,40 +11,19 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import Navbar from './components/Navbar'
 
 export default {
   name: 'App',
-  data: () => ({
-    //
-  }),
+  data() {
+    return {
+      
+    }
+  },
   components: {
-    Navbar,
+
   },
   computed: {
-    ...mapState(['userProfile']),
-    
-    showNavbar(){
-      return Object.keys(this.userProfile).length > 1
-      
 
-      // firebase.auth().onAuthStateChanged(userAuth => {
-      //   if (userAuth) {
-      //   firebase.auth().currentUser.getIdTokenResult()
-      //     .then(function ({claims}) {
-      //       if (claims.admin ) {
-      //         return 
-      //       }
-      //     })
-        
-      //   }
-      // })
-    },
-
-    // userIsAuthenticated(){
-    //   return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-    // }
   }
 };
 </script>
