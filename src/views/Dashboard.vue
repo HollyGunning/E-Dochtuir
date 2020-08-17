@@ -1,25 +1,23 @@
 <template>
-    <v-app>
+<v-container>
+  <Navbar />
         <div class="dashboard">
             <h1>Dashboard</h1>
         </div>
-
-    </v-app>
-
-
-
+</v-container>
 </template>
 
 <script>
-
+import Navbar from '../components/Navbars/Navbar'
 
 export default {
-components: {
- 
+  components: {
+    Navbar,
   },
-
-  data: () => ({
-    //
-  }),
+  data() {
+    return {
+      
+    }
+  },
 };
 </script>

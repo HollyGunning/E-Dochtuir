@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    
+<v-container>
+<Navbar />  
     <v-row>
       <v-col cols="12" s="12" sm="12" md="12" lg="12">
 
@@ -21,15 +21,15 @@
       </v-card>
 
       </v-col></v-row>
-    </v-container>
+</v-container>
 </template>
 
 <script>
-
+import Navbar from '../components/Navbars/Navbar'
 
 export default {
-components: {
- 
+  components: {
+    Navbar,
   },
   computed: {
     

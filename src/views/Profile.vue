@@ -1,6 +1,7 @@
 <template>
-    <v-container >
-    <div class="profile">
+<v-container >
+<Navbar />    
+ 
 
     <v-row>
 
@@ -300,12 +301,11 @@
 
 
 
-
-    </div>
-    </v-container>
+</v-container>
 </template>
 
 <script>
+import Navbar from '../components/Navbars/Navbar'
 import { mapState } from 'vuex'
 import { maxLength, minLength, alpha, numeric } from "vuelidate/lib/validators"
 
@@ -313,6 +313,9 @@ import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 
 export default {
+    components: {
+        Navbar,
+    },
     computed: {
     ...mapState(['userProfile']),
 
