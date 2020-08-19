@@ -279,18 +279,16 @@
             </v-card>   
 
             <v-card width="600" height="100" class="mt-5">
-                <!-- <v-row>
-                <v-col class="mt-n0" cols="12" md="12" lg="4">
-                    <v-btn
-                    type="button"
-                    raised 
-                    color="primary"
-                    >
-                    <span>Medical Record</span>
-                    </v-btn>
-                </v-col>
-                </v-row> -->
                 
+                <v-col cols="12">
+                <v-switch
+                v-model="$vuetify.theme.dark"
+                hide-details
+                inset
+                label="Dark Mode"
+                ></v-switch>
+                </v-col>
+            
       
             </v-card>
             </v-col>
