@@ -21,7 +21,7 @@ firebase.initializeApp(firebaseConfig)
 const db = firebase.firestore()
 const auth = firebase.auth()
 const functions = firebase.functions()
-
+const fieldValue = firebase.firestore.FieldValue
 
 // collections
 const usersCollection = db.collection('users')
@@ -32,6 +32,7 @@ export{
     db,
     auth,
     functions,
+    fieldValue,
     usersCollection,
     rolesCollection,
 }
