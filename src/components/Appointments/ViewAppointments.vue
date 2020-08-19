@@ -10,8 +10,7 @@
         <!-- UPCOMING APPOINTMENTS FILTER HERE -->
         <v-tab-item>
             <!-- For each appointment print out an appointment card with data corresponding to the appointmentID -->
-            <v-card v-for="appointment in appointments" :key="appointment.id"
-            outlined class="mt-2">
+            <v-card outlined class="mt-2" v-for="appointment in appointments" :key="appointment.id">
             <v-card-title class="text-uppercase">      
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the appointments -->

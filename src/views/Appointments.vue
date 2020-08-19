@@ -1,7 +1,6 @@
 <template>
 <v-container >
 <Navbar />
-
   <v-row><v-col cols="12" s="12" sm="12" md="12" lg="12">  
     <!-- V-Dialog is used to encompass the view page so that when the appointment add button is 
     pressed a full dialog with the form opens --> 
@@ -139,14 +138,6 @@
                     @change="onDropdownChanged($event)"
                     ></v-select>  
 
-                    <v-snackbar
-                      color="error"
-                      v-model="snackbar"
-                      :timeout="timeout"
-                      :multi-line="multiLine"
-                    >{{ snackbarText }}
-                    </v-snackbar>
-
                 </v-col>
                 <!-- Appointment Date -->
                 <v-col class="mt-n0" cols="12" md="6">
@@ -195,6 +186,7 @@
                 :error-messages="additionalDetailsError"
                 v-model="additionalDetails"
                 :counter="150"
+                :maxlength="150"
                 required
                 outlined
                 @input="$v.additionalDetails.$touch()"
@@ -241,10 +233,10 @@
               </v-btn>
                 <v-snackbar
                   color="error"
-                  v-model="appointmentErrorSnack"
+                  v-model="snackbar"
                   :timeout="timeout"
                   :multi-line="multiLine"
-                >{{ snackbarErrorText }}
+                >{{ snackbarText }}
                 </v-snackbar>
           </v-row>
           </v-card-actions>
@@ -254,9 +246,7 @@
 
         </v-card> <!-- End of book appointment form within dialog --> 
       </v-dialog>
-
-
-
+      
   </v-col></v-row>
 </v-container>
 </template>
@@ -332,14 +322,10 @@ export default {
         ],
         displayedTimeSlots: [],  // Returns the queried array of available times to the patient
 
-        // Doctor not chosen snackbar
         snackbar: false,
         multiLine: true,
-        snackbarText: "You forgot to select a doctor!",
         timeout: 5000,
-        // Already have an appointment on this day snackbar
-        appointmentErrorSnack: false,
-        snackbarErrorText: "You have already booked an appointment on this day",
+        snackbarText: "",
       }
     },
     validations: {
@@ -391,11 +377,15 @@ export default {
           this.displayedTimeSlots = this.timeSlots.filter(time => {
             return appointments.find(item => item.appointmentTime == time) == null
           })
-          this.showSelectTime = true // Then display the times available to the user
+          if(this.displayedTimeSlots.length == 0){
+            this.triggerSnackbar("There are no times available for this date!") // Display if there are no times left
+          }
+          else{
+            this.showSelectTime = true // Then display the times available to the user
+          }
         })
       }else {
           this.showSelectTime = false // Times are hidden if there are no times available
-          // Display snackbar here
       } 
       },
       onDateChanged () {
@@ -406,7 +396,7 @@ export default {
             this.getAvailableTimes()
           }
           else{
-            this.appointmentErrorSnack = true
+            this.triggerSnackbar("You have already booked an appointment on this day!")
           }
         })
       },
@@ -418,13 +408,17 @@ export default {
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
+      triggerSnackbar (message) {
+        this.snackbarText = message,
+        this.snackbar = true
+      },
       bookAppointment () {
         this.$v.$touch()
         this.formTouched = !this.$v.$anyDirty
         this.errors = this.$v.$anyError
 
         if(this.chosenDoc == null){
-          this.snackbar = true
+          this.triggerSnackbar("You must select a doctor!")
         }
         else{
           if (this.errors === false && this.formTouched === false){ 
@@ -445,7 +439,7 @@ export default {
               appointmentDetails: this.additionalDetails
             }
           }else{
-             this.appointmentErrorSnack = true
+             this.triggerSnackbar("You have already booked an appointment on this day!")
           }
              db.collection("appointments").doc().set(document).then(() => {
               // Reset any form error messages and inputs upon completion of booking
