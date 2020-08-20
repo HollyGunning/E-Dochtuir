@@ -69,8 +69,6 @@
 <script>
 import AdminNavbar from '../components/Navbars/AdminNavbar'
 import {auth, db, functions} from '../firebase'
-
-
 export default {
   components: {
     AdminNavbar,

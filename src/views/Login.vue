@@ -374,14 +374,10 @@
 
 <script>
 import { auth } from '@/firebase'
-
 import { required, email, maxLength, minLength, alpha, numeric, sameAs } from "vuelidate/lib/validators"
-
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
-
 import TsAndCs from '../components/TsAndCs'
-
 export default {
     components: {
         TsAndCs,
@@ -401,16 +397,11 @@ export default {
       
     //   errors: false,
     //   empty: true,
-
       showSuccess: false,
       errorMsg: {},
-
-
-
       alert1: false,
       alert2: false,
       alert3: false,
-
       forgotForm: {
         email: '',
       },
@@ -554,13 +545,9 @@ export default {
         loading () {
             return this.$store.state.loading
         },
-
-
         formattedDate () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
         },
-
-
         // VALIDATION ERROR MESSAGES
         emailErrors () {
           const errors = []
@@ -568,7 +555,6 @@ export default {
             !this.$v.forgotForm.email.email && errors.push('Invalid Email Address')
             !this.$v.forgotForm.email.required && errors.push('E-mail is required')
           return errors
-
         },
         loginEmailErrors () {
           const errors = []
@@ -657,9 +643,7 @@ export default {
 </script>
 
 <style scoped>
-
 .textCss input {
     text-transform: capitalize;
 }
-
 </style>

@@ -258,7 +258,6 @@ import { mapState } from 'vuex'
 import { auth, db } from '../firebase'
 import { format, parseISO } from 'date-fns'
 import { required, maxLength } from "vuelidate/lib/validators"
-
 export default {
    components: {
      Navbar,
@@ -266,7 +265,6 @@ export default {
     },
     computed: {
        ...mapState(['userProfile']),
-
       loading () {
           return this.$store.state.loading
       },
@@ -298,7 +296,6 @@ export default {
         dialog: false, // Dialog for overall dialog panel
         panel: 1,  // Appointment panel is open by default
         menu2: false, // Menu for picking the appointment date
-
         // Personal Details, pre-populated
         firstname: this.$store.state.userProfile.firstname,       
         surname: this.$store.state.userProfile.surname,
@@ -314,14 +311,12 @@ export default {
         additionalDetails: '',
         showSelectTime: false,   // Used to hide the times until the doctor and date are selected
         selectedTime: null,   // Time that is selected on the form
-
         // All timeslots available to begin with, queried later to determine which show
         timeSlots: [
           '09.00', '09.30', '10.00', '10.30', '11.00', '11.30', '13.00', 
           '13.30', '14.00', '14.30', '15.00', '15.30', '16.00', '16.30'
         ],
         displayedTimeSlots: [],  // Returns the queried array of available times to the patient
-
         snackbar: false,
         color: null,
         multiLine: true,
@@ -335,7 +330,6 @@ export default {
     },
     created() {
       this.currentUser = auth.currentUser.uid // Get current users ID
-
       // This query first gets the list of users whos role is doctor from the roles collection
       db.collection("roles").where("role.doctor", "==", true).get().then(snap => {
         // For each doctor document store the doc.id, which is the same ID used for the users colection doc.id, into doctorID 
@@ -369,25 +363,31 @@ export default {
       getAvailableTimes () {
       // Check if appointment date and chosen doctor isn't null
       if(this.appointmentDate != null && this.chosenDoc != null) {
-        // Query the appointments collection to check for appointments where the date and doctor are the same
-        db.collection("appointments").where("appointmentDate", "==", this.appointmentDate).where("doctorID", "==", this.chosenDoc).get().then(snap => {
-          // Create an array of appointments to convert firebase doc to a standard doc
-          var appointments = []
-          snap.forEach(doc => appointments.push(doc.data()))
-          // set displayedtimeslots to the filtered version of timeslots, where any appointments that are pre existing are filtered out
-          this.displayedTimeSlots = this.timeSlots.filter(time => {
-            return appointments.find(item => item.appointmentTime == time) == null
+          // Query the appointments collection to check for appointments where the date and doctor are the same
+          db.collection("appointments").where("appointmentDate", "==", this.appointmentDate).where("doctorID", "==", this.chosenDoc).get().then(snap => {
+            // Create an array of appointments to convert firebase doc to a standard doc
+            var appointments = []
+            snap.forEach(doc => appointments.push(doc.data()))
+
+        
+              // set displayedtimeslots to the filtered version of timeslots, where any appointments that are pre existing are filtered out
+              this.displayedTimeSlots = this.timeSlots.filter(time => {
+                return appointments.find(item => item.appointmentTime == time) == null
+              })
+              if(this.displayedTimeSlots.length == 0){
+                this.triggerSnackbar("There are no times available for this date!", "error") // Display if there are no times left
+              }
+              else{
+                this.showSelectTime = true // Then display the times available to the user
+              }
+              
+              
           })
-          if(this.displayedTimeSlots.length == 0){
-            this.triggerSnackbar("There are no times available for this date!", "error") // Display if there are no times left
-          }
-          else{
-            this.showSelectTime = true // Then display the times available to the user
-          }
-        })
       }else {
           this.showSelectTime = false // Times are hidden if there are no times available
       } 
+
+
       },
       onDateChanged () {
         this.showSelectTime = false
@@ -397,6 +397,7 @@ export default {
             this.getAvailableTimes()
           }
           else{
+            this.showSelectTime = false
             this.triggerSnackbar("You have already booked an appointment on this day!", "error")
           }
         })
@@ -418,44 +419,45 @@ export default {
         this.$v.$touch()
         this.formTouched = !this.$v.$anyDirty
         this.errors = this.$v.$anyError
-
         if(this.chosenDoc == null){
           this.triggerSnackbar("You must select a doctor!", "error")
         }
         else{
-          this.triggerSnackbar("Appointment Was Successfully Booked!", "success")
           if (this.errors === false && this.formTouched === false){ 
             db.collection("appointments").where("appointmentDate", "==", this.appointmentDate)
             .where("patientID", "==", this.currentUser).get().then(snap => {
-          if(snap.docs.length == 0){
-            var document = {
-              patientID: this.currentUser,
-              firstname: this.$store.state.userProfile.firstname,       
-              surname: this.$store.state.userProfile.surname,
-              dob: this.$store.state.userProfile.date,
-              email: this.$store.state.userProfile.email,
-              ppsn: this.$store.state.userProfile.ppsn,
-              mobile: this.$store.state.userProfile.mobile,
-              doctorID: this.chosenDoc,
-              appointmentDate: this.appointmentDate,
-              appointmentTime: this.selectedTime,
-              appointmentDetails: this.additionalDetails
+            if(snap.docs.length == 0){
+              var document = {
+                patientID: this.currentUser,
+                firstname: this.$store.state.userProfile.firstname,       
+                surname: this.$store.state.userProfile.surname,
+                dob: this.$store.state.userProfile.date,
+                email: this.$store.state.userProfile.email,
+                ppsn: this.$store.state.userProfile.ppsn,
+                mobile: this.$store.state.userProfile.mobile,
+                doctorID: this.chosenDoc,
+                appointmentDate: this.appointmentDate,
+                appointmentTime: this.selectedTime,
+                appointmentDetails: this.additionalDetails
+              }
+            }else{
+              this.triggerSnackbar("You have already booked an appointment on this day!", "error")
+              this.showSelectTime = false
             }
-          }else{
-             this.triggerSnackbar("You have already booked an appointment on this day!", "error")
-          }
-             db.collection("appointments").doc().set(document).then(() => {
-              // Reset any form error messages and inputs upon completion of booking
-              this.$v.$reset()
-              this.appointmentDate = ''
-              this.additionalDetails = ''
-              this.selectedTime = ''
-              
 
-            }).then(() => {
-              this.showSelectTime = !this.showSelectTime
-              this.dialog = false
-            })
+              this.triggerSnackbar("Appointment Was Successfully Booked!", "success")
+              db.collection("appointments").doc().set(document).then(() => {
+                // Reset any form error messages and inputs upon completion of booking
+                this.$v.$reset()
+                this.appointmentDate = ''
+                this.additionalDetails = ''
+                this.selectedTime = ''
+                
+              }).then(() => {
+                this.showSelectTime = !this.showSelectTime
+                this.dialog = false
+              })
+
           }
         )}
         
