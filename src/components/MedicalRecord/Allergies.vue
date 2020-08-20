@@ -84,7 +84,7 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-        <v-col cols="12">
+        <v-col cols="12" class="mt-n6">
             <v-btn
             type="submit"
             block class="primary white--text"

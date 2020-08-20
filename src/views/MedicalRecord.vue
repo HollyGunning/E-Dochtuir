@@ -24,13 +24,13 @@
             v-model="gender" 
             color="primary" 
             group 
+            mandatory
             @change="onGenderChange(gender)"
-        
             >
-              <v-btn depressed x-large color="primary--text darken-1" value="female">
+              <v-btn depressed x-large color="primary--text darken-1" value="Female">
               <v-icon class="mr-2">fa-venus</v-icon>Female
               </v-btn>
-              <v-btn depressed x-large color="primary--text darken-1" value="male">
+              <v-btn depressed x-large color="primary--text darken-1" value="Male">
               <v-icon class="mr-2">fa-mars</v-icon>Male
               </v-btn>
             </v-btn-toggle>
@@ -101,6 +101,26 @@
           </v-card-text>
         </v-card>
       </v-col>
+      <!-- Pulse -->
+      <v-col cols="12" sm="4" md="4" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">Pulse
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Pulse"
+          v-model="pulse"
+          outlined 
+          prepend-icon="fa-heartbeat"
+          suffix="bpm"
+          readonly
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
       <!-- Blood Pressure & Pulse -->
       <v-col cols="12" sm="4" md="4" lg="3">
       <v-card flat>
@@ -132,26 +152,6 @@
           v-model="diastolic"
           outlined 
           readonly
-          ></v-text-field>
-        </v-card-text>
-      </v-card>
-      </v-col>
-      <!-- Pulse -->
-      <v-col cols="12" sm="4" md="4" lg="3">
-      <v-card flat>
-        <v-card-title>
-          <v-subheader class="overline ml-n5">Pulse
-            <v-divider></v-divider>
-          </v-subheader>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field
-          label="Pulse"
-          v-model="pulse"
-          outlined 
-          prepend-icon="fa-heartbeat"
-          suffix="bpm"
-          :maxlength="3"
           ></v-text-field>
         </v-card-text>
       </v-card>
@@ -268,10 +268,12 @@
                   <v-card-title class="primary lighten-1 white--text">
                     <v-icon class="mr-4 white--text">fa-allergies</v-icon>
                     {{ allergy.allergyName }}
-                    <v-spacer></v-spacer>
+                  
                   <v-subheader class="overline primary lighten-1 white--text">
                   {{ allergy.allergyType }}
                   </v-subheader>
+                    <v-spacer></v-spacer>
+                    <!-- TODO ADD EDIT OPTION WITH DELETE INSIDE -->
                   </v-card-title>
                     <v-card-text>
                           <v-row>
@@ -323,7 +325,19 @@
                             <v-list-item>
                               <v-list-item-content>
                                 <v-list-item-title 
-                                class="overline grey--text mb-4">Descirption
+                                class="overline grey--text mb-4">Date of Diagnosis
+                                </v-list-item-title>
+                                <h3>{{ condition.conditionDate }}</h3>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-list>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-list>
+                            <v-list-item>
+                              <v-list-item-content>
+                                <v-list-item-title 
+                                class="overline grey--text mb-4">Description
                                 </v-list-item-title>
                                 <h3>{{ condition.conditionDetails }}</h3>
                               </v-list-item-content>
@@ -357,6 +371,30 @@
                               class="overline grey--text mb-4">Date Received
                               </v-list-item-title>
                               <h3>{{ immunisation.immunisationDate }}</h3>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-list>
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title 
+                              class="overline grey--text mb-4">Reaction
+                              </v-list-item-title>
+                              <h3>{{ immunisation.immunisationsReaction }}</h3>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-list>
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title 
+                              class="overline grey--text mb-4">Additional Details
+                              </v-list-item-title>
+                              <h3>{{ immunisation.immunisationDetails }}</h3>
                             </v-list-item-content>
                           </v-list-item>
                         </v-list>

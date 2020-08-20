@@ -1,7 +1,7 @@
 <template>
    <v-col cols="12" md="12" lg="12">
     <v-card flat>
-       <v-dialog v-model="dialogimmunisation" persistent max-width="600px">
+       <v-dialog v-model="dialogImmunisation" persistent max-width="600px">
         <template v-slot:activator="{ on, attrs }"> 
         <v-card flat>
             <v-card-title class="overline">
@@ -32,7 +32,6 @@
                         <v-autocomplete
                         label="Search Immunisations*"
                         v-model="immunisationForm.selectedImmunisation"
-                        :loading="loading"
                         :items="immunisations"
                         item-text="name"
                         item-value="value"
@@ -69,19 +68,46 @@
                         full-width
                         scrollable
                         show-current
+                        :max="getTodaysDate()"
                         v-model="immunisationForm.immunisationDate" 
                         @input="menu = false"
-                    
                         >
                         </v-date-picker>
                         </v-menu>
                     </v-col>
-
+                    <v-col cols="12" sm="6" md="6">
+                       <v-select
+                       label="Reaction"
+                       v-model="immunisationForm.immunisationReaction"
+                       :items="reactionList"
+                       outlined
+                       required
+                       :error-messages="immunisationReactionErrors"
+                       @input="$v.immunisationForm.immunisationReaction.$touch()"
+                       @blur="$v.immunisationForm.immunisationReaction.$touch()"
+                       ></v-select>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                        <v-textarea
+                        auto-grow
+                        rows="2"
+                        name="immunisationForm.immunisationDetails"
+                        label="Additional Details"
+                        v-model="immunisationForm.immunisationDetails"
+                        :counter="150"
+                        :maxlength="150"
+                        required
+                        outlined
+                        :error-messages="additionalDetailsError"
+                        @input="$v.immunisationForm.immunisationDetails.$touch()"
+                        @blur="$v.immunisationForm.immunisationDetails.$touch()"
+                        ></v-textarea>
+                    </v-col>
                     </v-row>
                 </v-container>
                 </v-card-text>
                 <v-card-actions>
-                <v-col cols="12">
+                <v-col cols="12" class="mt-n6">
                     <v-btn
                     type="submit"
                     block class="primary white--text"
@@ -125,10 +151,22 @@ export default {
             !this.$v.immunisationForm.immunisationDate.required && errors.push('Select Date Of Immunisation')
         return errors
         },
+        immunisationReactionErrors () {
+        const errors = []
+        if(!this.$v.immunisationForm.immunisationReaction.$dirty) return errors
+            !this.$v.immunisationForm.immunisationReaction.required && errors.push('Select Your Reaction To the Immunisation')
+        return errors
+        },
+        additionalDetailsError () {
+        const errors = []
+        if(!this.$v.immunisationForm.immunisationDetails.$dirty) return errors
+            !this.$v.immunisationForm.immunisationDetails.required && errors.push('Include Additional Details Of Immunisation')
+        return errors
+        },
     },
     data() {
         return {
-            dialogimmunisation: false,
+            dialogImmunisation: false,
             menu: false,
 
             snackbar: false,
@@ -161,19 +199,32 @@ export default {
                 { name: 'Haemophilus influenzae type b', abbr: 'Hib', value: 'Haemophilus influenzae type b' },
             ],
 
+            reactionList: [
+                { text: 'None', value: 'None'},
+                { text: 'Pain', value: 'Pain'},
+                { text: 'Swelling', value: 'Swelling'},
+                { text: 'Redness', value: 'Redness'},
+                { text: 'Fever', value: 'Fever'},
+                { text: 'Irritability', value: 'Irritability'},
+                { text: 'Malaise', value: 'Malaise'},
+                { text: 'Systemic Symptoms', value: 'Systemic Symptoms'},
+                
+            ],
 
             immunisationForm: {
                 immunisationSelected: null,
-                immunisationDate: null
+                immunisationDate: null,
+                immunisationReaction: null,
+                immunisationDetails: null
             },
-
-
         }
     },
     validations: {
         immunisationForm: {
             selectedImmunisation: { required },
             immunisationDate: { required },
+            immunisationReaction: { required },
+            immunisationDetails: { required },
         }
     },
     methods: {  
@@ -193,42 +244,50 @@ export default {
 
         cancelImmunisation () {
             this.snackbar = false
-            this.dialogimmunisation = false
+            this.dialogImmunisation = false
             this.$v.$reset()
             this.immunisationForm.selectedImmunisation = null
             this.immunisationForm.immunisationDate = null
-            
+            this.immunisationForm.immunisationReaction = null
+            this.immunisationForm.immunisationDetails = null  
         },
+         getTodaysDate () {
+            let today = new Date ()
+            today.setDate(today.getDate())
+            return today.toISOString()
+        },
+        saveImmunisation () {
+            this.$v.$touch()
+            this.formTouched = !this.$v.immunisationForm.$anyDirty
+            this.errors = this.$v.immunisationForm.$anyError
 
-      saveImmunisation () {
-        this.$v.$touch()
-        this.formTouched = !this.$v.immunisationForm.$anyDirty
-        this.errors = this.$v.immunisationForm.$anyError
-
-        if(this.errors === false && this.formTouched === false){
-            var addImmunisation = {
-                immunisationName: this.immunisationForm.selectedImmunisation,
-                immunisationDate: this.immunisationForm.immunisationDate,
+            if(this.errors === false && this.formTouched === false){
+                var addImmunisation = {
+                    immunisationName: this.immunisationForm.selectedImmunisation,
+                    immunisationDate: this.immunisationForm.immunisationDate,
+                    immunisationsReaction: this.immunisationForm.immunisationReaction,
+                    immunisationDetails: this.immunisationForm.immunisationDetails,
+                }
+                var immunisationRecord = {
+                    immunisation: fieldValue.arrayUnion(addImmunisation)
+                }
+                this.triggerSnackbar("Immunisation Was Successfully Added!", "success")
+                db.collection("users").doc(this.currentUser).update(immunisationRecord).then(() => {
+                    this.$v.$reset()
+                    this.immunisationForm.selectedImmunisation = null
+                    this.immunisationForm.immunisationDate = null
+                    this.immunisationForm.immunisationReaction = null
+                    this.immunisationForm.immunisationDetails = null
+                }).catch(error => {
+                    console.log(error)
+                }).then(() => {
+                    this.dialogImmunisation = false
+                    this.snackbar = false
+                })
+            }else{
+                this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
             }
-            var immunisationRecord = {
-                immunisation: fieldValue.arrayUnion(addImmunisation)
-            }
-            this.triggerSnackbar("Immunisation Was Successfully Added!", "success")
-            db.collection("users").doc(this.currentUser).update(immunisationRecord).then(() => {
-                this.$v.$reset()
-                this.immunisationForm.selectedImmunisation = null
-                this.immunisationForm.immunisationDate = null
-            }).catch(error => {
-                console.log(error)
-            }).then(() => {
-                this.dialogimmunisation = false
-                this.snackbar = false
-            })
-        }else{
-            this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
         }
-
-      }
     },
 }
 </script>

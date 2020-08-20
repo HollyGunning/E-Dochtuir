@@ -31,16 +31,17 @@
             <v-container>
               <v-row>
               <v-col cols="12" sm="6" md="6">
-                <v-text-field
-                  label="Condition Name*"
-                  v-model.trim="conditionForm.conditionName"
-                  :counter="25"
-                  outlined
-                  required
-                  :error-messages="conditionNameErrors"
-                  @input="$v.conditionForm.conditionName.$touch()"
-                  @blur="$v.conditionForm.conditionName.$touch()"
-                ></v-text-field>
+                <v-autocomplete
+                label="Search Condition Name"
+                v-model="conditionForm.conditionName"
+                :items="conditions"
+                item-text="name"
+                item-value="value"
+                outlined
+                :error-messages="conditionNameErrors"
+                @input="$v.conditionForm.conditionName.$touch()"
+                @blur="$v.conditionForm.conditionName.$touch()"
+                ></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-textarea
@@ -57,13 +58,45 @@
                 @blur="$v.conditionForm.conditionDetails.$touch()"
                 ></v-textarea>
               </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-menu
+                v-model="menu"
+                :close-on-content-click="false"
+                max-width="290"
+                >
+                <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                label="Select Date*"
+                readonly
+                :value="conditionForm.conditionDate"
+                v-bind="attrs"
+                v-on="on"
+                required
+                outlined
+                :error-messages="conditionDateErrors"
+                @input="$v.conditionForm.conditionDate.$touch()"
+                @blur="$v.conditionForm.conditionDate.$touch()"
+                @click:clear="conditionForm.conditionDate = null"
+                
+                ></v-text-field>
+                </template>
+                <v-date-picker 
+                full-width
+                scrollable
+                show-current
+                :max="getTodaysDate()"
+                v-model="conditionForm.conditionDate" 
+                @input="menu = false"
+                >
+                </v-date-picker>
+                </v-menu>
+              </v-col>
               </v-row>
             </v-container>
           </v-card-text>
           <v-card-actions>
-          <v-col cols="12">
+          <v-col cols="12" class="mt-n6">
               <v-btn
-              
               block class="primary white--text"
               @click.prevent="saveCondition()">
               <span>Add Condition</span>
@@ -104,7 +137,13 @@ export default {
         if(!this.$v.conditionForm.conditionDetails.$dirty) return errors
             !this.$v.conditionForm.conditionDetails.required && errors.push('Include Some Details About Your Condition')
         return errors
-        },      
+        },
+        conditionDateErrors () {
+        const errors = []
+        if(!this.$v.conditionForm.conditionDate.$dirty) return errors
+            !this.$v.conditionForm.conditionDate.required && errors.push('Select Date Of Condition Diagnosis')
+        return errors
+        },
     },
     data() {
         return {
@@ -114,18 +153,88 @@ export default {
             multiLine: true,
             timeout: 5000,
             snackbarText: "",
-
+            menu: false,
             dialogCondition: false,
+            conditions: [
+              { name: 'Alzheimer`s Disease', value: 'Alzheimer`s Disease'},
+              { name: 'Anemia', value: 'Anemia'},
+              { name: 'Asthma', value: 'Asthma'},
+              { name: 'Atopic Dermatitis', value: 'Atopic Dermatitis'},
+              { name: 'Atrial Fibrillation', value: 'Atrial Fibrillation'},
+              { name: 'Attention Deficit Hyperactivity Disorder', value: 'Attention Deficit Hyperactivity Disorder'},
+              { name: 'Autism or Asperger`s Syndrome', value: 'Autism or Asperger`s Syndrome'},
+              { name: 'Bipolar Mood Disorder', value: 'Bipolar Mood Disorder'},
+              { name: 'Bronchiectasis', value: 'Bronchiectasis'},
+              { name: 'Cancer', value: 'Cancer'},
+              { name: 'Cardiac Failure', value: 'Cardiac Failure'},
+              { name: 'Cardiomyopathy', value: 'Cardiomyopathy'},
+              { name: 'Cerebral Palsy', value: 'Cerebral Palsy'},
+              { name: 'Cerebrovascular Disease', value: 'Cerebrovascular Disease'},
+              { name: 'Chronic Fatigue Syndrome', value: 'Chronic Fatigue Syndrome'},
+              { name: 'Chronic Hepatitis', value: 'Chronic Hepatitis'},
+              { name: 'Chronic Kidney Disease', value: 'Chronic Kidney Disease'},
+              { name: 'Chronic Obstructive Pulmonary Disorder', value: 'Chronic Obstructive Pulmonary Disorder'},
+              { name: 'Chronic Renal Disease', value: 'Chronic Renal Disease'},
+              { name: 'Coeliac Disease', value: 'Coeliac Disease'},
+              { name: 'Complex Regional Pain Syndrome', value: 'Complex Regional Pain Syndrome'},
+              { name: 'Coronary Artery Disease', value: 'Coronary Artery Disease'},
+              { name: 'Crohn`s Disease', value: 'Crohn`s Disease'},
+              { name: 'Deafness & Hearing Impairment', value: 'Deafness & Hearing Impairment'},
+              { name: 'Dermatological Conditions', value: 'Dermatological Conditions'},
+              { name: 'Diabetes Insipidus', value: 'Diabetes Insipidus'},
+              { name: 'Diabetes Mellitus Types 1 & 2', value: 'Diabetes Mellitus Types 1 & 2'},
+              { name: 'Dysrhythmias', value: 'Dysrhythmias'},
+              { name: 'Ehlers-Danlos Syndrome', value: 'Ehlers-Danlos Syndrome'},
+              { name: 'Endometriosis', value: 'Endometriosis'},
+              { name: 'Epilepsy', value: 'Epilepsy'},
+              { name: 'Fetal Alcohol Spectrum Disorder', value: 'Fetal Alcohol Spectrum Disorder'},
+              { name: 'Fibromyalgia', value: 'Fibromyalgia'},
+              { name: 'Gestational Diabetes', value: 'Gestational Diabetes'},
+              { name: 'Glaucoma  ', value: 'Glaucoma  '},
+              { name: 'Haemophilia', value: 'Haemophilia'},
+              { name: 'Hashimoto`s Thyroiditis / Hashimoto`s Disease', value: 'Hashimoto`s Thyroiditis / Hashimoto`s Disease'},
+              { name: 'HIV/AIDS', value: 'HIV/AIDS'},
+              { name: 'Huntington`s Disease', value: 'Huntington`s Disease'},
+              { name: 'Hyperlipidaemia', value: 'Hyperlipidaemia'},
+              { name: 'Hypertension', value: 'Hypertension'},
+              { name: 'Hypothyroidism', value: 'Hypothyroidism'},
+              { name: 'Ischemic Cardiomyopathy', value: 'Ischemic Cardiomyopathy'},
+              { name: 'Mental Illness', value: 'Mental Illness'},
+              { name: 'Migraines', value: 'Migraines'},
+              { name: 'Multiple Sclerosis', value: 'Multiple Sclerosis'},
+              { name: 'Myasthenia Gravis', value: 'Myasthenia Gravis'},
+              { name: 'Narcolepsy', value: 'Narcolepsy'},
+              { name: 'Obesity', value: 'Obesity'},
+              { name: 'Osteoarthritis', value: 'Osteoarthritis'},
+              { name: 'Osteoporosis', value: 'Osteoporosis'},
+              { name: 'Parkinson`s Disease', value: 'Parkinson`s Disease'},
+              { name: 'Periodontal Disease', value: 'Periodontal Disease'},
+              { name: 'Polycystic Ovary Syndrome', value: 'Polycystic Ovary Syndrome'},
+              { name: 'Postural Orthostatic Tachycardia Syndrome', value: 'Postural Orthostatic Tachycardia Syndrome'},
+              { name: 'Post-Vasectomy Pain Syndrome', value: 'Post-Vasectomy Pain Syndrome'},
+              { name: 'Pre-Diabetes', value: 'Pre-Diabetes'},
+              { name: 'Psoriasis', value: 'Psoriasis'},
+              { name: 'Relapsing Polychondritis', value: 'Relapsing Polychondritis'},
+              { name: 'Rheumatoid Arthritis', value: 'Rheumatoid Arthritis'},
+              { name: 'Schizophrenia', value: 'Schizophrenia'},
+              { name: 'Sleep Apnea', value: 'Sleep Apnea'},
+              { name: 'Substance Abuse Disorders', value: 'Substance Abuse Disorders'},
+              { name: 'Systemic Lupus Erythematosus', value: 'Systemic Lupus Erythematosus'},
+              { name: 'Thyroid Disease', value: 'Thyroid Disease'},
+              { name: 'Ulcerative Colitis', value: 'Ulcerative Colitis'},
+            ],
             conditionForm: {
             condtionName: null,
             conditionDetails: null,
-      },
+            conditionDate: null,
+            },
         }
     },
     validations: {
         conditionForm: {
         conditionName: { required },
         conditionDetails: { required },
+        conditionDate: { required }
         },
     },
     methods: {
@@ -140,6 +249,12 @@ export default {
         this.$v.$reset()
         this.conditionForm.conditionName = null
         this.conditionForm.conditionDetails = null
+        this.conditionForm.conditionDate = null
+      },
+      getTodaysDate () {
+        let today = new Date ()
+        today.setDate(today.getDate())
+        return today.toISOString()
       },
       saveCondition () {
           this.$v.$touch()
@@ -148,11 +263,12 @@ export default {
 
           if(this.errors === false && this.formTouched === false){
               var addCondition = {
-              conditionName: this.conditionForm.conditionName,
-              conditionDetails: this.conditionForm.conditionDetails
+                conditionName: this.conditionForm.conditionName,
+                conditionDetails: this.conditionForm.conditionDetails,
+                conditionDate: this.conditionForm.conditionDate,
               }
               var conditionRecord = {
-              condition: fieldValue.arrayUnion(addCondition)
+                condition: fieldValue.arrayUnion(addCondition)
               }
               this.triggerSnackbar("Condition Was Successfully Added!", "success")
               db.collection("users").doc(this.currentUser).update(conditionRecord).then(() => {
@@ -160,6 +276,7 @@ export default {
                   this.$v.$reset()
                   this.conditionForm.conditionName = null
                   this.conditionForm.conditionDetails = null
+                  this.conditionForm.conditionDate = null
               }).catch(error => {
               console.log(error)
               }).then(() =>{
