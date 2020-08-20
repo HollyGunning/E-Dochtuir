@@ -22,7 +22,7 @@
         <v-form @submit.prevent="saveCondition()">
         <v-card-title class="primary lighten-1 white--text">Condition
         <v-spacer></v-spacer>
-          <v-btn class="mr-6" icon dark @click="dialogCondition = false"> 
+          <v-btn class="mr-6" icon dark @click="cancelCondition()"> 
           <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
           <span>Cancel</span>
           </v-btn>
@@ -129,40 +129,48 @@ export default {
         },
     },
     methods: {
-        triggerSnackbar (message, color) {
-          this.snackbarText = message,
-          this.color = color,
-          this.snackbar = true
+      triggerSnackbar (message, color) {
+        this.snackbarText = message,
+        this.color = color,
+        this.snackbar = true
       },
-        saveCondition () {
-            this.$v.$touch()
-            this.formTouched = !this.$v.conditionForm.$anyDirty
-            this.errors = this.$v.conditionForm.$anyError
+      cancelCondition() {
+        this.snackbar = false
+        this.dialogCondition = false
+        this.$v.$reset()
+        this.conditionForm.conditionName = null
+        this.conditionForm.conditionDetails = null
+      },
+      saveCondition () {
+          this.$v.$touch()
+          this.formTouched = !this.$v.conditionForm.$anyDirty
+          this.errors = this.$v.conditionForm.$anyError
 
-            if(this.errors === false && this.formTouched === false){
-                var addCondition = {
-                conditionName: this.conditionForm.conditionName,
-                conditionDetails: this.conditionForm.conditionDetails
-                }
-                var conditionRecord = {
-                condition: fieldValue.arrayUnion(addCondition)
-                }
-                this.triggerSnackbar("Condition Was Successfully Added!", "success")
-                db.collection("users").doc(this.currentUser).update(conditionRecord).then(() => {
-                    // Clear the form values
-                    this.$v.$reset()
-                    this.conditionForm.conditionName = null
-                    this.conditionForm.conditionDetails = null
-                }).catch(error => {
-                console.log(error)
-                }).then(() =>{
-                    this.dialogCondition = false
-                })
-            }
-            else{
-                this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
-            }
-        },   
+          if(this.errors === false && this.formTouched === false){
+              var addCondition = {
+              conditionName: this.conditionForm.conditionName,
+              conditionDetails: this.conditionForm.conditionDetails
+              }
+              var conditionRecord = {
+              condition: fieldValue.arrayUnion(addCondition)
+              }
+              this.triggerSnackbar("Condition Was Successfully Added!", "success")
+              db.collection("users").doc(this.currentUser).update(conditionRecord).then(() => {
+                  // Clear the form values
+                  this.$v.$reset()
+                  this.conditionForm.conditionName = null
+                  this.conditionForm.conditionDetails = null
+              }).catch(error => {
+              console.log(error)
+              }).then(() =>{
+                  this.dialogCondition = false
+                  this.snackbar = false
+              })
+          }
+          else{
+              this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
+          }
+      },   
     }
 }
 </script>

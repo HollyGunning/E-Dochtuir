@@ -185,6 +185,39 @@
                 </v-col>
           </v-card>
         </v-tab-item>
+        <v-tab-item><!-- immunisationS --> 
+          <v-card>
+            <immunisations />
+              <v-col cols="12" md="12">
+              <v-card outlined class="mt-2" v-for="(immunisation, index) in immunisations" :key="index">
+                <v-card-title class="primary lighten-1 white--text">
+                  <v-icon class="mr-4 white--text">fa-allergies</v-icon>
+                  {{ immunisation.immunisationName }}
+                  <v-spacer></v-spacer>
+                <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                </v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-list>
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title 
+                              class="overline grey--text mb-4">Date Received
+                              </v-list-item-title>
+                              <h3>{{ immunisation.immunisationDate }}</h3>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+          </v-card>
+        </v-tab-item>
+
+
       </v-tabs-items>
     </v-col>
 
@@ -206,7 +239,8 @@
 <script>
 import Navbar from '../components/Navbars/Navbar'
 import Allergies from '../components/MedicalRecord/Allergies'
-import Conditions from '../components//MedicalRecord/Conditions'
+import Conditions from '../components/MedicalRecord/Conditions'
+import Immunisations from '../components/MedicalRecord/Immunisations'
 
 import { auth, db } from '../firebase'
 
@@ -216,6 +250,7 @@ export default {
     Navbar,
     Allergies,
     Conditions,
+    Immunisations,
   },
   data() {
     return {
@@ -232,6 +267,7 @@ export default {
       tabs: [
       { tabName: 'Allergies' },
       { tabName: 'Conditions' },
+      { tabName: 'Immunisations' },
       ],
 
 
@@ -262,6 +298,7 @@ export default {
       
       allergies: [], // Store allergies here to display to user
       conditions: [], // Store conditions here to display to user
+      immunisations: [], // Store immunisations here to display to user
     }
   },
   validations: {
@@ -283,6 +320,7 @@ export default {
       // Populate the arrays with corresponding data from users record
       this.allergies = storedRecord.allergy
       this.conditions = storedRecord.condition
+      this.immunisations = storedRecord.immunisation
     })
 
   },

@@ -24,10 +24,5 @@ match /databases/{database}/documents {
     allow read, write: if request.auth.uid !=null;
   }
 
-  match /medicalRecords/{medicalRecordsId}{
-    allow read, write: if request.auth.uid !=null;
-  }
-
-
   }
 }

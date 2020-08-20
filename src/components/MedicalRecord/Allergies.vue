@@ -21,7 +21,7 @@
       <v-form @submit.prevent="saveAllergy()">
       <v-card-title class="primary lighten-1 white--text">Allergy
       <v-spacer></v-spacer>
-        <v-btn class="mr-6" icon dark @click="dialogAllergies = false"> 
+        <v-btn class="mr-6" icon dark @click="cancelAllergy()"> 
         <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
         <span>Cancel</span>
         </v-btn>
@@ -187,7 +187,15 @@ export default {
           this.color = color,
           this.snackbar = true
       },
-
+      cancelAllergy() {
+        this.snackbar = false
+        this.dialogAllergies = false
+        this.$v.$reset()
+        this.allergyForm.allergyName = null
+        this.allergyForm.selectedAllergyType = null
+        this.allergyForm.allergyDetails = null
+        this.allergyForm.selectedSeverity = null
+      },
       saveAllergy () { 
         this.$v.$touch()
         this.formTouched = !this.$v.allergyForm.$anyDirty
@@ -215,6 +223,7 @@ export default {
             console.log(error)
             }).then(() => {
               this.dialogAllergies = false
+              this.snackbar = false
             })
         }else{
             this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
