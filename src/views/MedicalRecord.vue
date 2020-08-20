@@ -8,9 +8,7 @@
     <v-card-title class="primary lighten-1 white--text">Medical Record
     <v-spacer></v-spacer>
     </v-card-title>
-      <v-row>
-
-        
+      <v-row>  
       <!-- GENDER -->
       <v-col cols="12" sm="6" md="6" lg="3">
        <v-card flat>
@@ -37,8 +35,6 @@
           </v-card-text>
       </v-card>
       </v-col>
-
-
       <!-- BLOODS -->
       <v-col cols="12" sm="6" md="6" lg="3">
        <v-card flat>
@@ -71,12 +67,15 @@
         <v-card-text>
           <v-text-field
           label="Weight"
-          type="number"
           v-model="weight"
           outlined 
           prepend-icon="fa-weight"
+          :maxlength="3"
           suffix="lbs"
           @change="onWeightChange(weight)"
+          :error-messages="weightError"
+          @input="$v.weight.$touch(weight)"
+          @blur="$v.weight.$touch(weight)"
           ></v-text-field>
         </v-card-text>
       </v-card> 
@@ -91,12 +90,15 @@
           <v-card-text>
              <v-text-field 
               label="Height"
-              type="number"
               v-model="height"
               outlined 
               prepend-icon="fa-ruler-vertical"
+              :maxlength="3"
               suffix="inches"
               @change="onHeightChange(height)"
+              :error-messages="heightError"
+              @input="$v.height.$touch(height)"
+              @blur="$v.height.$touch(height)"
               ></v-text-field>
           </v-card-text>
         </v-card>
@@ -425,7 +427,7 @@ import Conditions from '../components/MedicalRecord/Conditions'
 import Immunisations from '../components/MedicalRecord/Immunisations'
 
 import { auth, db } from '../firebase'
-
+import { numeric } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -434,10 +436,49 @@ export default {
     Conditions,
     Immunisations,
   },
+  created() {
+    this.currentUser = auth.currentUser.uid // Get current users ID
+    // Realtime listen to the patients record in the users collection
+    db.collection("users").doc(this.currentUser).onSnapshot(doc => {
+      let storedRecord = doc.data()
+      storedRecord.id = doc.id
+    
+      // Populate these values to display to the user what fields are currently holding info
+      this.gender = storedRecord.gender
+      this.selectedBlood = storedRecord.bloodType
+      this.weight = storedRecord.weight
+      this.height = storedRecord.height
+
+      // TODO: Store these in an array or array object if possible
+      // this.systolic = storedRecord.systolic
+      // this.diastolic = storedRecord.diastolic
+      // this.pulse = storedRecord.pulse
+      // this.bloodGlucoseLevel = storedRecord.bloodGlucoseLevel
+      
+
+      // Populate the arrays with corresponding data from users record
+      this.allergies = storedRecord.allergy
+      this.conditions = storedRecord.condition
+      this.immunisations = storedRecord.immunisation
+    })
+  },
+  computed: {
+    weightError () {
+      const errors = []
+      if(!this.$v.weight.$dirty) return errors
+          !this.$v.weight.numeric && errors.push('Only Numeric Values Will Save')
+      return errors
+    },
+    heightError () {
+      const errors = []
+      if(!this.$v.height.$dirty) return errors
+          !this.$v.height.numeric && errors.push('Only Numeric Values Will Save')
+      return errors
+    },
+  },
   data() {
     return {
       currentUser: null,
-
       // Tabs for upcoming and past
       tab: null,
       tabs: [
@@ -445,7 +486,6 @@ export default {
       { tabName: 'Conditions' },
       { tabName: 'Immunisations' },
       ],
-
 
       gender: null, // Gender value passes from db to buttons and highlights active one
       weight: null, // Used to store weight
@@ -478,34 +518,8 @@ export default {
     }
   },
   validations: {
-
-  },
-  created() {
-    this.currentUser = auth.currentUser.uid // Get current users ID
-    // Realtime listen to the patients record in the users collection
-    db.collection("users").doc(this.currentUser).onSnapshot(doc => {
-      let storedRecord = doc.data()
-      storedRecord.id = doc.id
-    
-      // Populate these values to display to the user what fields are currently holding info
-      this.gender = storedRecord.gender
-      this.selectedBlood = storedRecord.bloodType
-      this.weight = storedRecord.weight
-      this.height = storedRecord.height
-
-      // TODO: Store these in an array or array object if possible
-      // this.systolic = storedRecord.systolic
-      // this.diastolic = storedRecord.diastolic
-      // this.pulse = storedRecord.pulse
-      // this.bloodGlucoseLevel = storedRecord.bloodGlucoseLevel
-      
-
-      // Populate the arrays with corresponding data from users record
-      this.allergies = storedRecord.allergy
-      this.conditions = storedRecord.condition
-      this.immunisations = storedRecord.immunisation
-    })
-
+    weight: { numeric },
+    height: { numeric }
   },
   methods: {
     onGenderChange (gender) {
@@ -530,24 +544,34 @@ export default {
       })
     },
     onWeightChange (weight) {
-      db.collection("users").doc(this.currentUser).get().then(() =>{
-        // Access the users collection then update weight
+      this.$v.$touch()
+      this.formTouched = !this.$v.$anyDirty
+      this.errors = this.$v.$anyError
+      if(this.errors === false && this.formTouched === false){
+         db.collection("users").doc(this.currentUser).get().then(() =>{
+        // Access the users collection then update weight if not null
         if(weight != null){
           db.collection("users").doc(this.currentUser).update({
             weight: weight
           })
         }
       })
+      }
     },
     onHeightChange (height) {
-      // Access the users collection then update height
-      db.collection("users").doc(this.currentUser).get().then(() =>{
-        if(height != null){
-          db.collection("users").doc(this.currentUser).update({
-            height: height
-          })
-        }
-      })
+      this.$v.$touch()
+      this.formTouched = !this.$v.$anyDirty
+      this.errors = this.$v.$anyError
+      if(this.errors === false && this.formTouched === false){
+        // Access the users collection then update height if not null
+        db.collection("users").doc(this.currentUser).get().then(() =>{
+          if(height != null){
+            db.collection("users").doc(this.currentUser).update({
+              height: height
+            })
+          }
+        })
+      }
     },
 
   },

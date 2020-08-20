@@ -17,7 +17,6 @@
           </v-card-title>
         </v-card>
       </template>
-
         <v-card>
         <v-form @submit.prevent="saveCondition()">
         <v-card-title class="primary lighten-1 white--text">Condition
@@ -84,6 +83,7 @@
                 full-width
                 scrollable
                 show-current
+                :min="getUsersDob()"
                 :max="getTodaysDate()"
                 v-model="conditionForm.conditionDate" 
                 @input="menu = false"
@@ -126,28 +126,29 @@ export default {
         this.currentUser = auth.currentUser.uid // Get current users ID
     },
     computed: {
-        conditionNameErrors () {
-        const errors = []
-        if(!this.$v.conditionForm.conditionName.$dirty) return errors
-            !this.$v.conditionForm.conditionName.required && errors.push('A Condition Name Is Required')
-        return errors
-        },
-        conditionDetailsErrors () {
-        const errors = []
-        if(!this.$v.conditionForm.conditionDetails.$dirty) return errors
-            !this.$v.conditionForm.conditionDetails.required && errors.push('Include Some Details About Your Condition')
-        return errors
-        },
-        conditionDateErrors () {
-        const errors = []
-        if(!this.$v.conditionForm.conditionDate.$dirty) return errors
-            !this.$v.conditionForm.conditionDate.required && errors.push('Select Date Of Condition Diagnosis')
-        return errors
-        },
+      conditionNameErrors () {
+      const errors = []
+      if(!this.$v.conditionForm.conditionName.$dirty) return errors
+          !this.$v.conditionForm.conditionName.required && errors.push('A Condition Name Is Required')
+      return errors
+      },
+      conditionDetailsErrors () {
+      const errors = []
+      if(!this.$v.conditionForm.conditionDetails.$dirty) return errors
+          !this.$v.conditionForm.conditionDetails.required && errors.push('Include Some Details About Your Condition')
+      return errors
+      },
+      conditionDateErrors () {
+      const errors = []
+      if(!this.$v.conditionForm.conditionDate.$dirty) return errors
+          !this.$v.conditionForm.conditionDate.required && errors.push('Select Date Of Condition Diagnosis')
+      return errors
+      },
     },
     data() {
         return {
             currentUser: null,
+            dob: null,
             snackbar: false,
             color: null,
             multiLine: true,
@@ -155,9 +156,11 @@ export default {
             snackbarText: "",
             menu: false,
             dialogCondition: false,
+            // Condition Name Autocomplete Selection Field Name & Values
             conditions: [
               { name: 'Alzheimer`s Disease', value: 'Alzheimer`s Disease'},
               { name: 'Anemia', value: 'Anemia'},
+              { name: 'Anxiety Disorder', value: 'Anxiety Disorder'},
               { name: 'Asthma', value: 'Asthma'},
               { name: 'Atopic Dermatitis', value: 'Atopic Dermatitis'},
               { name: 'Atrial Fibrillation', value: 'Atrial Fibrillation'},
@@ -250,6 +253,15 @@ export default {
         this.conditionForm.conditionName = null
         this.conditionForm.conditionDetails = null
         this.conditionForm.conditionDate = null
+      },
+      getUsersDob () {
+          db.collection("users").doc(this.currentUser).onSnapshot(doc => {
+            let patientRecord = doc.data()
+            patientRecord.id = doc.id
+            // Get DoB
+            this.dob = patientRecord.date
+        })
+        return this.dob
       },
       getTodaysDate () {
         let today = new Date ()

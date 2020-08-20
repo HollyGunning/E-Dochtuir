@@ -33,8 +33,11 @@
                         label="Search Immunisations*"
                         v-model="immunisationForm.selectedImmunisation"
                         :items="immunisations"
+                        :filter="customFilter"
                         item-text="name"
                         item-value="value"
+                        persistent-hint
+                        hint="Immunisation Name Or Abbreviation"
                         outlined
                         :error-messages="selectedImmunisationErrors"
                         @input="$v.immunisationForm.selectedImmunisation.$touch()"
@@ -68,6 +71,7 @@
                         full-width
                         scrollable
                         show-current
+                        :min="getUsersDob()"
                         :max="getTodaysDate()"
                         v-model="immunisationForm.immunisationDate" 
                         @input="menu = false"
@@ -181,22 +185,32 @@ export default {
             selectedImmunisation: null,
           
             immunisations: [
-                { name: 'Influenza inactivated', abbr: 'IIV', value: 'Influenza inactivated' },
-                { name: 'Influenza recombinant', abbr: 'RIV', value: 'Influenza recombinant' },
-                { name: 'Influenza live attenuated', abbr: 'LAIV', value: 'Influenza live attenuated' },
-                { name: 'Tetanus, diphtheria, pertussis', abbr: 'Tdap', value: 'Tetanus, diphtheria, pertussis' },
-                { name: 'Measles, mumps, rubella', abbr: 'MMR', value: 'Measles, mumps, rubella' },
-                { name: 'Varicella', abbr: 'VAR', value: 'Varicella' },
-                { name: 'Zoster recombinant', abbr: 'RZV', value: 'Zoster recombinant' },
-                { name: 'Zoster live', abbr: 'ZVL', value: 'Zoster live' },
-                { name: 'Human papillomavirus', abbr: 'HPV', value: 'Human papillomavirus' },
-                { name: 'Pneumococcal conjugate', abbr: 'PCV13', value: 'Pneumococcal conjugate' },
-                { name: 'Pneumococcal polysaccharide', abbr: 'PPSV23', value: 'Pneumococcal polysaccharide' },
-                { name: 'Hepatitis A', abbr: 'HepA', value: 'Hepatitis A' },
-                { name: 'Hepatitis B', abbr: 'HepB', value: 'Hepatitis B' },
-                { name: 'Meningococcal A, C, W, Y', abbr: 'MenACWY', value: 'Meningococcal A, C, W, Y' },
-                { name: 'Meningococcal B', abbr: 'MenB', value: 'Meningococcal B' },
-                { name: 'Haemophilus influenzae type b', abbr: 'Hib', value: 'Haemophilus influenzae type b' },
+                { name: 'Anthrax Vaccine Adsorbed', abbr: 'AVA', value: 'Anthrax Vaccine Adsorbed', id: 1 },
+                { name: 'Bacille Calmette-Guérin (Tuberculosis) Vaccine', abbr: 'BCG', value: 'Bacille Calmette-Guérin (Tuberculosis) Vaccine', id: 2},
+                { name: 'Diphtheria, Tetanus & Pertussis Vaccine', abbr: 'DTaP', value: 'Diphtheria, Tetanus & Pertussis / Whopping Cough Vaccine', id: 3},
+                { name: 'Hepatitis A Vaccine', abbr: 'HepA', value: 'Hepatitis A Vaccine', id: 4 },
+                { name: 'Hepatitis B Vaccine', abbr: 'HepB', value: 'Hepatitis B Vaccine', id: 5 },
+                { name: 'Haemophilus Influenzae Type B', abbr: 'Hib', value: 'Haemophilus Influenzae Type B', id: 6 },
+                { name: 'Human Papillomavirus', abbr: 'HPV', value: 'Human Papillomavirus', id: 7 },
+                { name: 'Inactivated Poliovirus Vaccine', abbr: 'IPV', value: 'Inactivated Poliovirus Vaccine', id: 8 },
+                { name: 'Inactivated Influenza Vaccine', abbr: 'IIV', value: 'Inactivated Influenza Vaccine', id: 9 },
+                { name: 'Japanese Encephalitis', abbr: 'JE', value: 'Japanese Encephalitis', id: 10 },
+                { name: 'Live, Attenuated Influenza Vaccine (Quadrivalent)', abbr: 'LAIV4	', value:  'Live, Attenuated Influenza Vaccine (Quadrivalent)', id: 11 },
+                { name: 'Meningococcal A, C, W, Y', abbr: 'MenACWY', value: 'Meningococcal A, C, W, Y', id: 12 },
+                { name: 'Meningococcal B', abbr: 'MenB', value: 'Meningococcal B', id: 13 },
+                { name: 'Measles, Mumps, & Rubella', abbr: 'MMR', value: 'Measles, Mumps, & Rubella', id: 14 },
+                { name: 'Measles-Rubella Vaccine', abbr: 'MR', value: 'Measles-Rubella Vaccine', id: 15 },
+                { name: 'Pneumococcal Conjugate Vaccine', abbr: 'PCV13', value: 'Pneumococcal Conjugate Vaccine', id: 16 },
+                { name: 'Pneumococcal Polysaccharide Vaccine', abbr: 'PPSV23', value: 'Pneumococcal Polysaccharide Vaccine', id: 17 },
+                { name: 'Recombinant Influenza Vaccine', abbr: 'RIV3', value: 'Recombinant Influenza Vaccine', id: 18 },
+                { name: 'Rotavirus Vaccine', abbr: 'ROTA', value: 'Rotavirus Vaccine', id: 19 },
+                { name: 'Recombinant Zoster Vaccine', abbr: 'RZV', value: 'Recombinant Zoster Vaccine', id: 20 },
+                { name: 'Tetanus & Diphtheria Vaccine', abbr: 'Td', value: 'Tetanus & Diphtheria Vaccine', id: 21 },
+                { name: 'Tetanus, Diphtheria & Acellular Pertussis Vaccine', abbr: 'Tdap', value: 'Tetanus, Diphtheria & Acellular Pertussis Vaccine', id: 22 },
+                { name: 'Varicella Vaccine', abbr: 'VAR', value: 'Varicella Vaccine', id: 23 },
+                { name: 'Varicella Zoster Virus', abbr: 'VZV', value: 'Varicella Zoster Virus', id: 24 },
+                { name: 'Yellow Fever', abbr: 'YF', value: 'Yellow Fever', id: 25 },
+                { name: 'Zoster Vaccine Live', abbr: 'ZVL', value: 'Zoster Vaccine Live', id: 26 },       
             ],
 
             reactionList: [
@@ -228,7 +242,7 @@ export default {
         }
     },
     methods: {  
-      customFilter (item, queryText) {
+    customFilter (item, queryText) {
         const textOne = item.name.toLowerCase()
         const textTwo = item.abbr.toLowerCase()
         const searchText = queryText.toLowerCase()
@@ -251,6 +265,15 @@ export default {
             this.immunisationForm.immunisationReaction = null
             this.immunisationForm.immunisationDetails = null  
         },
+        getUsersDob () {
+          db.collection("users").doc(this.currentUser).onSnapshot(doc => {
+            let patientRecord = doc.data()
+            patientRecord.id = doc.id
+            // Get DoB
+            this.dob = patientRecord.date
+        })
+        return this.dob
+      },
          getTodaysDate () {
             let today = new Date ()
             today.setDate(today.getDate())
