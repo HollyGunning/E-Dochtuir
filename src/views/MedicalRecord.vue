@@ -25,6 +25,7 @@
             color="primary" 
             group 
             @change="onGenderChange(gender)"
+        
             >
               <v-btn depressed x-large color="primary--text darken-1" value="female">
               <v-icon class="mr-2">fa-venus</v-icon>Female
@@ -42,7 +43,7 @@
       <v-col cols="12" sm="6" md="6" lg="3">
        <v-card flat>
           <v-card-title class="overline">
-            <v-subheader  class="overline ml-n5">Bloods
+            <v-subheader  class="overline ml-n5">Blood Type
             <v-divider></v-divider>
             </v-subheader>
           </v-card-title>
@@ -63,7 +64,7 @@
       <v-col cols="12" sm="6" md="6" lg="3">
       <v-card flat>
         <v-card-title>                   
-          <v-subheader  class="overline ml-n5">Weight & Height
+          <v-subheader class="overline ml-n5">Weight & Height
             <v-divider></v-divider>
           </v-subheader>
         </v-card-title>
@@ -99,6 +100,156 @@
               ></v-text-field>
           </v-card-text>
         </v-card>
+      </v-col>
+      <!-- Blood Pressure & Pulse -->
+      <v-col cols="12" sm="4" md="4" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">Blood Pressure
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Systolic"
+          v-model="systolic"
+          outlined 
+          readonly
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+      <v-col cols="12" sm="4" md="4" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Diastolic"
+          v-model="diastolic"
+          outlined 
+          readonly
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+      <!-- Pulse -->
+      <v-col cols="12" sm="4" md="4" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">Pulse
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Pulse"
+          v-model="pulse"
+          outlined 
+          prepend-icon="fa-heartbeat"
+          suffix="bpm"
+          :maxlength="3"
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+      <!-- Blood Glucose Level -->
+      <v-col cols="12" sm="4" md="4" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">Blood Glucose Level
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Level"
+          v-model="bloodGlucoseLevel"
+          outlined 
+          suffix="mmol/l"
+          readonly
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+      <!-- Cholesterol -->
+      <v-col cols="12" sm="6" md="6" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">Cholesterol
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Total Cholesterol"
+          v-model="cholesterol"
+          outlined
+          suffix="mmol/l" 
+          readonly
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+
+      <v-col cols="12" sm="6" md="6" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="LDL"
+          v-model="cholesterolLDL"
+          outlined
+          suffix="mmol/l" 
+          readonly 
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+
+      <v-col cols="12" sm="6" md="6" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="HDL"
+          v-model="cholesterolHDL"
+          outlined
+          suffix="mmol/l" 
+          readonly 
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
+      </v-col>
+
+      <v-col cols="12" sm="6" md="6" lg="3">
+      <v-card flat>
+        <v-card-title>
+          <v-subheader class="overline ml-n5">
+            <v-divider></v-divider>
+          </v-subheader>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+          label="Triglycerides"
+          v-model="cholesterolTriglycerides"
+          outlined
+          suffix="mmol/l" 
+          readonly 
+          ></v-text-field>
+        </v-card-text>
+      </v-card>
       </v-col>
 
 
@@ -160,7 +311,7 @@
                <v-col cols="12" md="12">
                 <v-card outlined class="mt-2" v-for="(condition, index) in conditions" :key="index">
                   <v-card-title class="primary lighten-1 white--text">
-                    <v-icon class="mr-4 white--text">fa-allergies</v-icon>
+                    <v-icon class="mr-4 white--text">fa-file-medical-alt</v-icon>
                     {{ condition.conditionName }}
                     <v-spacer></v-spacer>
                   <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
@@ -191,7 +342,7 @@
               <v-col cols="12" md="12">
               <v-card outlined class="mt-2" v-for="(immunisation, index) in immunisations" :key="index">
                 <v-card-title class="primary lighten-1 white--text">
-                  <v-icon class="mr-4 white--text">fa-allergies</v-icon>
+                  <v-icon class="mr-4 white--text">fa-syringe</v-icon>
                   {{ immunisation.immunisationName }}
                   <v-spacer></v-spacer>
                 <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
@@ -221,13 +372,6 @@
       </v-tabs-items>
     </v-col>
 
-    <v-snackbar 
-    :color= "color"
-    v-model="snackbar" 
-    :timeout="timeout" 
-    :multi-line="multiLine"
-    > {{ snackbarText }} </v-snackbar>
-
     </v-row>
   </v-card>
 
@@ -256,12 +400,6 @@ export default {
     return {
       currentUser: null,
 
-      snackbar: false,
-      color: null,
-      multiLine: true,
-      timeout: 5000,
-      snackbarText: "",
-
       // Tabs for upcoming and past
       tab: null,
       tabs: [
@@ -272,17 +410,8 @@ export default {
 
 
       gender: null, // Gender value passes from db to buttons and highlights active one
-      measuringUnit: null, // Pass to the method onMeasurementChange() to determine which gets displayed
-      units: [
-        { text: 'Metric', value: 'metric' },
-        { text: 'US', value: 'us' },
-      ],
-      // Toggle between the two views for weight and height
-      showMetric: false,
-      showUS: false,
       weight: null, // Used to store weight
       height: null, // Used to store height
-
       selectedBlood: null, // Used to store the selected blood type
       bloods: [
         {text: 'None'},
@@ -295,6 +424,15 @@ export default {
         {text: 'AB+'},
         {text: 'AB-'},
       ],
+
+      systolic: null,
+      diastolic: null,
+      pulse: null,
+      bloodGlucoseLevel: null,
+      cholesterol: null,
+      cholesterolLDL: null,
+      cholesterolHDL: null,
+      cholesterolTriglycerides: null,
       
       allergies: [], // Store allergies here to display to user
       conditions: [], // Store conditions here to display to user
@@ -316,6 +454,13 @@ export default {
       this.selectedBlood = storedRecord.bloodType
       this.weight = storedRecord.weight
       this.height = storedRecord.height
+
+      // TODO: Store these in an array or array object if possible
+      // this.systolic = storedRecord.systolic
+      // this.diastolic = storedRecord.diastolic
+      // this.pulse = storedRecord.pulse
+      // this.bloodGlucoseLevel = storedRecord.bloodGlucoseLevel
+      
 
       // Populate the arrays with corresponding data from users record
       this.allergies = storedRecord.allergy
@@ -366,16 +511,6 @@ export default {
         }
       })
     },
-
-    triggerSnackbar (message, color) {
-      this.snackbarText = message,
-      this.color = color,
-      this.snackbar = true
-    },
-
-
-
-
 
   },
 };
