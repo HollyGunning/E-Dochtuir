@@ -275,7 +275,8 @@
                   {{ allergy.allergyType }}
                   </v-subheader>
                     <v-spacer></v-spacer>
-                    <!-- TODO ADD EDIT OPTION WITH DELETE INSIDE -->
+                    <!--  DELETE  ALLERGY -->
+                    <v-icon right @click="deleteAllergy(allergy.id)">fa-trash</v-icon>
                   </v-card-title>
                     <v-card-text>
                           <v-row>
@@ -317,8 +318,10 @@
                   <v-card-title class="primary lighten-1 white--text">
                     <v-icon class="mr-4 white--text">fa-file-medical-alt</v-icon>
                     {{ condition.conditionName }}
+                    <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
                     <v-spacer></v-spacer>
-                  <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                    <!--  DELETE  CONDITION -->
+                    <v-icon right @click="deleteCondition(condition.id)">fa-trash</v-icon>
                   </v-card-title>
                     <v-card-text>
                       <v-row>
@@ -352,7 +355,7 @@
                 </v-col>
           </v-card>
         </v-tab-item>
-        <v-tab-item><!-- immunisationS --> 
+        <v-tab-item><!-- immunisations --> 
           <v-card>
             <immunisations />
               <v-col cols="12" md="12">
@@ -360,8 +363,10 @@
                 <v-card-title class="primary lighten-1 white--text">
                   <v-icon class="mr-4 white--text">fa-syringe</v-icon>
                   {{ immunisation.immunisationName }}
+                  <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
                   <v-spacer></v-spacer>
-                <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                  <!--  DELETE  IMMUNISATION -->
+                    <v-icon right @click="deleteImmunisation(immunisation.id)">fa-trash</v-icon>
                 </v-card-title>
                   <v-card-text>
                     <v-row>
@@ -411,7 +416,13 @@
 
       </v-tabs-items>
     </v-col>
-
+       <v-snackbar
+        :color="color"
+        v-model="snackbar"
+        :timeout="timeout"
+        :multi-line="multiLine"
+      >{{ snackbarText }}
+      </v-snackbar>
     </v-row>
   </v-card>
 
@@ -425,10 +436,8 @@ import Navbar from '../components/Navbars/Navbar'
 import Allergies from '../components/MedicalRecord/Allergies'
 import Conditions from '../components/MedicalRecord/Conditions'
 import Immunisations from '../components/MedicalRecord/Immunisations'
-
 import { auth, db } from '../firebase'
 import { numeric } from 'vuelidate/lib/validators'
-
 export default {
   components: {
     Navbar,
@@ -448,14 +457,12 @@ export default {
       this.selectedBlood = storedRecord.bloodType
       this.weight = storedRecord.weight
       this.height = storedRecord.height
-
       // TODO: Store these in an array or array object if possible
       // this.systolic = storedRecord.systolic
       // this.diastolic = storedRecord.diastolic
       // this.pulse = storedRecord.pulse
       // this.bloodGlucoseLevel = storedRecord.bloodGlucoseLevel
       
-
       // Populate the arrays with corresponding data from users record
       this.allergies = storedRecord.allergy
       this.conditions = storedRecord.condition
@@ -479,6 +486,11 @@ export default {
   data() {
     return {
       currentUser: null,
+      snackbar: false,
+      color: null,
+      multiLine: true,
+      timeout: 5000,
+      snackbarText: "",
       // Tabs for upcoming and past
       tab: null,
       tabs: [
@@ -486,7 +498,6 @@ export default {
       { tabName: 'Conditions' },
       { tabName: 'Immunisations' },
       ],
-
       gender: null, // Gender value passes from db to buttons and highlights active one
       weight: null, // Used to store weight
       height: null, // Used to store height
@@ -502,7 +513,6 @@ export default {
         {text: 'AB+'},
         {text: 'AB-'},
       ],
-
       systolic: null,
       diastolic: null,
       pulse: null,
@@ -531,7 +541,6 @@ export default {
           })
         }
       })
-
     },
     onBloodsChange(selectedBlood) {
       // Access the users collection then update blood type
@@ -573,6 +582,29 @@ export default {
         })
       }
     },
+    triggerSnackbar (message, color) {
+      this.snackbarText = message,
+      this.color = color,
+      this.snackbar = true
+    },
+
+    deleteAllergy(id){
+      db.collection("users").doc(this.currentUser).update({
+        // DELETING EVERY RECORD
+        allergy: this.allergies.filter(allergy => allergy.id != id)
+      })
+      
+    },
+
+    deleteCondition (id) {
+  console.log(id)
+    },
+
+    deleteImmunisation (id) {
+  console.log(id)
+    },
+
+
 
   },
 };
