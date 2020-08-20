@@ -433,8 +433,6 @@ export default {
       showPasswordReset: false 
     }
     },
-
-
     validations: {
         loginForm: {
             email: { required, email },
@@ -461,8 +459,6 @@ export default {
         forgotForm: {
             email: { required, email },
         },
-        
-
     },
     methods: {
         async resetPassword() {

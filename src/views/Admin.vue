@@ -109,19 +109,17 @@ export default {
         });
     },
     methods: {
-     
-        changeRole(uid, event) {
-            console.log("Hello" + uid)
-            var addMessage = functions.httpsCallable("setUserRole");
-            var data = { uid: uid, role: { [event]: true } };
-            addMessage(data)
-                .then(function(result) {
-                    console.log(result);
-                })
-                .catch(function(error) {
-                    console.log(error);
-                });
-        },
+      changeRole(uid, event) {  
+        var addMessage = functions.httpsCallable("setUserRole");
+        var data = { uid: uid, role: { [event]: true } };
+        addMessage(data)
+            .then(function(result) {
+                console.log(result);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+      },
     }
 };
 </script>

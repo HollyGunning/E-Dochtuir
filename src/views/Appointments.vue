@@ -232,7 +232,7 @@
               <span>Book Appointment</span>
               </v-btn>
                 <v-snackbar
-                  color="error"
+                  :color="color"
                   v-model="snackbar"
                   :timeout="timeout"
                   :multi-line="multiLine"
@@ -323,6 +323,7 @@ export default {
         displayedTimeSlots: [],  // Returns the queried array of available times to the patient
 
         snackbar: false,
+        color: null,
         multiLine: true,
         timeout: 5000,
         snackbarText: "",
@@ -378,7 +379,7 @@ export default {
             return appointments.find(item => item.appointmentTime == time) == null
           })
           if(this.displayedTimeSlots.length == 0){
-            this.triggerSnackbar("There are no times available for this date!") // Display if there are no times left
+            this.triggerSnackbar("There are no times available for this date!", "error") // Display if there are no times left
           }
           else{
             this.showSelectTime = true // Then display the times available to the user
@@ -396,7 +397,7 @@ export default {
             this.getAvailableTimes()
           }
           else{
-            this.triggerSnackbar("You have already booked an appointment on this day!")
+            this.triggerSnackbar("You have already booked an appointment on this day!", "error")
           }
         })
       },
@@ -408,8 +409,9 @@ export default {
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
       },
-      triggerSnackbar (message) {
+      triggerSnackbar (message, color) {
         this.snackbarText = message,
+        this.color = color,
         this.snackbar = true
       },
       bookAppointment () {
@@ -418,9 +420,10 @@ export default {
         this.errors = this.$v.$anyError
 
         if(this.chosenDoc == null){
-          this.triggerSnackbar("You must select a doctor!")
+          this.triggerSnackbar("You must select a doctor!", "error")
         }
         else{
+          this.triggerSnackbar("Appointment Was Successfully Booked!", "success")
           if (this.errors === false && this.formTouched === false){ 
             db.collection("appointments").where("appointmentDate", "==", this.appointmentDate)
             .where("patientID", "==", this.currentUser).get().then(snap => {
@@ -439,7 +442,7 @@ export default {
               appointmentDetails: this.additionalDetails
             }
           }else{
-             this.triggerSnackbar("You have already booked an appointment on this day!")
+             this.triggerSnackbar("You have already booked an appointment on this day!", "error")
           }
              db.collection("appointments").doc().set(document).then(() => {
               // Reset any form error messages and inputs upon completion of booking
@@ -447,11 +450,15 @@ export default {
               this.appointmentDate = ''
               this.additionalDetails = ''
               this.selectedTime = ''
-              this.dialog = false
+              
+
+            }).then(() => {
               this.showSelectTime = !this.showSelectTime
+              this.dialog = false
             })
           }
         )}
+        
         }
       }
     }
