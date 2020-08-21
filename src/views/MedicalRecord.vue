@@ -276,7 +276,7 @@
                   </v-subheader>
                     <v-spacer></v-spacer>
                     <!--  DELETE  ALLERGY -->
-                    <v-icon right @click="deleteAllergy(allergy.id)">fa-trash</v-icon>
+                    <v-icon right @click="deleteAllergy(allergy)">fa-trash</v-icon>
                   </v-card-title>
                     <v-card-text>
                           <v-row>
@@ -321,7 +321,7 @@
                     <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
                     <v-spacer></v-spacer>
                     <!--  DELETE  CONDITION -->
-                    <v-icon right @click="deleteCondition(condition.id)">fa-trash</v-icon>
+                    <v-icon right @click="deleteCondition(condition)">fa-trash</v-icon>
                   </v-card-title>
                     <v-card-text>
                       <v-row>
@@ -366,7 +366,7 @@
                   <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
                   <v-spacer></v-spacer>
                   <!--  DELETE  IMMUNISATION -->
-                    <v-icon right @click="deleteImmunisation(immunisation.id)">fa-trash</v-icon>
+                    <v-icon right @click="deleteImmunisation(immunisation)">fa-trash</v-icon>
                 </v-card-title>
                   <v-card-text>
                     <v-row>
@@ -436,7 +436,7 @@ import Navbar from '../components/Navbars/Navbar'
 import Allergies from '../components/MedicalRecord/Allergies'
 import Conditions from '../components/MedicalRecord/Conditions'
 import Immunisations from '../components/MedicalRecord/Immunisations'
-import { auth, db } from '../firebase'
+import { auth, db, fieldValue } from '../firebase'
 import { numeric } from 'vuelidate/lib/validators'
 export default {
   components: {
@@ -457,11 +457,14 @@ export default {
       this.selectedBlood = storedRecord.bloodType
       this.weight = storedRecord.weight
       this.height = storedRecord.height
-      // TODO: Store these in an array or array object if possible
-      // this.systolic = storedRecord.systolic
-      // this.diastolic = storedRecord.diastolic
-      // this.pulse = storedRecord.pulse
-      // this.bloodGlucoseLevel = storedRecord.bloodGlucoseLevel
+      this.pulse = storedRecord.pulse
+      this.systolic = storedRecord.systolic
+      this.diastolic = storedRecord.diastolic
+      this.bloodGlucoseLevel = storedRecord.bloodGlucoseLevel
+      this.cholesterol = storedRecord.cholesterol
+      this.cholesterolLDL = storedRecord.cholesterolLDL
+      this.cholesterolHDL = storedRecord.cholesterolHDL
+      this.cholesterolTriglycerides = storedRecord.cholesterolTriglycerides
       
       // Populate the arrays with corresponding data from users record
       this.allergies = storedRecord.allergy
@@ -588,20 +591,23 @@ export default {
       this.snackbar = true
     },
 
-    deleteAllergy(id){
+    deleteAllergy(allergy){
       db.collection("users").doc(this.currentUser).update({
-        // DELETING EVERY RECORD
-        allergy: this.allergies.filter(allergy => allergy.id != id)
+        allergy: fieldValue.arrayRemove(allergy)
       })
       
     },
 
-    deleteCondition (id) {
-  console.log(id)
+    deleteCondition (condition) {
+       db.collection("users").doc(this.currentUser).update({
+        condition: fieldValue.arrayRemove(condition)
+      })
     },
 
-    deleteImmunisation (id) {
-  console.log(id)
+    deleteImmunisation (immunisation) {
+      db.collection("users").doc(this.currentUser).update({
+        immunisation: fieldValue.arrayRemove(immunisation)
+      })
     },
 
 
