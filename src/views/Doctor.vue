@@ -31,8 +31,10 @@
             <v-icon
             class="mr-2"
             :key="item.id"
+            :items="patients"
             v-bind="attrs"
             v-on="on"
+            @click="storeID(item.id)"
             >fa-notes-medical
             </v-icon>
             </v-col>
@@ -52,7 +54,7 @@
         </v-card-title>
           <v-row>
             <v-col cols="12" md="12" lg="12">
-              <!-- <DoctorUpdates /> -->
+
             <v-card flat class="mt-n5">
               <v-form @submit.prevent="updateMedicalRecord">
               <v-card-text>
@@ -215,29 +217,6 @@
                       </v-card-text>
                       </v-form>
                     </v-card>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             </v-col>
           </v-row>
       </v-card>
@@ -249,19 +228,18 @@
 
 <script>
 import DoctorNavbar from '../components/Navbars/DoctorNavbar'
-import DoctorUpdates from '../components/MedicalRecord/DoctorUpdates'
 import { auth, db } from '../firebase'
 
 export default {
   components: {
     DoctorNavbar,
-    DoctorUpdates,
   },
   created () {
     var user = auth.currentUser
       if(user){
         this.currentUser = auth.currentUser.uid // Get current users ID
 
+        // Gets the patients through roles by filtering only patient roles IDs
         db.collection("roles").get().then(snap => {
         snap.forEach(doc => {
           let user = doc.data()
@@ -289,15 +267,14 @@ export default {
       }else{
         console.log("User has logged out")
       }
-    
-
-
   },
   computed: {
 
   },
   data() {
     return {
+      patientID: null,
+
       currentUser: null,
       dialog: false,
 
@@ -306,7 +283,6 @@ export default {
       search: '',
 
       headers: [
-        // { text: 'Patient ID', align: 'start',  sortable: false, value: 'id' },
         { text: 'Patient Name', value: 'name' },
         { text: 'DoB', value: 'dob'},
         { text: 'Gender', value: 'gender' },
@@ -330,78 +306,90 @@ export default {
 
   },
   methods: {
+
+    storeID (id) {
+      // Store the ID of the record of which the action is pressed on
+      this.patientID = id
+    },
     onPulseChange (pulse) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(pulse != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   pulse: pulse
               })
           }
       })
   },
   onSystolicChange (systolic) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(systolic != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   systolic: systolic
               })
           }
       })
   },
   onDiastolicChange (diastolic) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(diastolic != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   diastolic: diastolic
               })
           }
       })
   },
   onLevelChange (bloodGlucoseLevel) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(bloodGlucoseLevel != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   bloodGlucoseLevel: bloodGlucoseLevel
               })
           }
       })
   },
   onTotalCholChange (cholesterol) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(cholesterol != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   cholesterol: cholesterol
               })
           }
       })
   },
   onLDLChange (cholesterolLDL) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(cholesterolLDL != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   cholesterolLDL: cholesterolLDL
               })
           }
       })
   },
   onHDLChange (cholesterolHDL) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(cholesterolHDL != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   cholesterolHDL: cholesterolHDL
               })
           }
       })
   },
   onTriglyceridesChange (cholesterolTriglycerides) {
-      db.collection("users").doc(id).get().then(()=> {
+      db.collection("users").doc(this.patientID).get().then(()=> {
           if(cholesterolTriglycerides != null){
-              db.collection("users").doc(id).update({
+              db.collection("users").doc(this.patientID).update({
                   cholesterolTriglycerides: cholesterolTriglycerides
               })
           }
       })
-  }
   },
+
+
+
+
+
+  },
+
+
 };
 </script>
