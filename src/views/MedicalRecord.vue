@@ -13,7 +13,7 @@
       <v-col cols="12" sm="6" md="6" lg="3">
        <v-card flat>
           <v-card-title class="overline">
-            <v-subheader  class="overline ml-n5">Gender
+            <v-subheader class="overline ml-n5">Gender
             <v-divider></v-divider>
             </v-subheader>
           </v-card-title>
@@ -513,9 +513,9 @@ export default {
         {text: 'AB Positive'},
         {text: 'AB Negative'},
       ],
+      pulse: null,
       systolic: null,
       diastolic: null,
-      pulse: null,
       bloodGlucoseLevel: null,
       cholesterol: null,
       cholesterolLDL: null,

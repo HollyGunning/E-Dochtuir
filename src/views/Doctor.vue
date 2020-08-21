@@ -27,16 +27,16 @@
           class="elevation-1"
           >
           <template v-slot:[`item.actions`]="{ item }">
+            <v-col cols="12" s="12" sm="12" md="12" lg="12">
             <v-icon
-              small
-              class="mr-2"
-              :key="item.id"
-              
-              v-bind="attrs"
-              v-on="on"
-            >
-              mdi-pencil
+            class="mr-2"
+            :key="item.id"
+            v-bind="attrs"
+            v-on="on"
+            >fa-notes-medical
             </v-icon>
+            </v-col>
+            
           </template>
           </v-data-table>
         </v-card>
@@ -48,12 +48,14 @@
           <v-spacer></v-spacer>
           <v-btn class="mr-4" icon dark @click="dialog = false"> 
           <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
-          <span>Cancel</span>
+          <span>Return to Patients</span>
           </v-btn>
         </v-card-title>
-        <v-card-text>
-          Update Medical Record
-        </v-card-text>
+          <v-row>
+            <v-col cols="12" md="12" lg="12">
+              <DoctorUpdates />
+            </v-col>
+          </v-row>
       </v-card>
     </v-dialog>
 
@@ -63,11 +65,13 @@
 
 <script>
 import DoctorNavbar from '../components/Navbars/DoctorNavbar'
+import DoctorUpdates from '../components/MedicalRecord/DoctorUpdates'
 import { auth, db } from '../firebase'
 
 export default {
   components: {
     DoctorNavbar,
+    DoctorUpdates,
   },
   created () {
     var user = auth.currentUser
