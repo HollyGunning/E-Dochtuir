@@ -4,9 +4,7 @@ match /databases/{database}/documents {
 // match logged in users doc with users collection
 
   match /users/{userId}{
-    allow create: if request.auth.uid !=null;
-    allow read: if request.auth.uid !=null;
-    allow write: if request.auth.uid == userId;
+    allow create, read, write: if request.auth.uid !=null;
   }
   
   match /roles/{userId}{
