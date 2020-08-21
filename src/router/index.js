@@ -152,7 +152,7 @@ router.beforeEach((to, from, next) => {
               })
 
           } else if (claims.doctor) {
-            if (to.path != '/admin' && to.path != '/doctorAppointment')
+            if (to.path != '/doctor' && to.path != '/doctorAppointment')
             return next ({
               path: './doctor'
             })
