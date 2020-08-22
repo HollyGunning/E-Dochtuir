@@ -505,34 +505,34 @@ export default {
         },
     },
     watch: {
-            // Register firebase error alert
-            registerError (value) {
-            if (value) {
-                this.alert1 = true
+        // Register firebase error alert
+        registerError (value) {
+        if (value) {
+            this.alert1 = true
+        }
+        },
+        alert (value) {
+        if (!value) {
+            this.$store.commit('setregisterError', null)
+        }
+        },
+        // Login firebase error alert
+        loginError (value){
+            if (value){
+                this.alert2 = true
             }
-            },
-            alert (value) {
+        },
+        alert2 (value){
+            if (!value){
+                this.$store.commit('setLoginError', null)
+            }
+        },
+        // Forgot Password firebase error alert
+        errorMsg (value) {
             if (!value) {
-                this.$store.commit('setregisterError', null)
+                this.alert3 = true
             }
-            },
-            // Login firebase error alert
-            loginError (value){
-                if (value){
-                    this.alert2 = true
-                }
-            },
-            alert2 (value){
-                if (!value){
-                    this.$store.commit('setLoginError', null)
-                }
-            },
-            // Forgot Password firebase error alert
-            errorMsg (value) {
-               if (!value) {
-                   this.alert3 = true
-               }
-            },
+        },
     },
     computed: {
         // Returning the state of the errors

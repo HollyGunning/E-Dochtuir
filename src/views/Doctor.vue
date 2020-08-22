@@ -23,7 +23,7 @@
           :headers="headers"
           :items="patients"
           :search="search"
-          :items-per-page="5"
+          :items-per-page="10"
           class="elevation-1"
           >
           <template v-slot:[`item.actions`]="{ item }">
@@ -60,7 +60,7 @@
               <v-card-text>
                   <v-row>
                   <!-- GENDER -->
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title class="overline">
                         <v-subheader class="overline ml-n5">Gender
@@ -86,7 +86,7 @@
                   </v-card>
                   </v-col>
                   <!-- BLOODS -->
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title class="overline">
                         <v-subheader  class="overline ml-n5">Blood Type
@@ -107,7 +107,7 @@
                   </v-col>
 
                   <!-- WEIGHT AND HEIGHT -->
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                     <v-card-title>                   
                       <v-subheader class="overline ml-n5">Weight & Height
@@ -130,7 +130,7 @@
                     </v-card-text>
                   </v-card> 
                   </v-col>
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                     <v-card flat>
                     <v-card-title>                   
                       <v-subheader  class="overline ml-n5">
@@ -154,7 +154,7 @@
                     </v-card>
                   </v-col>
                   <!-- Pulse -->
-                  <v-col cols="12" sm="4" md="4" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="3" md="3" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">Pulse
@@ -178,7 +178,7 @@
                   </v-card>
                   </v-col>
                   <!-- Blood Pressure & Pulse -->
-                  <v-col cols="12" sm="4" md="4" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="3" md="3" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">Blood Pressure
@@ -199,7 +199,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-                  <v-col cols="12" sm="4" md="4" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="3" md="3" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">
@@ -221,7 +221,7 @@
                   </v-card>
                   </v-col>
                   <!-- Blood Glucose Level -->
-                  <v-col cols="12" sm="4" md="4" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">Blood Glucose Level
@@ -240,21 +240,11 @@
                       @input="$v.medicalForm.bloodGlucoseLevel.$touch()"
                       @blur="$v.medicalForm.bloodGlucoseLevel.$touch()"
                       ></v-select>
-                      <!-- <v-text-field
-                      label="Level"
-                      v-model="medicalForm.bloodGlucoseLevel"
-                      outlined 
-                      suffix="mmol/l"
-                      @change="onLevelChange(medicalForm.bloodGlucoseLevel)"
-                      :error-messages="bloodGlucoseLevelError"
-                      @input="$v.medicalForm.bloodGlucoseLevel.$touch()"
-                      @blur="$v.medicalForm.bloodGlucoseLevel.$touch()"
-                      ></v-text-field> -->
                       </v-card-text>
                   </v-card>
                   </v-col>
                   <!-- Cholesterol -->
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">Cholesterol
@@ -262,9 +252,10 @@
                       </v-subheader>
                       </v-card-title>
                       <v-card-text>
-                      <v-text-field
+                      <v-select
                       label="Total Cholesterol"
                       v-model="medicalForm.cholesterol"
+                      :items="totalCholList"
                       outlined
                       suffix="mmol/l" 
                       prepend-icon="fa-heart-broken"
@@ -272,12 +263,12 @@
                       :error-messages="cholesterolError"
                       @input="$v.medicalForm.cholesterol.$touch()"
                       @blur="$v.medicalForm.cholesterol.$touch()"
-                      ></v-text-field>
+                      ></v-select>
                       </v-card-text>
                   </v-card>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">
@@ -289,6 +280,7 @@
                       label="LDL"
                       v-model="medicalForm.cholesterolLDL"
                       outlined
+                      :maxLength="3"
                       suffix="mmol/l" 
                       @change="onLDLChange(medicalForm.cholesterolLDL)"
                       :error-messages="cholesterolLDLError"
@@ -299,7 +291,7 @@
                   </v-card>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">
@@ -311,6 +303,7 @@
                       label="HDL"
                       v-model="medicalForm.cholesterolHDL"
                       outlined
+                      :maxLength="3"
                       suffix="mmol/l" 
                       @change="onHDLChange(medicalForm.cholesterolHDL)"
                       :error-messages="cholesterolHDLError"
@@ -321,7 +314,7 @@
                   </v-card>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="6" lg="3">
+                  <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">
@@ -333,6 +326,7 @@
                       label="Triglycerides"
                       v-model="medicalForm.cholesterolTriglycerides"
                       outlined
+                      :maxLength="3"
                       suffix="mmol/l" 
                       @change="onTriglyceridesChange(medicalForm.cholesterolTriglycerides)"
                       :error-messages="cholesterolTriglyceridesError"
@@ -343,7 +337,7 @@
                   </v-card>
                   </v-col>
                   
-                  <v-col cols="12">
+                  <v-col class="mt-n4" cols="12">
                     <v-tabs v-model="tab">
                       <v-tab v-for="tab in tabs" :key="tab.tabName">{{ tab.tabName }}</v-tab>
                     </v-tabs>
@@ -968,18 +962,21 @@ export default {
       const errors = []
       if(!this.$v.medicalForm.cholesterolLDL.$dirty) return errors
         !this.$v.medicalForm.cholesterolLDL.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.cholesterolLDL.numeric && errors.push('Only Numeric Values Will Save')
       return errors
     },
     cholesterolHDLError () {
       const errors = []
       if(!this.$v.medicalForm.cholesterolHDL.$dirty) return errors
         !this.$v.medicalForm.cholesterolHDL.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.cholesterolHDL.numeric && errors.push('Only Numeric Values Will Save')
       return errors
     },
     cholesterolTriglyceridesError () {
       const errors = []
       if(!this.$v.medicalForm.cholesterolTriglycerides.$dirty) return errors
         !this.$v.medicalForm.cholesterolTriglycerides.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.cholesterolTriglycerides.numeric && errors.push('Only Numeric Values Will Save')
       return errors
     },
 
@@ -1090,11 +1087,17 @@ export default {
       ],
 
       bloodGlucoseLevelList: [
-        { text: '< 3', value: 'Severe Hypoglycemia'},
-        { text: '< 3.9', value: 'Hypoglycemia'},
-        { text: '< 7', value: 'Normal'},
-        { text: '< 10', value: 'High (Take Action)'},
-        { text: '> 10 - 27.7 +', value: 'Metabolic Consequences (Take Action)'}
+        { text: 'Less Than 3', value: 'Severe Hypoglycemia'},
+        { text: 'Less Than 3.9', value: 'Hypoglycemia'},
+        { text: 'Less Than 7', value: 'Normal'},
+        { text: 'Less Than 10', value: 'High (Take Action)'},
+        { text: 'Above 10 - 27.7 +', value: 'Metabolic Consequences (Take Action)'}
+      ],
+
+      totalCholList: [
+        { text: 'Less Than 200', value: 'Desirable' },
+        { text: 'Between 200 & 239', value: 'Borderline High' },
+        { text: '240 & Above', value: 'High' },
       ],
 
       medicalForm: {
@@ -1279,9 +1282,9 @@ export default {
       diastolic: { required, numeric, minLength: minLength(2), between: between(40, 100) },
       bloodGlucoseLevel: { required },
       cholesterol: { required },
-      cholesterolLDL: { required },
-      cholesterolHDL: { required },
-      cholesterolTriglycerides: { required },
+      cholesterolLDL: { required, numeric },
+      cholesterolHDL: { required, numeric },
+      cholesterolTriglycerides: { required, numeric },
    },
    allergyForm: {
       allergyName: { required },

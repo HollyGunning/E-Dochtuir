@@ -171,7 +171,6 @@
           label="Level"
           v-model="bloodGlucoseLevel"
           outlined 
-          suffix="mmol/l"
           readonly
           ></v-text-field>
         </v-card-text>
@@ -187,10 +186,9 @@
         </v-card-title>
         <v-card-text>
           <v-text-field
-          label="Total Cholesterol"
+          label="Overall Cholesterol"
           v-model="cholesterol"
           outlined
-          suffix="mmol/l" 
           readonly
           ></v-text-field>
         </v-card-text>
