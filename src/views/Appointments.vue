@@ -403,9 +403,20 @@ export default {
         })
       },
       onDropdownChanged(value) {
-        this.showSelectTime = false
-        this.chosenDoc = value
-        this.getAvailableTimes()
+        db.collection("appointments").where("appointmentDate", "==", this.appointmentDate)
+            .where("patientID", "==", this.currentUser).get().then(snap => {
+            if(snap.docs.length == 0){ 
+              this.showSelectTime = false
+              this.chosenDoc = value
+              this.getAvailableTimes()
+            }
+            else{
+              this.triggerSnackbar("You have already booked an appointment on this day!", "error")
+              this.showSelectTime = false
+            }
+          })
+
+       
       },
       viewDOB () {
         return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
