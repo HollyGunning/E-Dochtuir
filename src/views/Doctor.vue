@@ -68,20 +68,12 @@
                         </v-subheader>
                       </v-card-title>
                       <v-card-text>
-                        <v-btn-toggle 
-                        v-model="gender" 
-                        color="primary" 
-                        group 
-                        mandatory
-                        @change="onGenderChange(gender)"
-                        >
-                          <v-btn depressed x-large color="primary--text darken-1" value="Female">
-                          <v-icon class="mr-2">fa-venus</v-icon>Female
-                          </v-btn>
-                          <v-btn depressed x-large color="primary--text darken-1" value="Male">
-                          <v-icon class="mr-2">fa-mars</v-icon>Male
-                          </v-btn>
-                        </v-btn-toggle>
+                        <v-text-field
+                        label="Gender"
+                        v-model="gender"
+                        outlined
+                        readonly
+                        ></v-text-field>
                       </v-card-text>
                   </v-card>
                   </v-col>
@@ -1328,16 +1320,6 @@ export default {
         this.allergies = patientInfo.allergy
         this.conditions = patientInfo.condition
         this.immunisations = patientInfo.immunisation
-      })
-    },
-    onGenderChange (gender) {
-      // Access the users collection then update gender value of patient
-      db.collection("users").doc(this.patientID).get().then(() =>{
-        if(gender != null){
-          db.collection("users").doc(this.patientID).update({
-            gender: gender
-          })
-        }
       })
     },
     onBloodsChange(selectedBlood) {
