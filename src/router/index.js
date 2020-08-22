@@ -13,6 +13,7 @@ import Profile from '@/views/Profile.vue'
 import MedicalRecord from '@/views/MedicalRecord.vue'
 import Medication from '@/views/Medication.vue'
 import Appointments from '@/views/Appointments.vue'
+import Prescriptions from '@/views/Prescriptions.vue'
 import Login from '@/views/Login.vue'
 import NotFound from '../components/404.vue'
 
@@ -92,6 +93,14 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/prescriptions',
+    name: 'Prescriptions',
+    component: Prescriptions,
+    meta: {
+      requiresAuth: true
+    }
+  },
   { 
     path: '*', 
     name: 'NotFound',
@@ -139,7 +148,7 @@ router.beforeEach((to, from, next) => {
         .then(function ({claims}) {
 
           if (claims.patient) {
-            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/medication' && to.path != '/medicalRecord')
+            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/prescriptions' && to.path != '/medication' && to.path != '/medicalRecord')
               return next ({
                 path: './'
               })

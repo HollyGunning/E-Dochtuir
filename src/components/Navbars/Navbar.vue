@@ -49,6 +49,7 @@ data(){
             { icon: 'fa-book-medical', text: 'Medical Record', route: '/medicalRecord'},
             { icon: 'fa-pills', text: 'Medication', route: '/medication' },
             { icon: 'fa-stethoscope', text: 'Appointments', route: '/appointments' },
+            { icon: 'fa-prescription', text: 'Prescriptions', route: '/prescriptions' },
         ]
     }
 },
