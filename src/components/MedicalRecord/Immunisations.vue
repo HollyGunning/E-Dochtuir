@@ -183,7 +183,6 @@ export default {
             items: [],
             search: null,
             selectedImmunisation: null,
-          
             immunisations: [
                 { name: 'Anthrax Vaccine Adsorbed', abbr: 'AVA', value: 'Anthrax Vaccine Adsorbed', id: 1 },
                 { name: 'Bacille Calmette-Guérin (Tuberculosis) Vaccine', abbr: 'BCG', value: 'Bacille Calmette-Guérin (Tuberculosis) Vaccine', id: 2},
