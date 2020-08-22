@@ -3,7 +3,7 @@
         <!-- Toolbar -->
         <v-app-bar app class="primary">
             <v-app-bar-nav-icon large class="grey--text" @click="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title class="grey--text text-uppercase">E-Dochtúir</v-toolbar-title> 
+            <v-toolbar-title class="grey--text text-uppercase">E-Dochtúir - Doctor Portal</v-toolbar-title> 
         <v-spacer></v-spacer> <!-- Anything after the spacer will align to the right of the page -->
         <v-btn depressed class="primary grey--text" @click="logout()">
             <span>Log Out</span>
@@ -35,7 +35,7 @@ data(){
         drawer: false,
 
         links: [
-            { icon: 'fa-user-md', text: 'Home', route: '/doctor'},
+            { icon: 'fa-user-injured', text: 'Patient Database', route: '/doctor'},
             { icon: 'fa-calendar', text: 'Appointments', route: '/doctorAppointment' },
             { icon: 'fa-file-prescription', text: 'Prescription Requests', route: '/doctorPrescription' },
         ]

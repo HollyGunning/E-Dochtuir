@@ -46,7 +46,7 @@
             :items="users"
             :search="search"
             :items-per-page="5"
-           class="elevation-8"
+            class="elevation-8"
             >
             <!-- selector for the user role -->
             <template v-slot:[`item.role`]="{item}"> 
@@ -98,10 +98,10 @@ export default {
         this.users = [];
         db.collection("roles").get().then(snap => {
             snap.forEach(doc => {
-                var user = doc.data();
-                user.id = doc.id;
-                user.currentRole = user.role.patient ? "patient" : "doctor";
-                if (!user.role.admin) this.users.push(user);
+                var user = doc.data()
+                user.id = doc.id
+                user.currentRole = user.role.patient ? "patient" : "doctor"
+                if (!user.role.admin) this.users.push(user)
             });
             console.log(this.users)
         });

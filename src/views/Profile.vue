@@ -279,8 +279,7 @@
             </v-card>   
 
             <v-card width="600" height="100" class="mt-5">
-                
-                <v-col cols="12">
+                <v-col cols="12" lg="12" class="justify-center">
                 <v-switch
                 v-model="$vuetify.theme.dark"
                 hide-details
@@ -288,8 +287,6 @@
                 label="Dark Mode"
                 ></v-switch>
                 </v-col>
-            
-      
             </v-card>
             </v-col>
 
