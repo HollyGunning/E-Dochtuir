@@ -47,7 +47,7 @@
       <!-- Dialog opens this card where the doctor can update the patients medical record-->
       <v-card>
         <v-card-title class="primary white--text">
-          <v-btn class="ml-0" icon dark @click="dialog = false"> 
+          <v-btn class="ml-0" icon dark @click="close()"> 
           <v-icon class="ml-0" fab dark color="white--text darken-1 ">fa-long-arrow-alt-left</v-icon>
           </v-btn>
           <span class="ml-10">Update Medical Record</span>
@@ -117,15 +117,15 @@
                     <v-card-text>
                       <v-text-field
                       label="Weight"
-                      v-model="weight"
+                      v-model="medicalForm.weight"
                       outlined 
                       prepend-icon="fa-weight"
                       :maxlength="3"
                       suffix="lbs"
-                      @change="onWeightChange(weight)"
+                      @change="onWeightChange(medicalForm.weight)"
                       :error-messages="weightError"
-                      @input="$v.weight.$touch(weight)"
-                      @blur="$v.weight.$touch(weight)"
+                      @input="$v.medicalForm.weight.$touch()"
+                      @blur="$v.medicalForm.weight.$touch()"
                       ></v-text-field>
                     </v-card-text>
                   </v-card> 
@@ -140,15 +140,15 @@
                       <v-card-text>
                         <v-text-field 
                           label="Height"
-                          v-model="height"
+                          v-model="medicalForm.height"
                           outlined 
                           prepend-icon="fa-ruler-vertical"
                           :maxlength="3"
                           suffix="inches"
-                          @change="onHeightChange(height)"
+                          @change="onHeightChange(medicalForm.height)"
                           :error-messages="heightError"
-                          @input="$v.height.$touch(height)"
-                          @blur="$v.height.$touch(height)"
+                          @input="$v.medicalForm.height.$touch()"
+                          @blur="$v.medicalForm.height.$touch()"
                           ></v-text-field>
                       </v-card-text>
                     </v-card>
@@ -164,11 +164,15 @@
                       <v-card-text>
                       <v-text-field
                       label="Pulse"
-                      v-model="pulse"
+                      v-model="medicalForm.pulse"
                       outlined 
                       prepend-icon="fa-heartbeat"
+                      :maxlength="3"
                       suffix="bpm"
-                      @change="onPulseChange(pulse)"
+                      @change="onPulseChange(medicalForm.pulse)"
+                      :error-messages="pulseError"
+                      @input="$v.medicalForm.pulse.$touch()"
+                      @blur="$v.medicalForm.pulse.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -178,15 +182,19 @@
                   <v-card flat>
                       <v-card-title>
                       <v-subheader class="overline ml-n5">Blood Pressure
-                          <v-divider></v-divider>
+                      <v-divider></v-divider>
                       </v-subheader>
                       </v-card-title>
                       <v-card-text>
                       <v-text-field
                       label="Systolic"
-                      v-model="systolic"
-                      outlined 
-                      @change="onSystolicChange(systolic)"
+                      v-model="medicalForm.systolic"
+                      outlined
+                      :maxlength="3"
+                      @change="onSystolicChange(medicalForm.systolic)"
+                      :error-messages="systolicError"
+                      @input="$v.medicalForm.systolic.$touch()"
+                      @blur="$v.medicalForm.systolic.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -201,9 +209,13 @@
                       <v-card-text>
                       <v-text-field
                       label="Diastolic"
-                      v-model="diastolic"
-                      outlined 
-                      @change="onDiastolicChange(diastolic)"
+                      v-model="medicalForm.diastolic"
+                      outlined
+                      :maxLength="3"
+                      @change="onDiastolicChange(medicalForm.diastolic)"
+                      :error-messages="diastolicError"
+                      @input="$v.medicalForm.diastolic.$touch()"
+                      @blur="$v.medicalForm.diastolic.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -219,10 +231,13 @@
                       <v-card-text>
                       <v-text-field
                       label="Level"
-                      v-model="bloodGlucoseLevel"
+                      v-model="medicalForm.bloodGlucoseLevel"
                       outlined 
                       suffix="mmol/l"
-                      @change="onLevelChange(bloodGlucoseLevel)"
+                      @change="onLevelChange(medicalForm.bloodGlucoseLevel)"
+                      :error-messages="bloodGlucoseLevelError"
+                      @input="$v.medicalForm.bloodGlucoseLevel.$touch()"
+                      @blur="$v.medicalForm.bloodGlucoseLevel.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -238,11 +253,14 @@
                       <v-card-text>
                       <v-text-field
                       label="Total Cholesterol"
-                      v-model="cholesterol"
+                      v-model="medicalForm.cholesterol"
                       outlined
                       suffix="mmol/l" 
                       prepend-icon="fa-heart-broken"
-                      @change="onTotalCholChange(cholesterol)"
+                      @change="onTotalCholChange(medicalForm.cholesterol)"
+                      :error-messages="cholesterolError"
+                      @input="$v.medicalForm.cholesterol.$touch()"
+                      @blur="$v.medicalForm.cholesterol.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -258,10 +276,13 @@
                       <v-card-text>
                       <v-text-field
                       label="LDL"
-                      v-model="cholesterolLDL"
+                      v-model="medicalForm.cholesterolLDL"
                       outlined
                       suffix="mmol/l" 
-                      @change="onLDLChange(cholesterolLDL)"
+                      @change="onLDLChange(medicalForm.cholesterolLDL)"
+                      :error-messages="cholesterolLDLError"
+                      @input="$v.medicalForm.cholesterolLDL.$touch()"
+                      @blur="$v.medicalForm.cholesterolLDL.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -277,10 +298,13 @@
                       <v-card-text>
                       <v-text-field
                       label="HDL"
-                      v-model="cholesterolHDL"
+                      v-model="medicalForm.cholesterolHDL"
                       outlined
                       suffix="mmol/l" 
-                      @change="onHDLChange(cholesterolHDL)"
+                      @change="onHDLChange(medicalForm.cholesterolHDL)"
+                      :error-messages="cholesterolHDLError"
+                      @input="$v.medicalForm.cholesterolHDL.$touch()"
+                      @blur="$v.medicalForm.cholesterolHDL.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -296,10 +320,13 @@
                       <v-card-text>
                       <v-text-field
                       label="Triglycerides"
-                      v-model="cholesterolTriglycerides"
+                      v-model="medicalForm.cholesterolTriglycerides"
                       outlined
                       suffix="mmol/l" 
-                      @change="onTriglyceridesChange(cholesterolTriglycerides)"
+                      @change="onTriglyceridesChange(medicalForm.cholesterolTriglycerides)"
+                      :error-messages="cholesterolTriglyceridesError"
+                      @input="$v.medicalForm.cholesterolTriglycerides.$touch()"
+                      @blur="$v.medicalForm.cholesterolTriglycerides.$touch()"
                       ></v-text-field>
                       </v-card-text>
                   </v-card>
@@ -834,7 +861,7 @@ import Allergies from '../components/MedicalRecord/Allergies'
 import Conditions from '../components/MedicalRecord/Conditions'
 import Immunisations from '../components/MedicalRecord/Immunisations'
 import { auth, db, fieldValue } from '../firebase'
-import { required, numeric } from 'vuelidate/lib/validators'
+import { required, numeric, minLength, between } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -875,15 +902,144 @@ export default {
   computed: {
     weightError () {
       const errors = []
-      if(!this.$v.weight.$dirty) return errors
-          !this.$v.weight.numeric && errors.push('Only Numeric Values Will Save')
+      if(!this.$v.medicalForm.weight.$dirty) return errors
+        !this.$v.medicalForm.weight.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.weight.numeric && errors.push('Only Numeric Values Will Save')
       return errors
     },
     heightError () {
       const errors = []
-      if(!this.$v.height.$dirty) return errors
-          !this.$v.height.numeric && errors.push('Only Numeric Values Will Save')
+      if(!this.$v.medicalForm.height.$dirty) return errors
+        !this.$v.medicalForm.height.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.height.numeric && errors.push('Only Numeric Values Will Save')
       return errors
+    },
+    pulseError () {
+      const errors = []
+      if(!this.$v.medicalForm.pulse.$dirty) return errors
+        !this.$v.medicalForm.pulse.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.pulse.numeric && errors.push('Only Numeric Values Will Save')
+        !this.$v.medicalForm.pulse.minLength && errors.push('Minimum Pulse Should Be In Double Digits')
+        !this.$v.medicalForm.pulse.between && errors.push('Pulse Should Be Between Values 60 To 120')
+      return errors
+    },
+    systolicError () {
+      const errors = []
+      if(!this.$v.medicalForm.systolic.$dirty) return errors
+        !this.$v.medicalForm.systolic.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.systolic.numeric && errors.push('Only Numeric Values Will Save')
+        !this.$v.medicalForm.systolic.minLength && errors.push('Systolic Should Be In Double Digits')
+        !this.$v.medicalForm.systolic.between && errors.push('Systolic Should Be Between Values 70 To 190')
+      return errors
+    },
+    diastolicError () {
+      const errors = []
+      if(!this.$v.medicalForm.diastolic.$dirty) return errors
+        !this.$v.medicalForm.diastolic.required && errors.push('Empty Fields Will Not Save')
+        !this.$v.medicalForm.diastolic.numeric && errors.push('Only Numeric Values Will Save')
+        !this.$v.medicalForm.diastolic.minLength && errors.push('Diastolic Should Be In Double Digits')
+        !this.$v.medicalForm.diastolic.between && errors.push('Diastolic Should Be Between Values 40 To 100')
+      return errors
+    },
+    bloodGlucoseLevelError () {
+      const errors = []
+      if(!this.$v.medicalForm.bloodGlucoseLevel.$dirty) return errors
+        !this.$v.medicalForm.bloodGlucoseLevel.required && errors.push('Empty Fields Will Not Save')
+      return errors
+    },
+    cholesterolError () {
+      const errors = []
+      if(!this.$v.medicalForm.cholesterol.$dirty) return errors
+        !this.$v.medicalForm.cholesterol.required && errors.push('Empty Fields Will Not Save')
+      return errors
+    },
+    cholesterolLDLError () {
+      const errors = []
+      if(!this.$v.medicalForm.cholesterolLDL.$dirty) return errors
+        !this.$v.medicalForm.cholesterolLDL.required && errors.push('Empty Fields Will Not Save')
+      return errors
+    },
+    cholesterolHDLError () {
+      const errors = []
+      if(!this.$v.medicalForm.cholesterolHDL.$dirty) return errors
+        !this.$v.medicalForm.cholesterolHDL.required && errors.push('Empty Fields Will Not Save')
+      return errors
+    },
+    cholesterolTriglyceridesError () {
+      const errors = []
+      if(!this.$v.medicalForm.cholesterolTriglycerides.$dirty) return errors
+        !this.$v.medicalForm.cholesterolTriglycerides.required && errors.push('Empty Fields Will Not Save')
+      return errors
+    },
+
+
+
+
+    allergyNameErrors () {
+      const errors = []
+      if(!this.$v.allergyForm.allergyName.$dirty) return errors
+        !this.$v.allergyForm.allergyName.required && errors.push('An Allergy Name Is Required')
+      return errors
+    },
+    allergyTypeErrors () {
+      const errors = []
+      if(!this.$v.allergyForm.selectedAllergyType.$dirty) return errors
+          !this.$v.allergyForm.selectedAllergyType.required && errors.push('Select The Type Of Allergy')
+      return errors
+    },
+    allergyDetailsErrors () {
+      const errors = []
+      if(!this.$v.allergyForm.allergyDetails.$dirty) return errors
+          !this.$v.allergyForm.allergyDetails.required && errors.push('Include Some Details About Your Allergy')
+      return errors
+    },
+    allergySeverityErrors () {
+      const errors = []
+      if(!this.$v.allergyForm.selectedSeverity.$dirty) return errors
+          !this.$v.allergyForm.selectedSeverity.required && errors.push('Select The Severity Of Your Allergy')
+      return errors
+    },
+    conditionNameErrors () {
+    const errors = []
+    if(!this.$v.conditionForm.conditionName.$dirty) return errors
+        !this.$v.conditionForm.conditionName.required && errors.push('A Condition Name Is Required')
+    return errors
+    },
+    conditionDetailsErrors () {
+    const errors = []
+    if(!this.$v.conditionForm.conditionDetails.$dirty) return errors
+        !this.$v.conditionForm.conditionDetails.required && errors.push('Include Some Details About Your Condition')
+    return errors
+    },
+    conditionDateErrors () {
+    const errors = []
+    if(!this.$v.conditionForm.conditionDate.$dirty) return errors
+        !this.$v.conditionForm.conditionDate.required && errors.push('Select Date Of Condition Diagnosis')
+    return errors
+    },
+    selectedImmunisationErrors () {
+    const errors = []
+    if(!this.$v.immunisationForm.selectedImmunisation.$dirty) return errors
+        !this.$v.immunisationForm.selectedImmunisation.required && errors.push('Select An Immunisation')
+    return errors
+    },
+    immunisationDateErrors () {
+    const errors = []
+    if(!this.$v.immunisationForm.immunisationDate.$dirty) return errors
+        !this.$v.immunisationForm.immunisationDate.required && errors.push('Select Date Of Immunisation')
+    return errors
+    },
+    immunisationReactionErrors () {
+    const errors = []
+    if(!this.$v.immunisationForm.immunisationReaction.$dirty) return errors
+        !this.$v.immunisationForm.immunisationReaction.required && errors.push('Select Your Reaction To the Immunisation')
+    return errors
+    },
+    additionalDetailsError () {
+    const errors = []
+    if(!this.$v.immunisationForm.immunisationDetails.$dirty) return errors
+        !this.$v.immunisationForm.immunisationDetails.required && errors.push('Include Additional Details Of Immunisation')
+    return errors
     },
   },
   data() {
@@ -909,8 +1065,6 @@ export default {
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       gender: null, // Gender value passes from db to buttons and highlights active one
-      weight: null, // Used to store weight
-      height: null, // Used to store height
       selectedBlood: null, // Used to store the selected blood type
       bloods: [
         {text: 'None'},
@@ -923,14 +1077,20 @@ export default {
         {text: 'AB Positive'},
         {text: 'AB Negative'},
       ],
-      pulse: null,  // Used to store pulse
-      systolic: null, // Used to store systolic
-      diastolic: null, // Used to store diastolic
-      bloodGlucoseLevel: null, // Used to store bloodGlucoseLevel
-      cholesterol: null, // Used to store cholesterol
-      cholesterolLDL: null, // Used to store cholesterolLDL
-      cholesterolHDL: null, // Used to store cholesterolHDL
-      cholesterolTriglycerides: null, // Used to store cholesterolTriglycerides
+
+      medicalForm: {
+        weight: null, // Used to store weight
+        height: null, // Used to store height
+        pulse: null,  // Used to store pulse
+        systolic: null, // Used to store systolic
+        diastolic: null, // Used to store diastolic
+        bloodGlucoseLevel: null, // Used to store bloodGlucoseLevel
+        cholesterol: null, // Used to store cholesterol
+        cholesterolLDL: null, // Used to store cholesterolLDL
+        cholesterolHDL: null, // Used to store cholesterolHDL
+        cholesterolTriglycerides: null, // Used to store cholesterolTriglycerides
+      },
+
       allergies: [], // Store allergies here to display to user
       conditions: [], // Store conditions here to display to user
       immunisations: [], // Store immunisations here to display to user
@@ -1092,9 +1252,21 @@ export default {
    }
   },
   validations: {
-    weight: { numeric },
-    height: { numeric },
-    allergyForm: {
+    medicalForm: {
+      weight: { required, numeric },
+      height: { required, numeric },
+      pulse: { required, numeric, minLength: minLength(2), between: between(60, 120) },
+      systolic: { required, numeric, minLength: minLength(2), between: between(70, 190) },
+      diastolic: { required, numeric, minLength: minLength(2), between: between(40, 100) },
+      bloodGlucoseLevel: { required },
+      cholesterol: { required },
+      cholesterolLDL: { required },
+      cholesterolHDL: { required },
+      cholesterolTriglycerides: { required },
+  
+   },
+
+   allergyForm: {
       allergyName: { required },
       selectedAllergyType: { required },
       allergyDetails: { required },
@@ -1122,16 +1294,16 @@ export default {
         // Populate these values to display patient medical record fields that are currently holding info
         this.gender = patientInfo.gender
         this.selectedBlood = patientInfo.bloodType
-        this.weight = patientInfo.weight
-        this.height = patientInfo.height
-        this.pulse = patientInfo.pulse
-        this.systolic = patientInfo.systolic
-        this.diastolic = patientInfo.diastolic
-        this.bloodGlucoseLevel = patientInfo.bloodGlucoseLevel
-        this.cholesterol = patientInfo.cholesterol
-        this.cholesterolLDL = patientInfo.cholesterolLDL
-        this.cholesterolHDL = patientInfo.cholesterolHDL
-        this.cholesterolTriglycerides = patientInfo.cholesterolTriglycerides
+        this.medicalForm.weight = patientInfo.weight
+        this.medicalForm.height = patientInfo.height
+        this.medicalForm.pulse = patientInfo.pulse
+        this.medicalForm.systolic = patientInfo.systolic
+        this.medicalForm.diastolic = patientInfo.diastolic
+        this.medicalForm.bloodGlucoseLevel = patientInfo.bloodGlucoseLevel
+        this.medicalForm.cholesterol = patientInfo.cholesterol
+        this.medicalForm.cholesterolLDL = patientInfo.cholesterolLDL
+        this.medicalForm.cholesterolHDL = patientInfo.cholesterolHDL
+        this.medicalForm.cholesterolTriglycerides = patientInfo.cholesterolTriglycerides
         // Populate the arrays with corresponding data from users record
         this.allergies = patientInfo.allergy
         this.conditions = patientInfo.condition
@@ -1161,8 +1333,8 @@ export default {
     onWeightChange (weight) {
       // Check to see if entered data is dirty before updating the db
       this.$v.$touch()
-      this.formTouched = !this.$v.$anyDirty
-      this.errors = this.$v.$anyError
+      this.formTouched = !this.$v.medicalForm.weight.$anyDirty
+      this.errors = this.$v.medicalForm.weight.$anyError
       if(this.errors === false && this.formTouched === false){
          db.collection("users").doc(this.patientID).get().then(() =>{
         // Access the users collection then update weight of patient if not null
@@ -1177,8 +1349,8 @@ export default {
     onHeightChange (height) {
       // Check to see if entered data is dirty before updating the db
       this.$v.$touch()
-      this.formTouched = !this.$v.$anyDirty
-      this.errors = this.$v.$anyError
+      this.formTouched = !this.$v.medicalForm.height.$anyDirty
+      this.errors = this.$v.medicalForm.height.$anyError
       if(this.errors === false && this.formTouched === false){
         // Access the users collection then update height of patient if not null
         db.collection("users").doc(this.patientID).get().then(() =>{
@@ -1191,6 +1363,10 @@ export default {
       }
     },    
     onPulseChange (pulse) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.pulse.$anyDirty
+      this.errors = this.$v.medicalForm.pulse.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update pulse of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(pulse != null){
@@ -1199,8 +1375,13 @@ export default {
           })
         }
       })
+      }
     },
     onSystolicChange (systolic) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.systolic.$anyDirty
+      this.errors = this.$v.medicalForm.systolic.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update systolic of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(systolic != null){
@@ -1209,8 +1390,14 @@ export default {
           })
         }
       })
+      }
+
     },
     onDiastolicChange (diastolic) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.diastolic.$anyDirty
+      this.errors = this.$v.medicalForm.diastolic.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update diastolic of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(diastolic != null){
@@ -1219,8 +1406,13 @@ export default {
           })
         }
       })
+      }
     },
     onLevelChange (bloodGlucoseLevel) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.bloodGlucoseLevel.$anyDirty
+      this.errors = this.$v.medicalForm.bloodGlucoseLevel.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update bloodGlucoseLevel of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(bloodGlucoseLevel != null){
@@ -1229,8 +1421,13 @@ export default {
           })
         }
       })
+      }
     },
     onTotalCholChange (cholesterol) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.cholesterol.$anyDirty
+      this.errors = this.$v.medicalForm.cholesterol.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update cholesterol of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(cholesterol != null){
@@ -1239,8 +1436,13 @@ export default {
           })
         }
       })
+      }
     },
     onLDLChange (cholesterolLDL) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.cholesterolLDL.$anyDirty
+      this.errors = this.$v.medicalForm.cholesterolLDL.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update cholesterolLDL of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(cholesterolLDL != null){
@@ -1249,8 +1451,13 @@ export default {
           })
         }
       })
+      }
     },
     onHDLChange (cholesterolHDL) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.cholesterolHDL.$anyDirty
+      this.errors = this.$v.medicalForm.cholesterolHDL.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update cholesterolHDL of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(cholesterolHDL != null){
@@ -1259,8 +1466,13 @@ export default {
           })
         }
       })
+      }
     },
     onTriglyceridesChange (cholesterolTriglycerides) {
+      this.$v.$touch()
+      this.formTouched = !this.$v.medicalForm.cholesterolTriglycerides.$anyDirty
+      this.errors = this.$v.medicalForm.cholesterolTriglycerides.$anyError
+      if(this.errors === false && this.formTouched === false){
       // Access the users collection then update cholesterolTriglycerides of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
         if(cholesterolTriglycerides != null){
@@ -1269,6 +1481,11 @@ export default {
           })
         }
       })
+      }
+    },
+    close() {
+      this.$v.$reset()
+      this.dialog = false
     },
     cancel() {
       this.snackbar = false
