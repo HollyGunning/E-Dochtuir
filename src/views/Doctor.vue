@@ -313,121 +313,129 @@
                     <v-tabs-items v-model="tab">
                       <v-tab-item> <!-- ALLERGIES -->
                         <v-card >
-                            <!-- Import Component -->
-                            <Allergies />
-                              <v-col cols="12" md="12">
-                              <v-card outlined class="mt-2" v-for="(allergy, index) in allergies" :key="index">
-                                <v-card-title class="primary lighten-1 white--text">
-                                  <v-icon class="mr-4 white--text">fa-allergies</v-icon>
-                                  {{ allergy.allergyName }}
-                                
-                                <v-subheader class="overline primary lighten-1 white--text">
-                                {{ allergy.allergyType }}
-                                </v-subheader>
-                                  <v-spacer></v-spacer>
-                                  <!--  DELETE  ALLERGY -->
-                                  <v-icon right @click="deleteAllergy(allergy)">fa-trash</v-icon>
-                                </v-card-title>
-                                  <v-card-text>
-                                        <v-row>
-                                          <v-col cols="12" sm="6" md="6">
-                                            <v-list>
-                                              <v-list-item>
-                                                <v-list-item-content>
-                                                  <v-list-item-title 
-                                                  class="overline grey--text mb-4">Severity
-                                                  </v-list-item-title>
-                                                  <h3>{{ allergy.allergySeverity }}</h3>
-                                                </v-list-item-content>
-                                              </v-list-item>
-                                            </v-list>
-                                          </v-col>
-                                          <v-col cols="12" sm="6" md="6">
-                                            <v-list>
-                                              <v-list-item>
-                                                <v-list-item-content>
-                                                  <v-list-item-title 
-                                                  class="overline grey--text mb-4">Descirption
-                                                  </v-list-item-title>
-                                                  <h3>{{ allergy.allergyDetails }}</h3> 
-                                                </v-list-item-content>
-                                              </v-list-item>
-                                            </v-list>
-                                          </v-col></v-row>
-                                  </v-card-text>
-                                </v-card>
-                              </v-col>
-                              </v-card>
-                      </v-tab-item>
-                      <v-tab-item> <!-- CONDITIONS -->
+                        <!-- Any Allergies -->
+                        <v-col cols="12" md="12" lg="12">
+                        <v-card flat>
+                        <v-dialog v-model="dialogAllergies" persistent max-width="600px">
+                        <template v-slot:activator="{ on, attrs }"> 
+                        <v-card flat>
+                            <v-card-title class="overline">
+                              <v-spacer></v-spacer>
+                              <v-btn 
+                                small
+                                v-bind="attrs"
+                                v-on="on"
+                              ><v-icon>mdi-plus</v-icon>
+                              Add Allergy
+                              </v-btn>
+                            </v-card-title>
+                          </v-card>
+                        </template>
                         <v-card>
-                          <!-- Import Component -->
-                          <Conditions />
-                            <v-col cols="12" md="12">
-                              <v-card outlined class="mt-2" v-for="(condition, index) in conditions" :key="index">
-                                <v-card-title class="primary lighten-1 white--text">
-                                  <v-icon class="mr-4 white--text">fa-file-medical-alt</v-icon>
-                                  {{ condition.conditionName }}
-                                  <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
-                                  <v-spacer></v-spacer>
-                                  <!--  DELETE  CONDITION -->
-                                  <v-icon right @click="deleteCondition(condition)">fa-trash</v-icon>
-                                </v-card-title>
-                                  <v-card-text>
-                                    <v-row>
-                                      <v-col cols="12" sm="6" md="6">
-                                        <v-list>
-                                          <v-list-item>
-                                            <v-list-item-content>
-                                              <v-list-item-title 
-                                              class="overline grey--text mb-4">Date of Diagnosis
-                                              </v-list-item-title>
-                                              <h3>{{ condition.conditionDate }}</h3>
-                                            </v-list-item-content>
-                                          </v-list-item>
-                                        </v-list>
-                                      </v-col>
-                                      <v-col cols="12" sm="6" md="6">
-                                        <v-list>
-                                          <v-list-item>
-                                            <v-list-item-content>
-                                              <v-list-item-title 
-                                              class="overline grey--text mb-4">Description
-                                              </v-list-item-title>
-                                              <h3>{{ condition.conditionDetails }}</h3>
-                                            </v-list-item-content>
-                                          </v-list-item>
-                                        </v-list>
-                                      </v-col>
-                                    </v-row>
-                                  </v-card-text>
-                                </v-card>
+                        <v-form @submit.prevent="saveAllergy()">
+                        <v-card-title class="primary lighten-1 white--text">Allergy
+                        <v-spacer></v-spacer>
+                          <v-btn class="mr-6" icon dark @click="cancel()"> 
+                          <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
+                          <span>Cancel</span>
+                          </v-btn>
+                        </v-card-title>
+                          <v-card-text>
+                            <v-container>
+                              <v-row>
+                              <v-col cols="12" sm="6" md="6">
+                                <v-text-field
+                                label="Allergen Name*"
+                                v-model.trim="allergyForm.allergyName"
+                                :counter="25"
+                                outlined
+                                required
+                                :error-messages="allergyNameErrors"
+                                @input="$v.allergyForm.allergyName.$touch()"
+                                @blur="$v.allergyForm.allergyName.$touch()"
+                                ></v-text-field>
                               </v-col>
+                              <v-col cols="12" sm="6" md="6">
+                                <v-select
+                                v-model="allergyForm.selectedAllergyType"
+                                :items="allergyList"
+                                label="Allergy Type*"
+                                outlined
+                                required
+                                :error-messages="allergyTypeErrors"
+                                @input="$v.allergyForm.selectedAllergyType.$touch()"
+                                @blur="$v.allergyForm.selectedAllergyType.$touch()"
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="12" sm="6" md="6">
+                                <v-textarea
+                                auto-grow
+                                rows="1"
+                                label="Details*"
+                                v-model="allergyForm.allergyDetails"
+                                :counter="150"
+                                :maxlength="150"
+                                outlined
+                                required
+                                :error-messages="allergyDetailsErrors"
+                                @input="$v.allergyForm.allergyDetails.$touch()"
+                                @blur="$v.allergyForm.allergyDetails.$touch()"
+                                ></v-textarea>
+                              </v-col>
+                              <v-col cols="12" sm="6">
+                                <v-select
+                                v-model="allergyForm.selectedSeverity"
+                                :items="severityList"
+                                label="Severity*"
+                                outlined
+                                required
+                                :error-messages="allergySeverityErrors"
+                                @input="$v.allergyForm.selectedSeverity.$touch()"
+                                @blur="$v.allergyForm.selectedSeverity.$touch()"
+                                ></v-select>
+                              </v-col>
+                              </v-row>
+                            </v-container>
+                          </v-card-text>
+                          <v-card-actions>
+                          <v-col cols="12" class="mt-n6">
+                            <v-btn
+                            type="submit"
+                            block class="primary white--text"
+                            @click.prevent="saveAllergy()">
+                            <span>Add Allergy</span>
+                            </v-btn>
+                          </v-col>  
+                          </v-card-actions>
+                        </v-form>
                         </v-card>
-                      </v-tab-item>
-                      <v-tab-item><!-- immunisations --> 
-                        <v-card>
-                          <immunisations />
-                            <v-col cols="12" md="12">
-                            <v-card outlined class="mt-2" v-for="(immunisation, index) in immunisations" :key="index">
-                              <v-card-title class="primary lighten-1 white--text">
-                                <v-icon class="mr-4 white--text">fa-syringe</v-icon>
-                                {{ immunisation.immunisationName }}
-                                <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
-                                <v-spacer></v-spacer>
-                                <!--  DELETE  IMMUNISATION -->
-                                  <v-icon right @click="deleteImmunisation(immunisation)">fa-trash</v-icon>
-                              </v-card-title>
-                                <v-card-text>
+                        </v-dialog>
+                        </v-card>
+                        </v-col> <!-- allergies end -->
+
+                        <v-col cols="12" md="12">
+                        <v-card outlined class="mt-2" v-for="(allergy, index) in allergies" :key="index">
+                          <v-card-title class="primary lighten-1 white--text">
+                            <v-icon class="mr-4 white--text">fa-allergies</v-icon>
+                            {{ allergy.allergyName }}
+                          
+                          <v-subheader class="overline primary lighten-1 white--text">
+                          {{ allergy.allergyType }}
+                          </v-subheader>
+                            <v-spacer></v-spacer>
+                            <!--  DELETE  ALLERGY -->
+                            <v-icon right @click="deleteAllergy(allergy)">fa-trash</v-icon>
+                          </v-card-title>
+                            <v-card-text>
                                   <v-row>
                                     <v-col cols="12" sm="6" md="6">
                                       <v-list>
                                         <v-list-item>
                                           <v-list-item-content>
                                             <v-list-item-title 
-                                            class="overline grey--text mb-4">Date Received
+                                            class="overline grey--text mb-4">Severity
                                             </v-list-item-title>
-                                            <h3>{{ immunisation.immunisationDate }}</h3>
+                                            <h3>{{ allergy.allergySeverity }}</h3>
                                           </v-list-item-content>
                                         </v-list-item>
                                       </v-list>
@@ -437,51 +445,382 @@
                                         <v-list-item>
                                           <v-list-item-content>
                                             <v-list-item-title 
-                                            class="overline grey--text mb-4">Reaction
+                                            class="overline grey--text mb-4">Descirption
                                             </v-list-item-title>
-                                            <h3>{{ immunisation.immunisationsReaction }}</h3>
+                                            <h3>{{ allergy.allergyDetails }}</h3> 
                                           </v-list-item-content>
                                         </v-list-item>
                                       </v-list>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                      <v-list>
-                                        <v-list-item>
-                                          <v-list-item-content>
-                                            <v-list-item-title 
-                                            class="overline grey--text mb-4">Additional Details
-                                            </v-list-item-title>
-                                            <h3>{{ immunisation.immunisationDetails }}</h3>
-                                          </v-list-item-content>
-                                        </v-list-item>
-                                      </v-list>
-                                    </v-col>
-                                  </v-row>
-                                </v-card-text>
-                              </v-card>
-                            </v-col>
+                                    </v-col></v-row>
+                            </v-card-text>
+                          </v-card>
+                        </v-col>
                         </v-card>
-                      </v-tab-item>
+                </v-tab-item>
+                <v-tab-item> <!-- CONDITIONS -->
+                <v-card>
+                <!-- Any Conditions -->
+                <v-col cols="12" md="12" lg="12">
+                  <v-card flat>
+                  <v-dialog v-model="dialogConditions" persistent max-width="600px">
+                  <template v-slot:activator="{ on, attrs }"> 
+                  <v-card flat>
+                      <v-card-title class="overline">
+                        <v-spacer></v-spacer>
+                        <v-btn 
+                          small
+                          v-bind="attrs"
+                          v-on="on"
+                        ><v-icon>mdi-plus</v-icon>
+                        Add Condition
+                        </v-btn>
+                      </v-card-title>
+                    </v-card>
+                  </template>
+                    <v-card>
+                    <v-form @submit.prevent="saveCondition()">
+                    <v-card-title class="primary lighten-1 white--text">Condition
+                    <v-spacer></v-spacer>
+                      <v-btn class="mr-6" icon dark @click="cancel()"> 
+                      <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
+                      <span>Cancel</span>
+                      </v-btn>
+                    </v-card-title>
+                      <v-card-text>
+                        <v-container>
+                          <v-row>
+                          <v-col cols="12" sm="6" md="6">
+                            <v-autocomplete
+                            label="Search Condition Name"
+                            v-model="conditionForm.conditionName"
+                            :items="conditionsList"
+                            item-text="name"
+                            item-value="value"
+                            outlined
+                            :error-messages="conditionNameErrors"
+                            @input="$v.conditionForm.conditionName.$touch()"
+                            @blur="$v.conditionForm.conditionName.$touch()"
+                            ></v-autocomplete>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="6">
+                            <v-textarea
+                            auto-grow
+                            rows="1"
+                            label="Details*"
+                            v-model.trim="conditionForm.conditionDetails"
+                            :counter="150"
+                            :maxlength="150"
+                            outlined
+                            required
+                            :error-messages="conditionDetailsErrors"
+                            @input="$v.conditionForm.conditionDetails.$touch()"
+                            @blur="$v.conditionForm.conditionDetails.$touch()"
+                            ></v-textarea>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="6">
+                            <v-menu
+                            v-model="menu"
+                            :close-on-content-click="false"
+                            max-width="290"
+                            >
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                            label="Select Date*"
+                            readonly
+                            :value="conditionForm.conditionDate"
+                            v-bind="attrs"
+                            v-on="on"
+                            required
+                            outlined
+                            :error-messages="conditionDateErrors"
+                            @input="$v.conditionForm.conditionDate.$touch()"
+                            @blur="$v.conditionForm.conditionDate.$touch()"
+                            @click:clear="conditionForm.conditionDate = null"
+                            ></v-text-field>
+                            </template>
+                            <v-date-picker 
+                            full-width
+                            scrollable
+                            show-current
+                            :min="getUsersDob()"
+                            :max="getTodaysDate()"
+                            v-model="conditionForm.conditionDate" 
+                            @input="menu = false"
+                            >
+                            </v-date-picker>
+                            </v-menu>
+                          </v-col>
+                          </v-row>
+                        </v-container>
+                      </v-card-text>
+                      <v-card-actions>
+                      <v-col cols="12" class="mt-n6">
+                          <v-btn
+                          block class="primary white--text"
+                          @click.prevent="saveCondition()">
+                          <span>Add Condition</span>
+                          </v-btn>
+                      </v-col>
+                      </v-card-actions>
+                    </v-form>
+                        <v-snackbar 
+                        :color= "color"
+                        v-model="snackbar" 
+                        :timeout="timeout" 
+                        :multi-line="multiLine"
+                        > {{ snackbarText }} 
+                        </v-snackbar>
+                    </v-card>
+                  </v-dialog>
+                  </v-card>
+                  </v-col> <!-- conditions end -->
 
+                  <v-col cols="12" md="12">
+                    <v-card outlined class="mt-2" v-for="(condition, index) in conditions" :key="index">
+                      <v-card-title class="primary lighten-1 white--text">
+                        <v-icon class="mr-4 white--text">fa-file-medical-alt</v-icon>
+                        {{ condition.conditionName }}
+                        <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                        <v-spacer></v-spacer>
+                        <!--  DELETE  CONDITION -->
+                        <v-icon right @click="deleteCondition(condition)">fa-trash</v-icon>
+                      </v-card-title>
+                        <v-card-text>
+                          <v-row>
+                            <v-col cols="12" sm="6" md="6">
+                              <v-list>
+                                <v-list-item>
+                                  <v-list-item-content>
+                                    <v-list-item-title 
+                                    class="overline grey--text mb-4">Date of Diagnosis
+                                    </v-list-item-title>
+                                    <h3>{{ condition.conditionDate }}</h3>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="6">
+                              <v-list>
+                                <v-list-item>
+                                  <v-list-item-content>
+                                    <v-list-item-title 
+                                    class="overline grey--text mb-4">Description
+                                    </v-list-item-title>
+                                    <h3>{{ condition.conditionDetails }}</h3>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-col>
+                          </v-row>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+              </v-card>
+            </v-tab-item>
+            <v-tab-item><!-- immunisations --> 
+            <v-card>
+            <v-col cols="12" md="12" lg="12">
+            <v-card flat>
+              <v-dialog v-model="dialogImmunisation" persistent max-width="600px">
+                <template v-slot:activator="{ on, attrs }"> 
+                <v-card flat>
+                    <v-card-title class="overline">
+                        <v-spacer></v-spacer>
+                        <v-btn 
+                        small
+                        v-bind="attrs"
+                        v-on="on"
+                        ><v-icon>mdi-plus</v-icon>
+                        Add immunisation
+                        </v-btn>
+                    </v-card-title>
+                    </v-card>
+                </template>
+                    <v-card>
+                    <v-form @submit.prevent="saveImmunisation()">
+                    <v-card-title class="primary lighten-1 white--text">Immunisation
+                    <v-spacer></v-spacer>
+                        <v-btn class="mr-6" icon dark @click="cancel()"> 
+                        <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
+                        <span>Cancel</span>
+                        </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                    <v-container>
+                      <v-row>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-autocomplete
+                        label="Search Immunisations*"
+                        v-model="immunisationForm.selectedImmunisation"
+                        :items="immunisationsList"
+                        :filter="customFilter"
+                        item-text="name"
+                        item-value="value"
+                        persistent-hint
+                        hint="Immunisation Name Or Abbreviation"
+                        outlined
+                        :error-messages="selectedImmunisationErrors"
+                        @input="$v.immunisationForm.selectedImmunisation.$touch()"
+                        @blur="$v.immunisationForm.selectedImmunisation.$touch()"
+                        ></v-autocomplete>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-menu
+                        v-model="menu2"
+                        :close-on-content-click="false"
+                        max-width="290"
+                        >
+                        <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                        label="Select Date*"
+                        readonly
+                        :value="immunisationForm.immunisationDate"
+                        v-bind="attrs"
+                        v-on="on"
+                        required
+                        outlined
+                        :error-messages="immunisationDateErrors"
+                        @input="$v.immunisationForm.immunisationDate.$touch()"
+                        @blur="$v.immunisationForm.immunisationDate.$touch()"
+                        @click:clear="immunisationForm.immunisationDate = null"
+                        
+                        ></v-text-field>
+                        </template>
+                        <v-date-picker 
+                        full-width
+                        scrollable
+                        show-current
+                        :min="getUsersDob()"
+                        :max="getTodaysDate()"
+                        v-model="immunisationForm.immunisationDate" 
+                        @input="menu2 = false"
+                        >
+                        </v-date-picker>
+                        </v-menu>
+                      </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                          label="Reaction"
+                          v-model="immunisationForm.immunisationReaction"
+                          :items="reactionList"
+                          outlined
+                          required
+                          :error-messages="immunisationReactionErrors"
+                          @input="$v.immunisationForm.immunisationReaction.$touch()"
+                          @blur="$v.immunisationForm.immunisationReaction.$touch()"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                            <v-textarea
+                            auto-grow
+                            rows="2"
+                            name="immunisationForm.immunisationDetails"
+                            label="Additional Details"
+                            v-model="immunisationForm.immunisationDetails"
+                            :counter="150"
+                            :maxlength="150"
+                            required
+                            outlined
+                            :error-messages="additionalDetailsError"
+                            @input="$v.immunisationForm.immunisationDetails.$touch()"
+                            @blur="$v.immunisationForm.immunisationDetails.$touch()"
+                            ></v-textarea>
+                        </v-col>
+                        </v-row>
+                    </v-container>
+                    </v-card-text>
+                        <v-card-actions>
+                        <v-col cols="12" class="mt-n6">
+                            <v-btn
+                            type="submit"
+                            block class="primary white--text"
+                            @click.prevent="saveImmunisation()">
+                            <span>Add Immunisation</span>
+                            </v-btn>
+                        </v-col>  
+                        </v-card-actions>
+                    </v-form>
+                        <v-snackbar 
+                        :color= "color"
+                        v-model="snackbar" 
+                        :timeout="timeout" 
+                        :multi-line="multiLine"
+                        > {{ snackbarText }} 
+                        </v-snackbar>
+                    </v-card>
+                </v-dialog>
+                </v-card>
+            </v-col>
 
-                    </v-tabs-items>
-                  </v-col>
-                  <v-snackbar
-                    :color="color"
-                    v-model="snackbar"
-                    :timeout="timeout"
-                    :multi-line="multiLine"
-                  >{{ snackbarText }}
-                  </v-snackbar>
-    
-                    
-
+            
+            <v-col cols="12" md="12">
+            <v-card outlined class="mt-2" v-for="(immunisation, index) in immunisations" :key="index">
+              <v-card-title class="primary lighten-1 white--text">
+                <v-icon class="mr-4 white--text">fa-syringe</v-icon>
+                {{ immunisation.immunisationName }}
+                <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                <v-spacer></v-spacer>
+                <!--  DELETE  IMMUNISATION -->
+                  <v-icon right @click="deleteImmunisation(immunisation)">fa-trash</v-icon>
+              </v-card-title>
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title 
+                            class="overline grey--text mb-4">Date Received
+                            </v-list-item-title>
+                            <h3>{{ immunisation.immunisationDate }}</h3>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title 
+                            class="overline grey--text mb-4">Reaction
+                            </v-list-item-title>
+                            <h3>{{ immunisation.immunisationsReaction }}</h3>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title 
+                            class="overline grey--text mb-4">Additional Details
+                            </v-list-item-title>
+                            <h3>{{ immunisation.immunisationDetails }}</h3>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-col>
                   </v-row>
                 </v-card-text>
-                </v-form>
               </v-card>
             </v-col>
+            </v-card>
+          </v-tab-item>
+          </v-tabs-items>
+          </v-col>
+          <v-snackbar
+            :color="color"
+            v-model="snackbar"
+            :timeout="timeout"
+            :multi-line="multiLine"
+          >{{ snackbarText }}
+          </v-snackbar>
           </v-row>
+        </v-card-text>
+        </v-form>
+        </v-card>
+        </v-col></v-row>
       </v-card>
     </v-dialog>
 
@@ -495,7 +834,7 @@ import Allergies from '../components/MedicalRecord/Allergies'
 import Conditions from '../components/MedicalRecord/Conditions'
 import Immunisations from '../components/MedicalRecord/Immunisations'
 import { auth, db, fieldValue } from '../firebase'
-import { numeric } from 'vuelidate/lib/validators'
+import { required, numeric } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -602,11 +941,176 @@ export default {
       { tabName: 'Conditions' },
       { tabName: 'Immunisations' },
       ],
+      // Everything for Allergies
+      dialogAllergies: false,
+      allergyList: [
+          { text: 'Drug Allergy', value: 'Drug Allergy'},
+          { text: 'Food Allergy', value: 'Food Allergy'},
+          { text: 'Pollen Allergy', value: 'Pollen Allergy'},
+          { text: 'Insect Allergy', value: 'Insect Allergy'},
+          { text: 'Latex Allergy', value: 'Latex Allergy'},
+          { text: 'Other', value: 'Other'}, 
+      ],
+      severityList: [
+          { text: 'Mild', value: 'Mild'},
+          { text: 'Moderate', value: 'Moderate'},
+          { text: 'Severe', value: 'Severe'},
+          { text: 'Life Threatening', value: 'Life Threatening'},
+          ],
+      allergyForm: {
+          allergyName: null,
+          selectedAllergyType: null, // Value holds the allergy selected by the user
+          allergyDetails: null, // Value holds user details
+          selectedSeverity: null, // Value holds the severity selected by the user
+      },
+      // Everything for Conditions
+      dialogConditions: false,
+      menu: false,
+      // Condition Name Autocomplete Selection Field Name & Values
+      conditionsList: [
+        { name: 'Alzheimer`s Disease', value: 'Alzheimer`s Disease'},
+        { name: 'Anemia', value: 'Anemia'},
+        { name: 'Anxiety Disorder', value: 'Anxiety Disorder'},
+        { name: 'Asthma', value: 'Asthma'},
+        { name: 'Atopic Dermatitis', value: 'Atopic Dermatitis'},
+        { name: 'Atrial Fibrillation', value: 'Atrial Fibrillation'},
+        { name: 'Attention Deficit Hyperactivity Disorder', value: 'Attention Deficit Hyperactivity Disorder'},
+        { name: 'Autism or Asperger`s Syndrome', value: 'Autism or Asperger`s Syndrome'},
+        { name: 'Bipolar Mood Disorder', value: 'Bipolar Mood Disorder'},
+        { name: 'Bronchiectasis', value: 'Bronchiectasis'},
+        { name: 'Cancer', value: 'Cancer'},
+        { name: 'Cardiac Failure', value: 'Cardiac Failure'},
+        { name: 'Cardiomyopathy', value: 'Cardiomyopathy'},
+        { name: 'Cerebral Palsy', value: 'Cerebral Palsy'},
+        { name: 'Cerebrovascular Disease', value: 'Cerebrovascular Disease'},
+        { name: 'Chronic Fatigue Syndrome', value: 'Chronic Fatigue Syndrome'},
+        { name: 'Chronic Hepatitis', value: 'Chronic Hepatitis'},
+        { name: 'Chronic Kidney Disease', value: 'Chronic Kidney Disease'},
+        { name: 'Chronic Obstructive Pulmonary Disorder', value: 'Chronic Obstructive Pulmonary Disorder'},
+        { name: 'Chronic Renal Disease', value: 'Chronic Renal Disease'},
+        { name: 'Coeliac Disease', value: 'Coeliac Disease'},
+        { name: 'Complex Regional Pain Syndrome', value: 'Complex Regional Pain Syndrome'},
+        { name: 'Coronary Artery Disease', value: 'Coronary Artery Disease'},
+        { name: 'Crohn`s Disease', value: 'Crohn`s Disease'},
+        { name: 'Deafness & Hearing Impairment', value: 'Deafness & Hearing Impairment'},
+        { name: 'Dermatological Conditions', value: 'Dermatological Conditions'},
+        { name: 'Diabetes Insipidus', value: 'Diabetes Insipidus'},
+        { name: 'Diabetes Mellitus Types 1 & 2', value: 'Diabetes Mellitus Types 1 & 2'},
+        { name: 'Dysrhythmias', value: 'Dysrhythmias'},
+        { name: 'Ehlers-Danlos Syndrome', value: 'Ehlers-Danlos Syndrome'},
+        { name: 'Endometriosis', value: 'Endometriosis'},
+        { name: 'Epilepsy', value: 'Epilepsy'},
+        { name: 'Fetal Alcohol Spectrum Disorder', value: 'Fetal Alcohol Spectrum Disorder'},
+        { name: 'Fibromyalgia', value: 'Fibromyalgia'},
+        { name: 'Gestational Diabetes', value: 'Gestational Diabetes'},
+        { name: 'Glaucoma  ', value: 'Glaucoma  '},
+        { name: 'Haemophilia', value: 'Haemophilia'},
+        { name: 'Hashimoto`s Thyroiditis / Hashimoto`s Disease', value: 'Hashimoto`s Thyroiditis / Hashimoto`s Disease'},
+        { name: 'HIV/AIDS', value: 'HIV/AIDS'},
+        { name: 'Huntington`s Disease', value: 'Huntington`s Disease'},
+        { name: 'Hyperlipidaemia', value: 'Hyperlipidaemia'},
+        { name: 'Hypertension', value: 'Hypertension'},
+        { name: 'Hypothyroidism', value: 'Hypothyroidism'},
+        { name: 'Ischemic Cardiomyopathy', value: 'Ischemic Cardiomyopathy'},
+        { name: 'Mental Illness', value: 'Mental Illness'},
+        { name: 'Migraines', value: 'Migraines'},
+        { name: 'Multiple Sclerosis', value: 'Multiple Sclerosis'},
+        { name: 'Myasthenia Gravis', value: 'Myasthenia Gravis'},
+        { name: 'Narcolepsy', value: 'Narcolepsy'},
+        { name: 'Obesity', value: 'Obesity'},
+        { name: 'Osteoarthritis', value: 'Osteoarthritis'},
+        { name: 'Osteoporosis', value: 'Osteoporosis'},
+        { name: 'Parkinson`s Disease', value: 'Parkinson`s Disease'},
+        { name: 'Periodontal Disease', value: 'Periodontal Disease'},
+        { name: 'Polycystic Ovary Syndrome', value: 'Polycystic Ovary Syndrome'},
+        { name: 'Postural Orthostatic Tachycardia Syndrome', value: 'Postural Orthostatic Tachycardia Syndrome'},
+        { name: 'Post-Vasectomy Pain Syndrome', value: 'Post-Vasectomy Pain Syndrome'},
+        { name: 'Pre-Diabetes', value: 'Pre-Diabetes'},
+        { name: 'Psoriasis', value: 'Psoriasis'},
+        { name: 'Relapsing Polychondritis', value: 'Relapsing Polychondritis'},
+        { name: 'Rheumatoid Arthritis', value: 'Rheumatoid Arthritis'},
+        { name: 'Schizophrenia', value: 'Schizophrenia'},
+        { name: 'Sleep Apnea', value: 'Sleep Apnea'},
+        { name: 'Substance Abuse Disorders', value: 'Substance Abuse Disorders'},
+        { name: 'Systemic Lupus Erythematosus', value: 'Systemic Lupus Erythematosus'},
+        { name: 'Thyroid Disease', value: 'Thyroid Disease'},
+        { name: 'Ulcerative Colitis', value: 'Ulcerative Colitis'},
+      ],
+      conditionForm: {
+      condtionName: null,
+      conditionDetails: null,
+      conditionDate: null,
+      },
+      // Everything for Immunisations
+      dialogImmunisation: false,
+      menu2: false,
+      selectedImmunisation: null,
+      immunisationsList: [
+          { name: 'Anthrax Vaccine Adsorbed', abbr: 'AVA', value: 'Anthrax Vaccine Adsorbed', id: 1 },
+          { name: 'Bacille Calmette-Guérin (Tuberculosis) Vaccine', abbr: 'BCG', value: 'Bacille Calmette-Guérin (Tuberculosis) Vaccine', id: 2},
+          { name: 'Diphtheria, Tetanus & Pertussis Vaccine', abbr: 'DTaP', value: 'Diphtheria, Tetanus & Pertussis / Whopping Cough Vaccine', id: 3},
+          { name: 'Hepatitis A Vaccine', abbr: 'HepA', value: 'Hepatitis A Vaccine', id: 4 },
+          { name: 'Hepatitis B Vaccine', abbr: 'HepB', value: 'Hepatitis B Vaccine', id: 5 },
+          { name: 'Haemophilus Influenzae Type B', abbr: 'Hib', value: 'Haemophilus Influenzae Type B', id: 6 },
+          { name: 'Human Papillomavirus', abbr: 'HPV', value: 'Human Papillomavirus', id: 7 },
+          { name: 'Inactivated Poliovirus Vaccine', abbr: 'IPV', value: 'Inactivated Poliovirus Vaccine', id: 8 },
+          { name: 'Inactivated Influenza Vaccine', abbr: 'IIV', value: 'Inactivated Influenza Vaccine', id: 9 },
+          { name: 'Japanese Encephalitis', abbr: 'JE', value: 'Japanese Encephalitis', id: 10 },
+          { name: 'Live, Attenuated Influenza Vaccine (Quadrivalent)', abbr: 'LAIV4	', value:  'Live, Attenuated Influenza Vaccine (Quadrivalent)', id: 11 },
+          { name: 'Meningococcal A, C, W, Y', abbr: 'MenACWY', value: 'Meningococcal A, C, W, Y', id: 12 },
+          { name: 'Meningococcal B', abbr: 'MenB', value: 'Meningococcal B', id: 13 },
+          { name: 'Measles, Mumps, & Rubella', abbr: 'MMR', value: 'Measles, Mumps, & Rubella', id: 14 },
+          { name: 'Measles-Rubella Vaccine', abbr: 'MR', value: 'Measles-Rubella Vaccine', id: 15 },
+          { name: 'Pneumococcal Conjugate Vaccine', abbr: 'PCV13', value: 'Pneumococcal Conjugate Vaccine', id: 16 },
+          { name: 'Pneumococcal Polysaccharide Vaccine', abbr: 'PPSV23', value: 'Pneumococcal Polysaccharide Vaccine', id: 17 },
+          { name: 'Recombinant Influenza Vaccine', abbr: 'RIV3', value: 'Recombinant Influenza Vaccine', id: 18 },
+          { name: 'Rotavirus Vaccine', abbr: 'ROTA', value: 'Rotavirus Vaccine', id: 19 },
+          { name: 'Recombinant Zoster Vaccine', abbr: 'RZV', value: 'Recombinant Zoster Vaccine', id: 20 },
+          { name: 'Tetanus & Diphtheria Vaccine', abbr: 'Td', value: 'Tetanus & Diphtheria Vaccine', id: 21 },
+          { name: 'Tetanus, Diphtheria & Acellular Pertussis Vaccine', abbr: 'Tdap', value: 'Tetanus, Diphtheria & Acellular Pertussis Vaccine', id: 22 },
+          { name: 'Varicella Vaccine', abbr: 'VAR', value: 'Varicella Vaccine', id: 23 },
+          { name: 'Varicella Zoster Virus', abbr: 'VZV', value: 'Varicella Zoster Virus', id: 24 },
+          { name: 'Yellow Fever', abbr: 'YF', value: 'Yellow Fever', id: 25 },
+          { name: 'Zoster Vaccine Live', abbr: 'ZVL', value: 'Zoster Vaccine Live', id: 26 },       
+      ],
+      reactionList: [
+          { text: 'None', value: 'None'},
+          { text: 'Pain', value: 'Pain'},
+          { text: 'Swelling', value: 'Swelling'},
+          { text: 'Redness', value: 'Redness'},
+          { text: 'Fever', value: 'Fever'},
+          { text: 'Irritability', value: 'Irritability'},
+          { text: 'Malaise', value: 'Malaise'},
+          { text: 'Systemic Symptoms', value: 'Systemic Symptoms'},  
+      ],
+      immunisationForm: {
+          immunisationSelected: null,
+          immunisationDate: null,
+          immunisationReaction: null,
+          immunisationDetails: null
+      },
    }
   },
   validations: {
     weight: { numeric },
-    height: { numeric }
+    height: { numeric },
+    allergyForm: {
+      allergyName: { required },
+      selectedAllergyType: { required },
+      allergyDetails: { required },
+      selectedSeverity: { required },
+    },
+    conditionForm: {
+      conditionName: { required },
+      conditionDetails: { required },
+      conditionDate: { required }
+    },
+    immunisationForm: {
+      selectedImmunisation: { required },
+      immunisationDate: { required },
+      immunisationReaction: { required },
+      immunisationDetails: { required },
+    }
   },
   methods: {
     storeID (id) {
@@ -766,26 +1270,167 @@ export default {
         }
       })
     },
+    cancel() {
+      this.snackbar = false
+      this.dialogAllergies = false
+      this.dialogConditions = false
+      this.dialogImmunisation = false
+      this.$v.$reset()
+      this.allergyForm.allergyName = null
+      this.allergyForm.selectedAllergyType = null
+      this.allergyForm.allergyDetails = null
+      this.allergyForm.selectedSeverity = null
+      this.conditionForm.conditionName = null
+      this.conditionForm.conditionDetails = null
+      this.conditionForm.conditionDate = null
+      this.immunisationForm.selectedImmunisation = null
+      this.immunisationForm.immunisationDate = null
+      this.immunisationForm.immunisationReaction = null
+      this.immunisationForm.immunisationDetails = null  
+    },
+    saveAllergy () { 
+      this.$v.$touch()
+      this.formTouched = !this.$v.allergyForm.$anyDirty
+      this.errors = this.$v.allergyForm.$anyError
+          
+      if(this.errors === false && this.formTouched === false){
+          var addAllergy = {
+          allergyName: this.allergyForm.allergyName,
+          allergyType: this.allergyForm.selectedAllergyType,
+          allergyDetails: this.allergyForm.allergyDetails,
+          allergySeverity: this.allergyForm.selectedSeverity
+          }
+          var allergyRecord = { 
+          allergy: fieldValue.arrayUnion(addAllergy)
+          }
+          this.triggerSnackbar("Allergy Was Successfully Added!", "success")
+          db.collection("users").doc(this.patientID).update(allergyRecord).then(() => {
+          // Clear the form values
+          this.$v.$reset()
+          this.allergyForm.allergyName = null
+          this.allergyForm.selectedAllergyType = null
+          this.allergyForm.allergyDetails = null
+          this.allergyForm.selectedSeverity = null
+          }).catch(error => {
+          console.log(error)
+          }).then(() => {
+            this.dialogAllergies = false
+            this.snackbar = false
+          })
+      }else{
+          this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
+      }
+    },
     deleteAllergy(allergy){
       // Use arrayRemove to remove all instances of the record
       db.collection("users").doc(this.patientID).update({
         allergy: fieldValue.arrayRemove(allergy)
       })
     },
+    saveCondition () {
+      this.$v.$touch()
+      this.formTouched = !this.$v.conditionForm.$anyDirty
+      this.errors = this.$v.conditionForm.$anyError
 
+      if(this.errors === false && this.formTouched === false){
+          var addCondition = {
+            conditionName: this.conditionForm.conditionName,
+            conditionDetails: this.conditionForm.conditionDetails,
+            conditionDate: this.conditionForm.conditionDate,
+          }
+          var conditionRecord = {
+            condition: fieldValue.arrayUnion(addCondition)
+          }
+          this.triggerSnackbar("Condition Was Successfully Added!", "success")
+          db.collection("users").doc(this.patientID).update(conditionRecord).then(() => {
+              // Clear the form values
+              this.$v.$reset()
+              this.conditionForm.conditionName = null
+              this.conditionForm.conditionDetails = null
+              this.conditionForm.conditionDate = null
+          }).catch(error => {
+          console.log(error)
+          }).then(() =>{
+              this.dialogConditions = false
+              this.snackbar = false
+          })
+      }
+      else{
+          this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
+      }
+    },   
     deleteCondition (condition) {
         // Use arrayRemove to remove all instances of the record
         db.collection("users").doc(this.patientID).update({
           condition: fieldValue.arrayRemove(condition)
       })
     },
-
+    saveImmunisation () {
+      this.$v.$touch()
+      this.formTouched = !this.$v.immunisationForm.$anyDirty
+      this.errors = this.$v.immunisationForm.$anyError
+      if(this.errors === false && this.formTouched === false){
+        var addImmunisation = {
+            immunisationName: this.immunisationForm.selectedImmunisation,
+            immunisationDate: this.immunisationForm.immunisationDate,
+            immunisationsReaction: this.immunisationForm.immunisationReaction,
+            immunisationDetails: this.immunisationForm.immunisationDetails,
+        }
+        var immunisationRecord = {
+            immunisation: fieldValue.arrayUnion(addImmunisation)
+        }
+        this.triggerSnackbar("Immunisation Was Successfully Added!", "success")
+        db.collection("users").doc(this.patientID).update(immunisationRecord).then(() => {
+            this.$v.$reset()
+            this.immunisationForm.selectedImmunisation = null
+            this.immunisationForm.immunisationDate = null
+            this.immunisationForm.immunisationReaction = null
+            this.immunisationForm.immunisationDetails = null
+        }).catch(error => {
+            console.log(error)
+        }).then(() => {
+            this.dialogImmunisation = false
+            this.snackbar = false
+        })
+      }else{
+          this.triggerSnackbar("There Are Errors Preventing You From Submitting This Form", "error")
+      }
+    },
     deleteImmunisation (immunisation) {
       // Use arrayRemove to remove all instances of the record
       db.collection("users").doc(this.patientID).update({
         immunisation: fieldValue.arrayRemove(immunisation)
       })
     },
+    triggerSnackbar (message, color) {
+      this.snackbarText = message,
+      this.color = color,
+      this.snackbar = true
+    },
+    getUsersDob () {
+      if(this.patientID != null){
+        db.collection("users").doc(this.patientID).get().then(doc => {
+          let patientRecord = doc.data()
+          patientRecord.id = doc.id
+        //   // Get DoB
+          this.dob = patientRecord.date
+        })
+        return this.dob
+      }    
+    },
+    getTodaysDate () {
+      let today = new Date ()
+      today.setDate(today.getDate())
+      return today.toISOString()
+    },
+    customFilter (item, queryText) {
+      const textOne = item.name.toLowerCase()
+      const textTwo = item.abbr.toLowerCase()
+      const searchText = queryText.toLowerCase()
+
+      return textOne.indexOf(searchText) > -1 ||
+        textTwo.indexOf(searchText) > -1
+    },  
   },
 };
 </script>
