@@ -516,14 +516,15 @@ export default {
         {text: 'AB Positive'},
         {text: 'AB Negative'},
       ],
-      pulse: null,
-      systolic: null,
-      diastolic: null,
-      bloodGlucoseLevel: null,
-      cholesterol: null,
-      cholesterolLDL: null,
-      cholesterolHDL: null,
-      cholesterolTriglycerides: null,
+      pulse: null,  // Used to store pulse
+      systolic: null, // Used to store systolic
+      diastolic: null, // Used to store diastolic
+      bloodGlucoseLevel: null, // Used to store bloodGlucoseLevel
+      cholesterol: null, // Used to store cholesterol
+      cholesterolLDL: null, // Used to store cholesterolLDL
+      cholesterolHDL: null, // Used to store cholesterolHDL
+      cholesterolTriglycerides: null, // Used to store cholesterolTriglycerides
+  
       
       allergies: [], // Store allergies here to display to user
       conditions: [], // Store conditions here to display to user
@@ -535,6 +536,12 @@ export default {
     height: { numeric }
   },
   methods: {
+    // Used for error and success messages
+    triggerSnackbar (message, color) {
+      this.snackbarText = message,
+      this.color = color,
+      this.snackbar = true
+    },
     onGenderChange (gender) {
       // Access the users collection then update gender value
       db.collection("users").doc(this.currentUser).get().then(() =>{
@@ -556,6 +563,7 @@ export default {
       })
     },
     onWeightChange (weight) {
+      // Check to see if entered data is dirty before updating the db
       this.$v.$touch()
       this.formTouched = !this.$v.$anyDirty
       this.errors = this.$v.$anyError
@@ -571,6 +579,7 @@ export default {
       }
     },
     onHeightChange (height) {
+      // Check to see if entered data is dirty before updating the db
       this.$v.$touch()
       this.formTouched = !this.$v.$anyDirty
       this.errors = this.$v.$anyError
@@ -585,11 +594,7 @@ export default {
         })
       }
     },
-    triggerSnackbar (message, color) {
-      this.snackbarText = message,
-      this.color = color,
-      this.snackbar = true
-    },
+
 
     deleteAllergy(allergy){
       db.collection("users").doc(this.currentUser).update({
