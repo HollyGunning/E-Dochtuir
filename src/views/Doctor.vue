@@ -229,7 +229,18 @@
                       </v-subheader>
                       </v-card-title>
                       <v-card-text>
-                      <v-text-field
+                      <v-select
+                      label="Levels"
+                      v-model="medicalForm.bloodGlucoseLevel"
+                      :items="bloodGlucoseLevelList"
+                      outlined 
+                      suffix="mmol/l"
+                      @change="onLevelChange(medicalForm.bloodGlucoseLevel)"
+                      :error-messages="bloodGlucoseLevelError"
+                      @input="$v.medicalForm.bloodGlucoseLevel.$touch()"
+                      @blur="$v.medicalForm.bloodGlucoseLevel.$touch()"
+                      ></v-select>
+                      <!-- <v-text-field
                       label="Level"
                       v-model="medicalForm.bloodGlucoseLevel"
                       outlined 
@@ -238,7 +249,7 @@
                       :error-messages="bloodGlucoseLevelError"
                       @input="$v.medicalForm.bloodGlucoseLevel.$touch()"
                       @blur="$v.medicalForm.bloodGlucoseLevel.$touch()"
-                      ></v-text-field>
+                      ></v-text-field> -->
                       </v-card-text>
                   </v-card>
                   </v-col>
@@ -1078,6 +1089,14 @@ export default {
         {text: 'AB Negative'},
       ],
 
+      bloodGlucoseLevelList: [
+        { text: '< 3', value: 'Severe Hypoglycemia'},
+        { text: '< 3.9', value: 'Hypoglycemia'},
+        { text: '< 7', value: 'Normal'},
+        { text: '< 10', value: 'High (Take Action)'},
+        { text: '> 10 - 27.7 +', value: 'Metabolic Consequences (Take Action)'}
+      ],
+
       medicalForm: {
         weight: null, // Used to store weight
         height: null, // Used to store height
@@ -1263,9 +1282,7 @@ export default {
       cholesterolLDL: { required },
       cholesterolHDL: { required },
       cholesterolTriglycerides: { required },
-  
    },
-
    allergyForm: {
       allergyName: { required },
       selectedAllergyType: { required },
