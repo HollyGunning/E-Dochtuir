@@ -304,6 +304,176 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
+                  
+                  <v-col cols="12">
+                    <v-tabs v-model="tab">
+                      <v-tab v-for="tab in tabs" :key="tab.tabName">{{ tab.tabName }}</v-tab>
+                    </v-tabs>
+
+                    <v-tabs-items v-model="tab">
+                      <v-tab-item> <!-- ALLERGIES -->
+                        <v-card >
+                            <!-- Import Component -->
+                            <Allergies />
+                              <v-col cols="12" md="12">
+                              <v-card outlined class="mt-2" v-for="(allergy, index) in allergies" :key="index">
+                                <v-card-title class="primary lighten-1 white--text">
+                                  <v-icon class="mr-4 white--text">fa-allergies</v-icon>
+                                  {{ allergy.allergyName }}
+                                
+                                <v-subheader class="overline primary lighten-1 white--text">
+                                {{ allergy.allergyType }}
+                                </v-subheader>
+                                  <v-spacer></v-spacer>
+                                  <!--  DELETE  ALLERGY -->
+                                  <v-icon right @click="deleteAllergy(allergy)">fa-trash</v-icon>
+                                </v-card-title>
+                                  <v-card-text>
+                                        <v-row>
+                                          <v-col cols="12" sm="6" md="6">
+                                            <v-list>
+                                              <v-list-item>
+                                                <v-list-item-content>
+                                                  <v-list-item-title 
+                                                  class="overline grey--text mb-4">Severity
+                                                  </v-list-item-title>
+                                                  <h3>{{ allergy.allergySeverity }}</h3>
+                                                </v-list-item-content>
+                                              </v-list-item>
+                                            </v-list>
+                                          </v-col>
+                                          <v-col cols="12" sm="6" md="6">
+                                            <v-list>
+                                              <v-list-item>
+                                                <v-list-item-content>
+                                                  <v-list-item-title 
+                                                  class="overline grey--text mb-4">Descirption
+                                                  </v-list-item-title>
+                                                  <h3>{{ allergy.allergyDetails }}</h3> 
+                                                </v-list-item-content>
+                                              </v-list-item>
+                                            </v-list>
+                                          </v-col></v-row>
+                                  </v-card-text>
+                                </v-card>
+                              </v-col>
+                              </v-card>
+                      </v-tab-item>
+                      <v-tab-item> <!-- CONDITIONS -->
+                        <v-card>
+                          <!-- Import Component -->
+                          <Conditions />
+                            <v-col cols="12" md="12">
+                              <v-card outlined class="mt-2" v-for="(condition, index) in conditions" :key="index">
+                                <v-card-title class="primary lighten-1 white--text">
+                                  <v-icon class="mr-4 white--text">fa-file-medical-alt</v-icon>
+                                  {{ condition.conditionName }}
+                                  <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                                  <v-spacer></v-spacer>
+                                  <!--  DELETE  CONDITION -->
+                                  <v-icon right @click="deleteCondition(condition)">fa-trash</v-icon>
+                                </v-card-title>
+                                  <v-card-text>
+                                    <v-row>
+                                      <v-col cols="12" sm="6" md="6">
+                                        <v-list>
+                                          <v-list-item>
+                                            <v-list-item-content>
+                                              <v-list-item-title 
+                                              class="overline grey--text mb-4">Date of Diagnosis
+                                              </v-list-item-title>
+                                              <h3>{{ condition.conditionDate }}</h3>
+                                            </v-list-item-content>
+                                          </v-list-item>
+                                        </v-list>
+                                      </v-col>
+                                      <v-col cols="12" sm="6" md="6">
+                                        <v-list>
+                                          <v-list-item>
+                                            <v-list-item-content>
+                                              <v-list-item-title 
+                                              class="overline grey--text mb-4">Description
+                                              </v-list-item-title>
+                                              <h3>{{ condition.conditionDetails }}</h3>
+                                            </v-list-item-content>
+                                          </v-list-item>
+                                        </v-list>
+                                      </v-col>
+                                    </v-row>
+                                  </v-card-text>
+                                </v-card>
+                              </v-col>
+                        </v-card>
+                      </v-tab-item>
+                      <v-tab-item><!-- immunisations --> 
+                        <v-card>
+                          <immunisations />
+                            <v-col cols="12" md="12">
+                            <v-card outlined class="mt-2" v-for="(immunisation, index) in immunisations" :key="index">
+                              <v-card-title class="primary lighten-1 white--text">
+                                <v-icon class="mr-4 white--text">fa-syringe</v-icon>
+                                {{ immunisation.immunisationName }}
+                                <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
+                                <v-spacer></v-spacer>
+                                <!--  DELETE  IMMUNISATION -->
+                                  <v-icon right @click="deleteImmunisation(immunisation)">fa-trash</v-icon>
+                              </v-card-title>
+                                <v-card-text>
+                                  <v-row>
+                                    <v-col cols="12" sm="6" md="6">
+                                      <v-list>
+                                        <v-list-item>
+                                          <v-list-item-content>
+                                            <v-list-item-title 
+                                            class="overline grey--text mb-4">Date Received
+                                            </v-list-item-title>
+                                            <h3>{{ immunisation.immunisationDate }}</h3>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                      <v-list>
+                                        <v-list-item>
+                                          <v-list-item-content>
+                                            <v-list-item-title 
+                                            class="overline grey--text mb-4">Reaction
+                                            </v-list-item-title>
+                                            <h3>{{ immunisation.immunisationsReaction }}</h3>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                      <v-list>
+                                        <v-list-item>
+                                          <v-list-item-content>
+                                            <v-list-item-title 
+                                            class="overline grey--text mb-4">Additional Details
+                                            </v-list-item-title>
+                                            <h3>{{ immunisation.immunisationDetails }}</h3>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-col>
+                                  </v-row>
+                                </v-card-text>
+                              </v-card>
+                            </v-col>
+                        </v-card>
+                      </v-tab-item>
+
+
+                    </v-tabs-items>
+                  </v-col>
+                  <v-snackbar
+                    :color="color"
+                    v-model="snackbar"
+                    :timeout="timeout"
+                    :multi-line="multiLine"
+                  >{{ snackbarText }}
+                  </v-snackbar>
+    
                     
 
                   </v-row>
@@ -324,7 +494,7 @@ import DoctorNavbar from '../components/Navbars/DoctorNavbar'
 import Allergies from '../components/MedicalRecord/Allergies'
 import Conditions from '../components/MedicalRecord/Conditions'
 import Immunisations from '../components/MedicalRecord/Immunisations'
-import { auth, db } from '../firebase'
+import { auth, db, fieldValue } from '../firebase'
 import { numeric } from 'vuelidate/lib/validators'
 
 export default {
@@ -335,34 +505,33 @@ export default {
     Immunisations,
   },
   created () {
+    this.currentUser = auth.currentUser.uid // Get current users ID
 
-        this.currentUser = auth.currentUser.uid // Get current users ID
+    // Gets the patients through roles by filtering only patient roles IDs
+    db.collection("roles").get().then(snap => {
+    snap.forEach(doc => {
+      let user = doc.data()
+      // if user is not doctor or admin retrieve the record
+      if (!user.role.admin && !user.role.doctor) {
+        // Then set user.id to the doc.id to refer back to their record in users
+        user.id = doc.id
+        db.collection("users").doc(user.id).get().then(doc => {
+            let patientRecord = doc.data()
+            patientRecord.id = doc.id
+            // Set the patient info for the data table
+            let patient = {
+              id: patientRecord.id,
+              name: patientRecord.firstname + ' ' + patientRecord.surname,
+              dob: patientRecord.date,
+              gender: patientRecord.gender,
+              ppsn: patientRecord.ppsn
+            }
+            this.patients.push(patient) // Store the patient info to the patients array
+        })
+      }
+    })
+    })
 
-        // Gets the patients through roles by filtering only patient roles IDs
-        db.collection("roles").get().then(snap => {
-        snap.forEach(doc => {
-          let user = doc.data()
-          // if user is not doctor or admin retrieve the record
-          if (!user.role.admin && !user.role.doctor) {
-            // Then set user.id to the doc.id to refer back to their record in users
-            user.id = doc.id
-            db.collection("users").doc(user.id).get().then(doc => {
-                let patientRecord = doc.data()
-                patientRecord.id = doc.id
-                
-                let patient = {
-                  id: patientRecord.id,
-                  name: patientRecord.firstname + ' ' + patientRecord.surname,
-                  dob: patientRecord.date,
-                  gender: patientRecord.gender,
-                  ppsn: patientRecord.ppsn
-                }
-                this.patients.push(patient)
-            })
-          }
-        })
-        })
- 
   },
   computed: {
     weightError () {
@@ -380,16 +549,19 @@ export default {
   },
   data() {
     return {
-      patientID: null,
+      currentUser: null, // Used to store the current logged in user
+      patientID: null, // Store the patient ID when doctor clicks on actions
       dialog: false,
+      snackbar: false,
+      color: null,
+      multiLine: true,
+      timeout: 5000,
+      snackbarText: "",
 
-      currentUser: null,
-     
-
-      patients: [],
-      patient: null,
-      search: '',
-
+      patients: [], // Patients array for data table
+      patient: null, // Individual patient info
+      search: '', // Search bar 
+      /// Headers define the labels for the data table and the values take the values from patient
       headers: [
         { text: 'Patient Name', value: 'name' },
         { text: 'DoB', value: 'dob'},
@@ -397,31 +569,40 @@ export default {
         { text: 'PPSN', value: 'ppsn' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-        gender: null, // Gender value passes from db to buttons and highlights active one
-        weight: null, // Used to store weight
-        height: null, // Used to store height
-        selectedBlood: null, // Used to store the selected blood type
-        bloods: [
-          {text: 'None'},
-          {text: 'A Positive'},
-          {text: 'A Negative'},
-          {text: 'B Positive'},
-          {text: 'B Negative'},
-          {text: 'O Positive'},
-          {text: 'O Negative'},
-          {text: 'AB Positive'},
-          {text: 'AB Negative'},
-        ],
-        pulse: null,  // Used to store pulse
-        systolic: null, // Used to store systolic
-        diastolic: null, // Used to store diastolic
-        bloodGlucoseLevel: null, // Used to store bloodGlucoseLevel
-        cholesterol: null, // Used to store cholesterol
-        cholesterolLDL: null, // Used to store cholesterolLDL
-        cholesterolHDL: null, // Used to store cholesterolHDL
-        cholesterolTriglycerides: null, // Used to store cholesterolTriglycerides
-    
-    }
+      gender: null, // Gender value passes from db to buttons and highlights active one
+      weight: null, // Used to store weight
+      height: null, // Used to store height
+      selectedBlood: null, // Used to store the selected blood type
+      bloods: [
+        {text: 'None'},
+        {text: 'A Positive'},
+        {text: 'A Negative'},
+        {text: 'B Positive'},
+        {text: 'B Negative'},
+        {text: 'O Positive'},
+        {text: 'O Negative'},
+        {text: 'AB Positive'},
+        {text: 'AB Negative'},
+      ],
+      pulse: null,  // Used to store pulse
+      systolic: null, // Used to store systolic
+      diastolic: null, // Used to store diastolic
+      bloodGlucoseLevel: null, // Used to store bloodGlucoseLevel
+      cholesterol: null, // Used to store cholesterol
+      cholesterolLDL: null, // Used to store cholesterolLDL
+      cholesterolHDL: null, // Used to store cholesterolHDL
+      cholesterolTriglycerides: null, // Used to store cholesterolTriglycerides
+      allergies: [], // Store allergies here to display to user
+      conditions: [], // Store conditions here to display to user
+      immunisations: [], // Store immunisations here to display to user
+      // Tabs for upcoming and past
+      tab: null,
+      tabs: [
+      { tabName: 'Allergies' },
+      { tabName: 'Conditions' },
+      { tabName: 'Immunisations' },
+      ],
+   }
   },
   validations: {
     weight: { numeric },
@@ -431,6 +612,27 @@ export default {
     storeID (id) {
       // Store the ID of the record of which the action is pressed on
       this.patientID = id
+      db.collection("users").doc(this.patientID).onSnapshot(doc => {
+        let patientInfo = doc.data()
+        patientInfo.id = doc.id
+        // Populate these values to display patient medical record fields that are currently holding info
+        this.gender = patientInfo.gender
+        this.selectedBlood = patientInfo.bloodType
+        this.weight = patientInfo.weight
+        this.height = patientInfo.height
+        this.pulse = patientInfo.pulse
+        this.systolic = patientInfo.systolic
+        this.diastolic = patientInfo.diastolic
+        this.bloodGlucoseLevel = patientInfo.bloodGlucoseLevel
+        this.cholesterol = patientInfo.cholesterol
+        this.cholesterolLDL = patientInfo.cholesterolLDL
+        this.cholesterolHDL = patientInfo.cholesterolHDL
+        this.cholesterolTriglycerides = patientInfo.cholesterolTriglycerides
+        // Populate the arrays with corresponding data from users record
+        this.allergies = patientInfo.allergy
+        this.conditions = patientInfo.condition
+        this.immunisations = patientInfo.immunisation
+      })
     },
     onGenderChange (gender) {
       // Access the users collection then update gender value of patient
@@ -442,7 +644,7 @@ export default {
         }
       })
     },
-      onBloodsChange(selectedBlood) {
+    onBloodsChange(selectedBlood) {
       // Access the users collection then update blood type of patient
       db.collection("users").doc(this.patientID).get().then(() =>{
         if(selectedBlood != null){
@@ -484,86 +686,106 @@ export default {
         })
       }
     },    
-
     onPulseChange (pulse) {
+      // Access the users collection then update pulse of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(pulse != null){
-              db.collection("users").doc(this.patientID).update({
-                  pulse: pulse
-              })
-          }
+        if(pulse != null){
+          db.collection("users").doc(this.patientID).update({
+            pulse: pulse
+          })
+        }
       })
-  },
-  onSystolicChange (systolic) {
+    },
+    onSystolicChange (systolic) {
+      // Access the users collection then update systolic of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(systolic != null){
-              db.collection("users").doc(this.patientID).update({
-                  systolic: systolic
-              })
-          }
+        if(systolic != null){
+          db.collection("users").doc(this.patientID).update({
+            systolic: systolic
+          })
+        }
       })
-  },
-  onDiastolicChange (diastolic) {
+    },
+    onDiastolicChange (diastolic) {
+      // Access the users collection then update diastolic of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(diastolic != null){
-              db.collection("users").doc(this.patientID).update({
-                  diastolic: diastolic
-              })
-          }
+        if(diastolic != null){
+          db.collection("users").doc(this.patientID).update({
+            diastolic: diastolic
+          })
+        }
       })
-  },
-  onLevelChange (bloodGlucoseLevel) {
+    },
+    onLevelChange (bloodGlucoseLevel) {
+      // Access the users collection then update bloodGlucoseLevel of patient
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(bloodGlucoseLevel != null){
-              db.collection("users").doc(this.patientID).update({
-                  bloodGlucoseLevel: bloodGlucoseLevel
-              })
-          }
+        if(bloodGlucoseLevel != null){
+          db.collection("users").doc(this.patientID).update({
+            bloodGlucoseLevel: bloodGlucoseLevel
+          })
+        }
       })
-  },
-  onTotalCholChange (cholesterol) {
+    },
+    onTotalCholChange (cholesterol) {
+      // Access the users collection then update cholesterol of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(cholesterol != null){
-              db.collection("users").doc(this.patientID).update({
-                  cholesterol: cholesterol
-              })
-          }
+        if(cholesterol != null){
+          db.collection("users").doc(this.patientID).update({
+            cholesterol: cholesterol
+          })
+        }
       })
-  },
-  onLDLChange (cholesterolLDL) {
+    },
+    onLDLChange (cholesterolLDL) {
+      // Access the users collection then update cholesterolLDL of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(cholesterolLDL != null){
-              db.collection("users").doc(this.patientID).update({
-                  cholesterolLDL: cholesterolLDL
-              })
-          }
+        if(cholesterolLDL != null){
+          db.collection("users").doc(this.patientID).update({
+            cholesterolLDL: cholesterolLDL
+          })
+        }
       })
-  },
-  onHDLChange (cholesterolHDL) {
+    },
+    onHDLChange (cholesterolHDL) {
+      // Access the users collection then update cholesterolHDL of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(cholesterolHDL != null){
-              db.collection("users").doc(this.patientID).update({
-                  cholesterolHDL: cholesterolHDL
-              })
-          }
+        if(cholesterolHDL != null){
+          db.collection("users").doc(this.patientID).update({
+            cholesterolHDL: cholesterolHDL
+          })
+        }
       })
-  },
-  onTriglyceridesChange (cholesterolTriglycerides) {
+    },
+    onTriglyceridesChange (cholesterolTriglycerides) {
+      // Access the users collection then update cholesterolTriglycerides of patient 
       db.collection("users").doc(this.patientID).get().then(()=> {
-          if(cholesterolTriglycerides != null){
-              db.collection("users").doc(this.patientID).update({
-                  cholesterolTriglycerides: cholesterolTriglycerides
-              })
-          }
+        if(cholesterolTriglycerides != null){
+          db.collection("users").doc(this.patientID).update({
+            cholesterolTriglycerides: cholesterolTriglycerides
+          })
+        }
       })
-  },
+    },
+    deleteAllergy(allergy){
+      // Use arrayRemove to remove all instances of the record
+      db.collection("users").doc(this.patientID).update({
+        allergy: fieldValue.arrayRemove(allergy)
+      })
+    },
 
+    deleteCondition (condition) {
+        // Use arrayRemove to remove all instances of the record
+        db.collection("users").doc(this.patientID).update({
+          condition: fieldValue.arrayRemove(condition)
+      })
+    },
 
-
-
-
+    deleteImmunisation (immunisation) {
+      // Use arrayRemove to remove all instances of the record
+      db.collection("users").doc(this.patientID).update({
+        immunisation: fieldValue.arrayRemove(immunisation)
+      })
+    },
   },
-
-
 };
 </script>
