@@ -50,6 +50,7 @@ data(){
             { icon: 'fa-pills', text: 'Medication', route: '/medication' },
             { icon: 'fa-stethoscope', text: 'Appointments', route: '/appointments' },
             { icon: 'fa-prescription', text: 'Prescriptions', route: '/prescriptions' },
+            { icon: 'fa-user-md', text: 'Chat', route: '/chat' },
         ]
     }
 },

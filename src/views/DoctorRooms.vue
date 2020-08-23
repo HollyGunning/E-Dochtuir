@@ -1,0 +1,266 @@
+<template>
+<v-container>
+<DoctorNavbar />
+    <v-card>
+        <v-card-title></v-card-title>
+        <v-card-text>
+            <v-row align="center" justify="center">
+                <v-col cols="12">
+                <v-select
+                label="Todays Patients"
+                :items="patients"
+                item-text="name"
+                item-value="value"
+                outlined
+                @change="onPatientChanged($event)"
+                ></v-select>
+                </v-col>
+                <v-col cols="6">
+                <v-btn 
+                class="primary white--text ml-6"
+                block 
+                @click="createRoom()"
+                >
+                Create Room
+                </v-btn>
+                </v-col>
+            </v-row>
+           
+           
+     
+             <v-snackbar
+                  :color="color"
+                  v-model="snackbar"
+                  :timeout="timeout"
+                  :multi-line="multiLine"
+                >{{ snackbarText }}
+                </v-snackbar>
+        </v-card-text>
+    </v-card>
+
+    <v-card v-if="chatRoom" class="mt-6">
+        <v-card-title>Chat</v-card-title>
+        <v-container>
+            <v-card outlined id="messages">
+                <v-card-text></v-card-text>
+                <v-card-text v-for="(message, index) in messages" :key="index">
+                <span>{{ message.name }}: </span>
+                <span>{{ message.text }}</span>
+                </v-card-text>
+            </v-card>
+
+            <v-card flat class="mt-4">
+                <v-card-text>
+                    
+                <v-row>
+                    
+               
+                    <v-col cols="7">
+                        <v-textarea
+                        rows="1"
+                        auto-grow
+                        v-model="message"
+                        outlined
+                        ></v-textarea>
+                    </v-col>
+                
+                <v-col cols="2">
+                    <v-btn 
+                    class="primary white--text ml-6"
+                    block 
+                    @click="sendMessage()"
+                    >
+                    Send
+                    </v-btn>
+                </v-col>
+                <v-spacer></v-spacer>
+                <!-- <v-col cols="4">
+                    <v-btn icon>
+                        <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
+                    </v-btn>  
+                </v-col> -->
+                </v-row>
+                </v-card-text>
+            </v-card>
+        </v-container>
+    </v-card>
+
+
+</v-container>
+</template>
+
+<script>
+import DoctorNavbar from '../components/Navbars/DoctorNavbar'
+import { auth, db, fieldValue } from '../firebase'
+export default {
+    components: {
+        DoctorNavbar,
+    },
+    created() {
+        this.currentUser = auth.currentUser.uid
+        this.today = this.getTodaysDate(this.today)
+        // Get Doctors name
+        db.collection("users").doc(this.currentUser).get().then(doc => {
+            let doctor = doc.data()
+            this.userName = doctor.firstname + ' ' + doctor.surname
+        })
+         this.loadMessages() // Load in the messages for this chat
+        // Gets all the appointments for the doctor that is signed in on load
+         db.collection("appointments").where("doctorID", "==", this.currentUser).onSnapshot( snap => {
+            let appointment = snap.docChanges()
+            appointment.forEach( appointment => {
+                let patient = appointment.doc.data()
+                patient.id = patient.patientID
+                // // Get the appointments on todays date
+                if(patient.appointmentDate == this.today){
+                    this.patients.push({
+                        name: patient.firstname + ' ' + patient.surname,
+                        value: patient.id
+                    })
+                }
+            })
+        }) 
+    },
+    data() {
+        return {
+            currentUser: null,
+            userName: null,
+            today: null,
+            snackbar: false,
+            color: null,
+            multiLine: true,
+            timeout: 5000,
+            snackbarText: "",
+            chatRoom: false,
+
+            
+            patients: [], // Patient array containing list of patients for todays date
+            chosenPatient: null,
+            roomID: null,
+            timestamp: null,
+            message: null,
+            messages: [],
+        }
+    },
+    methods: {
+        // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
+        appendLeadingZeroes(n){
+            if(n <= 9){
+                return "0" + n;
+            }
+            return n
+        },
+        getTodaysDate () {
+            let today = new Date()
+            let formattedDate = today.getFullYear() + "-" + this.appendLeadingZeroes(today.getMonth() + 1) + "-" + this.appendLeadingZeroes(today.getDate()) 
+            return formattedDate
+        },
+        triggerSnackbar (message, color) {
+            this.snackbarText = message,
+            this.color = color,
+            this.snackbar = true
+        },
+        onPatientChanged (value) {
+            // Set the ChosePatient to the value of the selected item
+           this.chosenPatient = value
+           console.log(this.chosenPatient)
+        },
+        createRoom (){
+            if(this.chosenPatient == null){
+                this.triggerSnackbar("Select A Patient To Create A Room For", "error")
+            }
+            else{
+                // Check the rooms collection for any rooms with these two users
+                db.collection("rooms").where("patientID", "==", this.chosenPatient).where("doctorID", "==", this.currentUser).get().then(snap => {
+                    snap.forEach(doc =>{
+                        let room = doc.id
+                        this.roomID = room
+                    })
+                        // There is no room and therefore one must be created
+                        if(snap.docs.length == 0) {
+                            // Create room collection here and add patientID and doctorID to the room for later reference
+                            db.collection("rooms").add({
+                                doctorID: this.currentUser,
+                                patientID: this.chosenPatient,
+                            }).then( () => {
+                                this.chatRoom = true
+                            }).catch(error => {
+                                console.log("Error with Room Creation", error)
+                            })
+                            this.triggerSnackbar("New Room Created!", "success")
+                            
+                        }
+                        // There is already a room with chosenPatients and doctors/currentUsers ID
+                        else{
+                            this.triggerSnackbar("Chat Room Opened")
+                            // Open the "chat" to this room as a card to test
+                            this.chatRoom = true
+                            this.loadMessages()
+                        }
+                }).catch(error => {
+                    console.log("Rooms error", error)
+                })
+            }
+        },
+
+        sendMessage () {
+            db.collection("rooms").where("patientID", "==", this.chosenPatient).where("doctorID", "==", this.currentUser).get().then(snap => {
+                snap.forEach(doc =>{
+                    let room = doc.id
+                    this.roomID = room
+                }) 
+
+                var addMessage = {
+                    doctorId: this.currentUser,
+                    name: this.userName,
+                    text: this.message,
+                    timestamp: this.timestamp = new Date()
+                }
+
+                var messageSaved = {
+                    message: fieldValue.arrayUnion(addMessage)
+                }
+
+                db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
+                  this.message = null  
+                })
+            })
+        },
+
+        loadMessages () {
+            // Load all rooms where DoctorID is the same as the user
+            db.collection("rooms").where("doctorID", "==", this.currentUser).onSnapshot(snap => {
+                let rooms = snap.docChanges()
+                // This gets the data of each doc connected to the user
+                rooms.forEach(rooms => {
+                    let roomDoc = rooms.doc.data() 
+                    this.messages = roomDoc.message
+
+                 
+                    console.log ("Messages ", this.messages)
+                   
+                    // Need to get specifics/narrow it to the chosenPatient
+                    // Get the data from the array and store it to messages []
+
+                    
+                })
+            })
+            // var load = db.collection("rooms").orderBy("message.timestamp").limit(12)
+            // load.onSnapshot( snap =>{
+            //     snap.docChanges().forEach(change => {
+            //         if(change.type === 'removed'){
+            //             console.log("Delete messages")
+            //         }
+            //         else{   
+            //             console.log(change)
+            //             // var message = change.doc.data()
+            //             // this.messages.push(message)
+            //         }
+            //     })
+              
+            // })
+        },  
+
+    },
+}
+</script>

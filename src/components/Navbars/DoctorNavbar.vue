@@ -38,6 +38,7 @@ data(){
             { icon: 'fa-user-injured', text: 'Patient Database', route: '/doctor'},
             { icon: 'fa-calendar', text: 'Appointments', route: '/doctorAppointment' },
             { icon: 'fa-file-prescription', text: 'Prescription Requests', route: '/doctorPrescription' },
+            { icon: 'fa-comment-medical', text: 'Patient Chat', route: '/doctorRooms' },
         ]
     }
 },
