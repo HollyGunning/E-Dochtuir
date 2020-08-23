@@ -1,66 +1,88 @@
 <template>
 <v-container>
-    <Navbar />
+<Navbar />
+        <v-card v-if="preMessageView">
+            <v-card-title></v-card-title>
 
-        <v-row><v-col cols="12">
-        
-            <v-card>
-                <v-card-title>
-                    <!-- <v-icon>fa-comment-medical</v-icon> -->
-                    Chat
-                </v-card-title>
-                <v-container>
-                    <v-card flat id="messages">
-                        <v-card-text v-for="(message, index) in messages" :key="index">
-                        <span>{{ message.name }}: </span>
-                        <span>{{ message.text }}</span>
-                        </v-card-text>
-                    </v-card>
+            <v-card-text>
+                <v-row>
+                <v-col cols="12" md="6" lg="6">
+                    <h2 class="overline black--text ml-4" justify="center">You do not have any appointments!</h2>
+                    
+                </v-col>
+                <v-col cols="12" md="6" lg="6">
+                    <router-link to="/appointments" tag="button">
+                        <v-btn class="primary white--text">Create An Appointment</v-btn>
+                    </router-link>
+                </v-col>
+ 
+                </v-row>
+                
+                
+  
+            </v-card-text>
+        </v-card>
 
-                        <v-card flat>
-                            <v-row>
-                            <v-col cols="6">
-                                <v-text-field
-                                v-model="message"
-                                outlined
-                                ></v-text-field>
-                            </v-col>
-                            <v-card-actions>
-                            <v-row>
-                            <v-col cols="2">
-                                <v-btn 
-                                class="primary white--text ml-6"
-                                block 
-                                @click="sendMessage()"
-                                >
-                                Send
-                                </v-btn>
-                            </v-col>
-                            <v-spacer></v-spacer>
-                            <v-col cols="4">
-                                <v-btn icon>
-                                    <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
-                                </v-btn>
-                                 
-                            </v-col>
-                            </v-row>
-                            </v-card-actions>
-                        
-                     </v-row>
+        <v-card v-if="chatRoom" class="mt-6">
+        <v-card-title>Chat</v-card-title>
+        <v-container>
+            <v-card outlined id="messages" v-if="chatRoom">
+                <v-card-text v-for="(message, index) in messages" :key="index">
+                <v-subtitle-1 class="overline">{{ message.name }}</v-subtitle-1>
+                <v-spacer></v-spacer>
+                <h2>{{ message.text }}</h2>
+                <v-divider class="mt-8"></v-divider>
+                </v-card-text>
+            </v-card>
 
-
-                        </v-card>
-
-                </v-container>
-            </v-card>        
-        </v-col></v-row>
+            <v-card flat class="mt-4">
+                <v-card-text>
+                <v-row>
+                    <v-col cols="7">
+                        <v-textarea
+                        rows="1"
+                        auto-grow
+                        v-model="message"
+                        outlined
+                        ></v-textarea>
+                    </v-col>
+                
+                <v-col cols="2">
+                    <v-btn 
+                    class="primary white--text ml-6"
+                    block 
+                    @click="sendMessage()"
+                    >
+                    Send
+                    </v-btn>
+                </v-col>
+                <v-spacer></v-spacer>
+                <!-- <v-col cols="4">
+                    <v-btn icon>
+                        <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
+                    </v-btn>  
+                </v-col> -->
+                </v-row>
+                </v-card-text>
+            </v-card>
+        </v-container>
+    </v-card> 
+        <v-snackbar
+        :color="color"
+        v-model="snackbar"
+        :timeout="timeout"
+        :multi-line="multiLine"
+    >{{ snackbarText }}
+    </v-snackbar>
 
 </v-container>
 </template>
 
 <script>
 import Navbar from '../components/Navbars/Navbar'
-import { auth, db, fieldValue, storage } from '../firebase'
+// import { auth, db, fieldValue, storage } from '../firebase'
+import { auth, db, fieldValue } from '../firebase'
+
 export default {
    components: {
        Navbar,
@@ -70,80 +92,177 @@ export default {
    },
    created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
+        this.today = this.getTodaysDate(this.today)
         // Get current users name
         db.collection("users").doc(this.currentUser).get().then(doc => {
             let user = doc.data()
             this.userName = user.firstname + ' ' + user.surname
         })
-
-        this.loadMessages()
-
-     
+        this.loadMessages() // Load in messages for this chat     
    },
-   data() {
-       return {
-           currentUser: null,
-           userName: null,
-           message: null,
-           messages: [],
-           file: [],
-           LOADING_IMAGE_URL: null,
-       }
-   },
-   validations: {
+    data() {
+        return {
+            currentUser: null,
+            userName: null,
+            today: null,
+            snackbar: false,
+            color: null,
+            multiLine: true,
+            timeout: 5000,
+            snackbarText: "",
+            preMessageView: true,
+            chatRoom: false,
+            roomID: null,
+            chosenDoctor: null,
+            message: null,
+            messages: [],
+            //    file: [],
+            //    LOADING_IMAGE_URL: null,
+        }
+    },
+    validations: {
 
-   },
-   methods: {
+    },
+    methods: {
+        // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
+        appendLeadingZeroes(n){
+            if(n <= 9){
+                return "0" + n;
+            }
+            return n
+        },
+        getTodaysDate () {
+            let today = new Date()
+            let formattedDate = today.getFullYear() + "-" + this.appendLeadingZeroes(today.getMonth() + 1) + "-" + this.appendLeadingZeroes(today.getDate()) 
+            return formattedDate
+        },
+        triggerSnackbar (message, color) {
+            this.snackbarText = message,
+            this.color = color,
+            this.snackbar = true
+        },
        loadMessages () {
-        var load = db.collection("messages").orderBy('timestamp').limit(12)
-        load.onSnapshot(snap => {
-            snap.docChanges().forEach(change => {
-                if(change.type === 'removed'){
-                    console.log("Add deleteMessage")
-                    // deleteMessage(change.doc.id)
-                }
-                else{
-                    var message = change.doc.data()
-                    this.messages.push(message)
-                }
-            })
-        })
+            // Load all rooms where DoctorID is the same as the user
+            db.collection("rooms").where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                let rooms = snap.docChanges()
+                // This gets the data of each doc connected to the user
+                rooms.forEach(rooms => {
+                    let roomDoc = rooms.doc.data() 
+                    this.messages = roomDoc.message
 
+                    // Sorting can only occur once their are messages to be sorted
+                    if(this.messages != null) {
+                        this.messages.sort((a, b) => {
+                        if(a.timestamp > b.timestamp) return 1
+                        if(a.timestamp < b.timestamp) return -1
+                        })
+
+                        let len = this.messages.length
+                        let numMessages = this.messages.length < 8 ? this.messages.length : 8
+                        this.messages = this.messages.slice(len - numMessages, len)
+                        this.chatRoom = true
+                    }
+                    else{
+                        this.chatRoom = false
+                    }
+                })
+            })
        },
        sendMessage () {
-           // Add a new message to DB
-           db.collection("messages").add({
-               id: this.currentUser,
-               name: this.userName,
-               text: this.message,
-               timestamp: fieldValue.serverTimestamp()
-           }).catch(error => {
-               console.log("Error writing message to db", error)
-           })
-       },
-       uploadFile (file) {
-           db.collection("messages").add({
-               id: this.currentUser,
-               name: this.userName,
-               imageUrl: this.LOADING_IMAGE_URL,
-               timestamp: fieldValue.serverTimestamp(),
-           }).then(snap => {
-                var filePath = this.currentUser + '/' + snap.id + file.name
-                return storage.ref(filePath).put(file).then(fileSnap => {
-                    return fileSnap.ref.getDownloadURL().then((url) => {
-                        return snap.update({
-                            imageUrl: url,
-                            storageUri: fileSnap.metadata.fullPath
+            db.collection("appointments").where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                let appointment = snap.docChanges()
+                appointment.forEach(appointment => {
+                    let doctor = appointment.doc.data()
+                    doctor.id = doctor.doctorID
+                    // Get appointments for todays date to get the specific doctor ID
+                    if(doctor.appointmentDate == this.today){
+                        this.chosenDoctor = doctor.id
+                        console.log(this.chosenDoctor)
+                        console.log("Appointment today") 
+                    
+
+                        db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).get().then(snap => {
+                        snap.forEach(doc =>{
+                            let room = doc.id
+                            this.roomID = room
+                        }) 
+                        
+                        
+
+                        var addMessage = {
+                            patientId: this.currentUser,
+                            name: this.userName,
+                            text: this.message,
+                            timestamp: this.timestamp = new Date()
+                        }
+
+                        var messageSaved = {
+                            message: fieldValue.arrayUnion(addMessage)
+                        }
+
+                        db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
+                        this.message = null  
                         })
                     })
+
+
+
+
+
+                    }
                 })
-           }).catch(error => {
-               console.log("There was an error uploading file to Cloud Storage", error)
-           })
+            })
+
+        //    if(this.chosenDoctor != null){
+        //         db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("doctorID", "==", this.currentUser).get().then(snap => {
+        //         snap.forEach(doc =>{
+        //             let room = doc.id
+        //             this.roomID = room
+        //         }) 
+                
+                
+
+        //         var addMessage = {
+        //             patientId: this.currentUser,
+        //             name: this.userName,
+        //             text: this.message,
+        //             timestamp: this.timestamp = new Date()
+        //         }
+
+        //         var messageSaved = {
+        //             message: fieldValue.arrayUnion(addMessage)
+        //         }
+
+        //         db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
+        //           this.message = null  
+        //         })
+        //     })
+        //    }
+
+       },
+    //    uploadFile (file) {
+    //        db.collection("messages").add({
+    //            id: this.currentUser,
+    //            name: this.userName,
+    //            imageUrl: this.LOADING_IMAGE_URL,
+    //            timestamp: fieldValue.serverTimestamp(),
+    //        }).then(snap => {
+    //             var filePath = this.currentUser + '/' + snap.id + file.name
+    //             return storage.ref(filePath).put(file).then(fileSnap => {
+    //                 return fileSnap.ref.getDownloadURL().then((url) => {
+    //                     return snap.update({
+    //                         imageUrl: url,
+    //                         storageUri: fileSnap.metadata.fullPath
+    //                     })
+    //                 })
+    //             })
+    //        }).catch(error => {
+    //            console.log("There was an error uploading file to Cloud Storage", error)
+    //        })
 
 
            
-       }
-   },
+    //    }
+    },
 }
 </script>

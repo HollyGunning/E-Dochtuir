@@ -14,6 +14,8 @@ import MedicalRecord from '@/views/MedicalRecord.vue'
 import Medication from '@/views/Medication.vue'
 import Appointments from '@/views/Appointments.vue'
 import Prescriptions from '@/views/Prescriptions.vue'
+import Chat from '@/views/Chat.vue'
+import DoctorRooms from '@/views/DoctorRooms.vue'
 import Login from '@/views/Login.vue'
 import NotFound from '../components/404.vue'
 
@@ -101,6 +103,22 @@ const routes = [
       requiresAuth: true
     }
   },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: Chat,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/doctorRooms',
+    name: 'DoctorRooms',
+    component: DoctorRooms,
+    meta: {
+      requiresAuth: true
+    }
+  },
   { 
     path: '*', 
     name: 'NotFound',
@@ -148,7 +166,7 @@ router.beforeEach((to, from, next) => {
         .then(function ({claims}) {
 
           if (claims.patient) {
-            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/prescriptions' && to.path != '/medication' && to.path != '/medicalRecord')
+            if (to.path != '/profile' && to.path != '/appointments' && to.path != '/prescriptions' && to.path != '/chat' && to.path != '/medication' && to.path != '/medicalRecord')
               return next ({
                 path: './'
               })
@@ -161,7 +179,7 @@ router.beforeEach((to, from, next) => {
               })
 
           } else if (claims.doctor) {
-            if (to.path != '/doctor' && to.path != '/doctorAppointment')
+            if (to.path != '/doctor' && to.path != '/doctorAppointment' && to.path != '/doctorRooms')
             return next ({
               path: './doctor'
             })

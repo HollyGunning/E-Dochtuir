@@ -27,14 +27,7 @@
             </v-row>
            
            
-     
-             <v-snackbar
-                  :color="color"
-                  v-model="snackbar"
-                  :timeout="timeout"
-                  :multi-line="multiLine"
-                >{{ snackbarText }}
-                </v-snackbar>
+    
         </v-card-text>
     </v-card>
 
@@ -42,19 +35,17 @@
         <v-card-title>Chat</v-card-title>
         <v-container>
             <v-card outlined id="messages">
-                <v-card-text></v-card-text>
                 <v-card-text v-for="(message, index) in messages" :key="index">
-                <span>{{ message.name }}: </span>
-                <span>{{ message.text }}</span>
+                <v-subtitle-1 class="overline">{{ message.name }}</v-subtitle-1>
+                <v-spacer></v-spacer>
+                <h2>{{ message.text }}</h2>
+                <v-divider class="mt-8"></v-divider>
                 </v-card-text>
             </v-card>
 
             <v-card flat class="mt-4">
                 <v-card-text>
-                    
                 <v-row>
-                    
-               
                     <v-col cols="7">
                         <v-textarea
                         rows="1"
@@ -84,7 +75,13 @@
             </v-card>
         </v-container>
     </v-card>
-
+    <v-snackbar
+        :color="color"
+        v-model="snackbar"
+        :timeout="timeout"
+        :multi-line="multiLine"
+    >{{ snackbarText }}
+    </v-snackbar>
 
 </v-container>
 </template>
@@ -102,7 +99,7 @@ export default {
         // Get Doctors name
         db.collection("users").doc(this.currentUser).get().then(doc => {
             let doctor = doc.data()
-            this.userName = doctor.firstname + ' ' + doctor.surname
+            this.userName = 'Dr. ' + doctor.firstname + ' ' + doctor.surname
         })
          this.loadMessages() // Load in the messages for this chat
         // Gets all the appointments for the doctor that is signed in on load
@@ -111,7 +108,7 @@ export default {
             appointment.forEach( appointment => {
                 let patient = appointment.doc.data()
                 patient.id = patient.patientID
-                // // Get the appointments on todays date
+                // Get the appointments on todays date
                 if(patient.appointmentDate == this.today){
                     this.patients.push({
                         name: patient.firstname + ' ' + patient.surname,
@@ -236,29 +233,19 @@ export default {
                     let roomDoc = rooms.doc.data() 
                     this.messages = roomDoc.message
 
-                 
-                    console.log ("Messages ", this.messages)
-                   
-                    // Need to get specifics/narrow it to the chosenPatient
-                    // Get the data from the array and store it to messages []
+                    // Sorting can only occur once their are messages to be sorted
+                    if(this.messages != null) {
+                        this.messages.sort((a, b) => {
+                        if(a.timestamp > b.timestamp) return 1
+                        if(a.timestamp < b.timestamp) return -1
+                        })
 
-                    
+                        let len = this.messages.length
+                        let numMessages = this.messages.length < 8 ? this.messages.length : 8
+                        this.messages = this.messages.slice(len - numMessages, len)
+                    }
                 })
             })
-            // var load = db.collection("rooms").orderBy("message.timestamp").limit(12)
-            // load.onSnapshot( snap =>{
-            //     snap.docChanges().forEach(change => {
-            //         if(change.type === 'removed'){
-            //             console.log("Delete messages")
-            //         }
-            //         else{   
-            //             console.log(change)
-            //             // var message = change.doc.data()
-            //             // this.messages.push(message)
-            //         }
-            //     })
-              
-            // })
         },  
 
     },
