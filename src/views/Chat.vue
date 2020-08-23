@@ -8,37 +8,37 @@
                 <v-row>
                 <v-col cols="12" md="6" lg="6">
                     <h2 class="overline black--text ml-4" justify="center">You do not have any appointments!</h2>
-                    
                 </v-col>
                 <v-col cols="12" md="6" lg="6">
                     <router-link to="/appointments" tag="button">
                         <v-btn class="primary white--text">Create An Appointment</v-btn>
                     </router-link>
                 </v-col>
- 
                 </v-row>
-                
-                
-  
             </v-card-text>
         </v-card>
 
         <v-card v-if="chatRoom" class="mt-6">
-        <v-card-title>Chat</v-card-title>
+        <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
         <v-container>
-            <v-card outlined id="messages" v-if="chatRoom">
-                <v-card-text v-for="(message, index) in messages" :key="index">
-                <v-subtitle-1 class="overline">{{ message.name }}</v-subtitle-1>
-                <v-spacer></v-spacer>
-                <h2>{{ message.text }}</h2>
-                <v-divider class="mt-8"></v-divider>
-                </v-card-text>
+            <v-card flat id="messages" v-if="chatRoom">
+                <v-div v-for="(message, index) in messages" :key="index">
+                    <v-card outlined class="mt-3">
+                        <v-card-text>
+                            <v-subtitle-1 class="overline">{{ message.name }}</v-subtitle-1>
+                            <v-spacer></v-spacer>
+                            <h2>{{ message.text }}</h2>
+                <!-- <v-divider class="mt-8"></v-divider> -->
+                        </v-card-text>
+                    </v-card>
+               
+                </v-div>
             </v-card>
 
             <v-card flat class="mt-4">
                 <v-card-text>
                 <v-row>
-                    <v-col cols="7">
+                    <v-col cols="12" sm="12" md="6">
                         <v-textarea
                         rows="1"
                         auto-grow
@@ -47,7 +47,7 @@
                         ></v-textarea>
                     </v-col>
                 
-                <v-col cols="2">
+                <v-col cols="12" sm="12" md="2">
                     <v-btn 
                     class="primary white--text ml-6"
                     block 
@@ -152,6 +152,7 @@ export default {
 
                     // Sorting can only occur once their are messages to be sorted
                     if(this.messages != null) {
+                        this.preMessageView = false
                         this.messages.sort((a, b) => {
                         if(a.timestamp > b.timestamp) return 1
                         if(a.timestamp < b.timestamp) return -1
@@ -164,6 +165,7 @@ export default {
                     }
                     else{
                         this.chatRoom = false
+                        this.preMessageView = true
                     }
                 })
             })

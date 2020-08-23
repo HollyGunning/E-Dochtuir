@@ -4,7 +4,7 @@
 
      <v-container class="text-center">
        <v-card flat>
-         <v-title class="overline" align="center" justify="center"><h1>E-DOCHTÚIR features</h1></v-title>
+         <v-card-title class="overline" align="center" justify="center"><h1>E-DOCHTÚIR features</h1></v-card-title>
        </v-card>
         <v-row>
           <v-col
@@ -133,6 +133,12 @@ export default {
   },
   data() {
     return {
+        snackbar: false,
+        color: null,
+        multiLine: true,
+        timeout: 5000,
+        snackbarText: "",
+
         currentUser: null,
         email: null, 
         name: null,

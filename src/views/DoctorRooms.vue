@@ -21,7 +21,7 @@
                 block 
                 @click="createRoom()"
                 >
-                Create Room
+                Join Room
                 </v-btn>
                 </v-col>
             </v-row>

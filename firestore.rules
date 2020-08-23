@@ -26,5 +26,14 @@ match /databases/{database}/documents {
     allow write: if request.auth.uid !=null;
   }
 
+  match /messages/{messagesId}{
+    allow create, read, write: if request.auth.uid !=null;
+  }
+
+  match /rooms/{roomsId}{
+    allow create: if user.auth.token.doctor == true;
+    allow read, write: if request.auth.uid !=null;
+  }
+
   }
 }
