@@ -47,7 +47,7 @@ data(){
         links: [
             { icon: 'dashboard', text: 'Dashboard', route: '/' },
             { icon: 'fa-book-medical', text: 'Medical Record', route: '/medicalRecord'},
-            { icon: 'fa-pills', text: 'Medication', route: '/medication' },
+            { icon: 'fa-pills', text: 'Track Medication', route: '/medication' },
             { icon: 'fa-stethoscope', text: 'Appointments', route: '/appointments' },
             { icon: 'fa-prescription', text: 'Prescriptions', route: '/prescriptions' },
             { icon: 'fa-user-md', text: 'Chat', route: '/chat' },
