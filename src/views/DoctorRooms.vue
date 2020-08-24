@@ -3,10 +3,11 @@
 <DoctorNavbar />
     <v-card>
         <v-card-title></v-card-title>
-        <v-card-text>
-            <v-row align="center" justify="center">
-                <v-col cols="12">
-                <v-select
+        
+            <v-row>
+                <v-col cols="12" sm="6" md="6" lg="6">
+                <v-select 
+                class="ml-9"
                 label="Todays Patients"
                 :items="patients"
                 item-text="name"
@@ -15,9 +16,9 @@
                 @change="onPatientChanged($event)"
                 ></v-select>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="12" sm="4" md="4" lg="4">
                 <v-btn 
-                class="primary white--text ml-6"
+                class="primary white--text ml-6 mt-3"
                 block 
                 @click="createRoom()"
                 >
@@ -25,54 +26,56 @@
                 </v-btn>
                 </v-col>
             </v-row>
-           
-           
-    
-        </v-card-text>
+        
     </v-card>
-
-    <v-card v-if="chatRoom" class="mt-6">
-        <v-card-title>Chat</v-card-title>
+  
+    <!-- Chat Card -->
+    <v-card v-if="chatRoom" class="mt-6 mb-9">
+        <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
         <v-container>
-            <v-card outlined id="messages">
-                <v-card-text v-for="(message, index) in messages" :key="index">
-                <v-subtitle-1 class="overline">{{ message.name }}</v-subtitle-1>
-                <v-spacer></v-spacer>
-                <h2>{{ message.text }}</h2>
-                <v-divider class="mt-8"></v-divider>
-                </v-card-text>
-            </v-card>
+        <v-card outlined class="messages" v-chat-scroll>
+            <v-card-text class="chat-message" v-for="(message, index) in messages" :key="index">
+            <v-div class="right-bubble" v-if="message.name === userName ">
+               <v-subtitle-1 class="overline">{{ message.name }}&nbsp;</v-subtitle-1>
+                <span class="green-text">{{ message.text }}</span>  
+            </v-div>
+            <v-div class="left-bubble right-align" v-if="message.name !== userName">
+                <v-subtitle-1 class="overline">{{ message.name }}&nbsp;</v-subtitle-1>
+                <span class="green-text">{{ message.text }}</span>
+            </v-div>
+            </v-card-text>
+        </v-card>
 
-            <v-card flat class="mt-4">
-                <v-card-text>
-                <v-row>
-                    <v-col cols="7">
-                        <v-textarea
-                        rows="1"
-                        auto-grow
-                        v-model="message"
-                        outlined
-                        ></v-textarea>
-                    </v-col>
-                
-                <v-col cols="2">
-                    <v-btn 
-                    class="primary white--text ml-6"
-                    block 
-                    @click="sendMessage()"
-                    >
-                    Send
-                    </v-btn>
+        <v-card flat class="mt-6">
+            <v-card-text>
+            <v-row>
+                <v-col cols="7">
+                    <v-textarea
+                    rows="1"
+                    auto-grow
+                    v-model="message"
+                    outlined
+                    ></v-textarea>
                 </v-col>
-                <v-spacer></v-spacer>
-                <!-- <v-col cols="4">
-                    <v-btn icon>
-                        <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
-                    </v-btn>  
-                </v-col> -->
-                </v-row>
-                </v-card-text>
-            </v-card>
+            
+            <v-col cols="2">
+                <v-btn 
+                class="primary white--text ml-6"
+                block 
+                @click="sendMessage()"
+                >
+                Send
+                </v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col cols="3" class="ml-2">
+                <v-btn type="file" v-model="uploadFile" icon>
+                    <!-- <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input> -->
+                </v-btn>  
+            </v-col>
+            </v-row>
+            </v-card-text>
+        </v-card>
         </v-container>
     </v-card>
     <v-snackbar
@@ -241,7 +244,7 @@ export default {
                         })
 
                         let len = this.messages.length
-                        let numMessages = this.messages.length < 8 ? this.messages.length : 8
+                        let numMessages = this.messages.length < 50 ? this.messages.length : 50
                         this.messages = this.messages.slice(len - numMessages, len)
                     }
                 })
@@ -251,3 +254,79 @@ export default {
     },
 }
 </script>
+
+
+<style>
+.container {
+  border-radius: 5px;
+}
+.chat h2{
+  font-size: 2.6em;
+  margin-bottom: 40px;
+}
+.chat span {
+  font-size: 1.4em;
+}
+.chat .time {
+  display: block;
+  font-size: 0.8em;
+}
+.messages {
+  max-height: 400px;
+  overflow: auto;
+}
+.chat-message {
+  width: 80%;
+  min-height: 40px;
+}
+.chat-message .right-bubble {
+  position: relative;
+  background: #dcf8c6;
+  border-top-left-radius: .4em;
+  border-bottom-left-radius: .4em;
+  border-bottom-right-radius: .4em;
+  padding: 5px 10px 10px;
+  margin-bottom: 10px;
+  left: 50%;
+  width: 85%
+}
+.chat-message .right-bubble:after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border: 1px solid transparent;
+  border-left-color: #dcf8c6;
+  border-right: 0;
+  border-top: 0;
+  margin-top: 1px;
+  margin-right: 200px;
+}
+.chat-message .left-bubble {
+  position: relative;
+  background: #efefef;
+  border-top-right-radius: .4em;
+  border-bottom-left-radius: .4em;
+  border-bottom-right-radius: .4em;
+  padding: 5px 10px 10px;
+  margin-bottom: 10px;
+  left: 0%;
+  width: 200%;
+}
+.chat-message .left-bubble:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border: 1px solid transparent;
+  border-right-color: #efefef;
+  border-left: 0;
+  border-top: 0;
+  margin-top: 1px;
+  margin-left: 1px;
+}
+</style>

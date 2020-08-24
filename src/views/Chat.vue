@@ -1,39 +1,37 @@
 <template>
 <v-container>
 <Navbar />
-        <v-card v-if="preMessageView">
-            <v-card-title></v-card-title>
+    <v-card v-if="preMessageView">
+        <v-card-title></v-card-title>
+        <v-card-text>
+        <v-row>
+        <v-col cols="12" md="6" lg="6">
+            <h2 class="overline black--text ml-4" justify="center">You do not have any appointments!</h2>
+        </v-col>
+        <v-col cols="12" md="6" lg="6">
+            <router-link to="/appointments" tag="button">
+                <v-btn class="primary white--text">Create An Appointment</v-btn>
+            </router-link>
+        </v-col>
+        </v-row>
+        </v-card-text>
+    </v-card>
 
-            <v-card-text>
-                <v-row>
-                <v-col cols="12" md="6" lg="6">
-                    <h2 class="overline black--text ml-4" justify="center">You do not have any appointments!</h2>
-                </v-col>
-                <v-col cols="12" md="6" lg="6">
-                    <router-link to="/appointments" tag="button">
-                        <v-btn class="primary white--text">Create An Appointment</v-btn>
-                    </router-link>
-                </v-col>
-                </v-row>
+        <!-- Chat Card -->
+        <v-card v-if="chatRoom" class="mt-6">
+        <v-container>
+        <v-card outlined class="messages" v-chat-scroll>
+            <v-card-text class="chat-message" v-for="(message, index) in messages" :key="index">
+            <v-div class="right-bubble" v-if="message.name === userName ">
+               <v-subtitle-1 class="overline">{{ message.name }}&nbsp;</v-subtitle-1>
+                <span class="green-text">{{ message.text }}</span>  
+            </v-div>
+            <v-div class="left-bubble right-align" v-if="message.name !== userName">
+                <v-subtitle-1 class="overline">{{ message.name }}&nbsp;</v-subtitle-1>
+                <span class="green-text">{{ message.text }}</span>
+            </v-div>
             </v-card-text>
         </v-card>
-
-        <v-card v-if="chatRoom" class="mt-6">
-        <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
-        <v-container>
-            <v-card flat id="messages" v-if="chatRoom">
-                <v-div v-for="(message, index) in messages" :key="index">
-                    <v-card outlined class="mt-3">
-                        <v-card-text>
-                            <v-subtitle-1 class="overline">{{ message.name }}</v-subtitle-1>
-                            <v-spacer></v-spacer>
-                            <h2>{{ message.text }}</h2>
-                <!-- <v-divider class="mt-8"></v-divider> -->
-                        </v-card-text>
-                    </v-card>
-               
-                </v-div>
-            </v-card>
 
             <v-card flat class="mt-4">
                 <v-card-text>
@@ -182,15 +180,12 @@ export default {
                         console.log(this.chosenDoctor)
                         console.log("Appointment today") 
                     
-
                         db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).get().then(snap => {
                         snap.forEach(doc =>{
                             let room = doc.id
                             this.roomID = room
                         }) 
                         
-                        
-
                         var addMessage = {
                             patientId: this.currentUser,
                             name: this.userName,
@@ -207,40 +202,9 @@ export default {
                         })
                     })
 
-
-
-
-
                     }
                 })
             })
-
-        //    if(this.chosenDoctor != null){
-        //         db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("doctorID", "==", this.currentUser).get().then(snap => {
-        //         snap.forEach(doc =>{
-        //             let room = doc.id
-        //             this.roomID = room
-        //         }) 
-                
-                
-
-        //         var addMessage = {
-        //             patientId: this.currentUser,
-        //             name: this.userName,
-        //             text: this.message,
-        //             timestamp: this.timestamp = new Date()
-        //         }
-
-        //         var messageSaved = {
-        //             message: fieldValue.arrayUnion(addMessage)
-        //         }
-
-        //         db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
-        //           this.message = null  
-        //         })
-        //     })
-        //    }
-
        },
     //    uploadFile (file) {
     //        db.collection("messages").add({
@@ -268,3 +232,79 @@ export default {
     },
 }
 </script>
+
+
+<style>
+.container {
+  border-radius: 5px;
+}
+.chat h2{
+  font-size: 2.6em;
+  margin-bottom: 40px;
+}
+.chat span {
+  font-size: 1.4em;
+}
+.chat .time {
+  display: block;
+  font-size: 0.8em;
+}
+.messages {
+  max-height: 400px;
+  overflow: auto;
+}
+.chat-message {
+  width: 80%;
+  min-height: 40px;
+}
+.chat-message .right-bubble {
+  position: relative;
+  background: #dcf8c6;
+  border-top-left-radius: .4em;
+  border-bottom-left-radius: .4em;
+  border-bottom-right-radius: .4em;
+  padding: 5px 10px 10px;
+  margin-bottom: 10px;
+  left: 50%;
+  width: 85%
+}
+.chat-message .right-bubble:after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border: 1px solid transparent;
+  border-left-color: #dcf8c6;
+  border-right: 0;
+  border-top: 0;
+  margin-top: 1px;
+  margin-right: 200px;
+}
+.chat-message .left-bubble {
+  position: relative;
+  background: #efefef;
+  border-top-right-radius: .4em;
+  border-bottom-left-radius: .4em;
+  border-bottom-right-radius: .4em;
+  padding: 5px 10px 10px;
+  margin-bottom: 10px;
+  left: 0%;
+  width: 200%;
+}
+.chat-message .left-bubble:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border: 1px solid transparent;
+  border-right-color: #efefef;
+  border-left: 0;
+  border-top: 0;
+  margin-top: 1px;
+  margin-left: 1px;
+}
+</style>
