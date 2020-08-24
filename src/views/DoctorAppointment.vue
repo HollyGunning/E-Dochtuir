@@ -15,8 +15,8 @@ import Calendar from "../components/Calendar"
 
 export default {
     components: {
-        DoctorNavbar,
-        Calendar
+      DoctorNavbar,
+      Calendar
     }
 }
 </script>
