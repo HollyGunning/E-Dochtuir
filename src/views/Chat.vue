@@ -157,7 +157,7 @@ export default {
                         })
 
                         let len = this.messages.length
-                        let numMessages = this.messages.length < 8 ? this.messages.length : 8
+                        let numMessages = this.messages.length < 50 ? this.messages.length : 50
                         this.messages = this.messages.slice(len - numMessages, len)
                         this.chatRoom = true
                     }
