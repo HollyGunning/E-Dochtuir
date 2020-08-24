@@ -64,33 +64,26 @@
                 min-width="350px"
                 flat
                 >
-                <v-toolbar
+                <v-toolbar class="primary"
                 :color="selectedEvent.color"
                 dark
                 >
-                <v-btn icon>
-                <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                    <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
-                    <v-spacer></v-spacer>
-                <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-                </v-btn>
-                <v-btn icon>
-                <v-icon>mdi-dots-vertical</v-icon>
+          
+                <v-toolbar-title class="primary white--text" v-html="selectedEvent.name"></v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn
+                text
+                color="white"
+                @click="selectedOpen = false"
+                >
+                Cancel
                 </v-btn>
                 </v-toolbar>
                 <v-card-text>
                 <span v-html="selectedEvent.details"></span>
                 </v-card-text>
                 <v-card-actions>
-                <v-btn
-                text
-                color="secondary"
-                @click="selectedOpen = false"
-                >
-                Cancel
-                </v-btn>
+            
                 </v-card-actions>
                 </v-card>
                 </v-menu>
@@ -131,8 +124,7 @@ export default {
                 let appointment = snap.docChanges()
                 appointment.forEach(appointment => { 
                     let record = appointment.doc.data()
-                    // record.id = appointment.doc.id
-
+                
                     let time = record.appointmentTime.replace(".", ":")
                     let endTime = time.substr(0, time.length -2)
                     let endTimeMinutes = time.substr(time.length -2, 2)
@@ -140,6 +132,7 @@ export default {
 
                     let event = {
                         name: record.firstname + ' ' + record.surname,
+                        details : record.appointmentDetails,
                         start: record.appointmentDate + " " + time,
                         end: record.appointmentDate + " " + endTime
                     }
