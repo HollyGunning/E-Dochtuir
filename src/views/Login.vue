@@ -204,6 +204,8 @@
                                 </template>
                                 <v-date-picker
                                 v-model.trim="date"
+                                :max="getLowestPossible()"
+                                :min="getEarliestPossible()"
                                 @change="menu = false"  
                                 >
                                 </v-date-picker>
@@ -382,158 +384,6 @@ export default {
     components: {
         TsAndCs,
     },
-   data() {
-    return {
-    //icons to show password
-      showPassword: false,
-      showPassword2: false,
-      // dialog and menu for forgot password
-      dialog: false,
-      dialog2: false,
-      menu: false,
-      // date for dob 
-      date: '',
-      
-      
-    //   errors: false,
-    //   empty: true,
-      showSuccess: false,
-      errorMsg: {},
-      alert1: false,
-      alert2: false,
-      alert3: false,
-      forgotForm: {
-        email: '',
-      },
-      loginForm: {
-        email: '',
-        password: ''
-        
-      },
-      signupForm: {
-        firstname: '',
-        surname: '',
-        ppsn: '',
-        email: '',
-        mobile: '',
-        password: '',
-        confirmPassword: '',
-        checkbox: false,   
-      },
-      showLoginForm: true,
-      showPasswordReset: false 
-    }
-    },
-    validations: {
-        loginForm: {
-            email: { required, email },
-            password: { required, maxLength: maxLength(16) },
-        },
-        signupForm: {
-            firstname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
-            surname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
-            ppsn: { 
-                required,
-                ppsnValidate(ppsn){
-                    return (
-                        /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
-                    );
-                },
-            },
-            email: { required, email },
-            mobile: { required, numeric, minLength: minLength(9), maxLength: maxLength(14) },
-            password: { required, minLength: minLength(8), maxLength: maxLength(16)},
-            confirmPassword: { required, sameAs: sameAs(function () { return this.signupForm.password})},
-            checkbox: {checked (val) {return val}},
-        },
-        date: { required },
-        forgotForm: {
-            email: { required, email },
-        },
-    },
-    methods: {
-        async resetPassword() {
-        this.errorMsg = ''
-        this.$v.$touch()
-            try {
-                await auth.sendPasswordResetEmail(this.forgotForm.email)
-                this.showSuccess = true
-            } catch (error) {
-                this.errorMsg = error.message
-            }
-        },
-        toggleForm() {
-        this.showLoginForm = !this.showLoginForm
-         this.$v.$reset()
-            this.loginForm.email = ''
-            this.loginForm.password = ''
-            this.signupForm.firstname = ''
-            this.signupForm.surname = ''
-            this.signupForm.ppsn = ''
-            this.signupForm.email = ''
-            this.signupForm.mobile = ''
-            this.signupForm.password = ''
-            this.signupForm.confirmPassword = ''
-            this.signupForm.checkbox = false
-            this.forgotForm.email = ''
-            this.alert1 = false
-            this.alert2 = false
-        },
-        login() {
-        this.$v.$touch()
-        this.$store.dispatch('login', {
-            email: this.loginForm.email,
-            password: this.loginForm.password
-        })
-        },
-        signup() {
-        this.$v.$touch()
-        this.formTouched = !this.$v.signupForm.$anyDirty
-        this.errors = this.$v.signupForm.$anyError
-            if (this.errors === false && this.formTouched === false){
-                // send users registered info into a collection
-                this.$store.dispatch('signup', {
-                firstname: this.signupForm.firstname,
-                surname: this.signupForm.surname,
-                date: this.date,
-                ppsn: this.signupForm.ppsn,
-                email: this.signupForm.email,
-                mobile: this.signupForm.mobile,
-                password: this.signupForm.password,   
-            })
-            }
-        },
-    },
-    watch: {
-        // Register firebase error alert
-        registerError (value) {
-        if (value) {
-            this.alert1 = true
-        }
-        },
-        alert (value) {
-        if (!value) {
-            this.$store.commit('setregisterError', null)
-        }
-        },
-        // Login firebase error alert
-        loginError (value){
-            if (value){
-                this.alert2 = true
-            }
-        },
-        alert2 (value){
-            if (!value){
-                this.$store.commit('setLoginError', null)
-            }
-        },
-        // Forgot Password firebase error alert
-        errorMsg (value) {
-            if (!value) {
-                this.alert3 = true
-            }
-        },
-    },
     computed: {
         // Returning the state of the errors
         registerError () {
@@ -638,7 +488,185 @@ export default {
          !this.$v.signupForm.checkbox.checked && errors.push('You must agree to continue!')
         return errors
         },
+    },
+   data() {
+    return {
+    //icons to show password
+      showPassword: false,
+      showPassword2: false,
+      // dialog and menu for forgot password
+      dialog: false,
+      dialog2: false,
+      menu: false,
+      // date for dob 
+      date: '',
+      
+      
+    //   errors: false,
+    //   empty: true,
+      showSuccess: false,
+      errorMsg: {},
+      alert1: false,
+      alert2: false,
+      alert3: false,
+      forgotForm: {
+        email: '',
+      },
+      loginForm: {
+        email: '',
+        password: ''
+        
+      },
+      signupForm: {
+        firstname: '',
+        surname: '',
+        ppsn: '',
+        email: '',
+        mobile: '',
+        password: '',
+        confirmPassword: '',
+        checkbox: false,   
+      },
+      showLoginForm: true,
+      showPasswordReset: false 
     }
+    },
+    validations: {
+        loginForm: {
+            email: { required, email },
+            password: { required, maxLength: maxLength(16) },
+        },
+        signupForm: {
+            firstname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
+            surname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
+            ppsn: { 
+                required,
+                ppsnValidate(ppsn){
+                    return (
+                        /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
+                    );
+                },
+            },
+            email: { required, email },
+            mobile: { required, numeric, minLength: minLength(9), maxLength: maxLength(14) },
+            password: { required, minLength: minLength(8), maxLength: maxLength(16)},
+            confirmPassword: { required, sameAs: sameAs(function () { return this.signupForm.password})},
+            checkbox: {checked (val) {return val}},
+        },
+        date: { required },
+        forgotForm: {
+            email: { required, email },
+        },
+    },
+    methods: {
+        getLowestPossible () {
+            let latest = new Date ()
+            latest.setFullYear(latest.getFullYear() - 16)
+            //Filter
+            var d = new Date(latest),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        },
+        getEarliestPossible () {
+            let latest = new Date ()
+            latest.setFullYear(latest.getFullYear() - 90)
+            //Filter
+            var d = new Date(latest),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        },
+        async resetPassword() {
+        this.errorMsg = ''
+        this.$v.$touch()
+            try {
+                await auth.sendPasswordResetEmail(this.forgotForm.email)
+                this.showSuccess = true
+            } catch (error) {
+                this.errorMsg = error.message
+            }
+        },
+        toggleForm() {
+        this.showLoginForm = !this.showLoginForm
+         this.$v.$reset()
+            this.loginForm.email = ''
+            this.loginForm.password = ''
+            this.signupForm.firstname = ''
+            this.signupForm.surname = ''
+            this.signupForm.ppsn = ''
+            this.signupForm.email = ''
+            this.signupForm.mobile = ''
+            this.signupForm.password = ''
+            this.signupForm.confirmPassword = ''
+            this.signupForm.checkbox = false
+            this.forgotForm.email = ''
+            this.alert1 = false
+            this.alert2 = false
+        },
+        login() {
+        this.$v.$touch()
+        this.$store.dispatch('login', {
+            email: this.loginForm.email,
+            password: this.loginForm.password
+        })
+        },
+        signup() {
+        this.$v.$touch()
+        this.formTouched = !this.$v.signupForm.$anyDirty
+        this.errors = this.$v.signupForm.$anyError
+            if (this.errors === false && this.formTouched === false){
+                // send users registered info into a collection
+                this.$store.dispatch('signup', {
+                firstname: this.signupForm.firstname,
+                surname: this.signupForm.surname,
+                date: this.date,
+                ppsn: this.signupForm.ppsn,
+                email: this.signupForm.email,
+                mobile: this.signupForm.mobile,
+                password: this.signupForm.password,   
+            })
+            }
+        },
+    },
+    watch: {
+        // Register firebase error alert
+        registerError (value) {
+        if (value) {
+            this.alert1 = true
+        }
+        },
+        alert (value) {
+        if (!value) {
+            this.$store.commit('setregisterError', null)
+        }
+        },
+        // Login firebase error alert
+        loginError (value){
+            if (value){
+                this.alert2 = true
+            }
+        },
+        alert2 (value){
+            if (!value){
+                this.$store.commit('setLoginError', null)
+            }
+        },
+        // Forgot Password firebase error alert
+        errorMsg (value) {
+            if (!value) {
+                this.alert3 = true
+            }
+        },
+    },
 }
 </script>
 
