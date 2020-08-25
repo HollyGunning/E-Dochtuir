@@ -3,7 +3,7 @@
         <v-col>
         <!-- Contains the top toolbar with the today, prev, next btn options and a menu that switches the calendar view--> 
         <v-sheet height="64">
-            <v-toolbar  flat color="white">
+            <v-toolbar flat>
                 <v-btn outlined color="primary" @click="setToday">Today</v-btn>
                 <v-btn fab text small color="primary" @click="prev">
                     <v-icon small >mdi-chevron-left</v-icon>
@@ -39,7 +39,7 @@
                 </v-menu>
             </v-toolbar>
         </v-sheet>
-
+        <!-- Calendar sheet -->
         <v-sheet height="500">
             <v-calendar
             ref="calendar"
@@ -81,9 +81,6 @@
                 <v-card-text>
                 <span v-html="selectedEvent.details"></span>
                 </v-card-text>
-                <v-card-actions>
-            
-                </v-card-actions>
                 </v-card>
                 </v-menu>
 

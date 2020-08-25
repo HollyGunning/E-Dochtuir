@@ -4,15 +4,10 @@
 
      <v-container class="text-center">
        <v-card flat>
-         <v-card-title class="overline" align="center" justify="center"><h1>E-DOCHTÚIR features</h1></v-card-title>
+         <v-card-title class="overline text-justify text-center"><h1>E-DOCHTÚIR features</h1></v-card-title>
        </v-card>
         <v-row>
-          <v-col
-            v-for="({ icon, title, text }, i) in features"
-            :key="i"
-            cols="12"
-            md="4"
-          >
+          <v-col v-for="({ icon, title, text }, i) in features" :key="i" cols="12" md="6">
             <v-card
               class="py-12 px-4"
               color="grey lighten-5"
@@ -31,14 +26,12 @@
                   </v-avatar>
                 </div>
               </v-theme-provider>
-
               <v-card-title
                 class="justify-center text-center font-weight-black text-uppercase"
                 v-text="title"
               ></v-card-title>
-
               <v-card-text
-                class="subtitle-1 text-justify"
+                class="subtitle-1 text-justify text-center"
                 v-text="text"
               >
               </v-card-text>
@@ -46,7 +39,6 @@
           </v-col>
         </v-row>
      </v-container>
-
 
 <v-row align="center" justify="center"><v-col cols="12">
   <v-card flat>
@@ -78,7 +70,11 @@
           outlined
           auto-grow
           :counter="150"
+          :minLength="50"
           :maxlength="150"
+          :error-messages="messageErrors"
+          @input="$v.message.$touch()"
+          @blur="$v.message.$touch()"
           ></v-textarea>
         </v-col>
       </v-row>
@@ -108,13 +104,13 @@
   </v-card>
 </v-col></v-row>
 
-
 </v-container>
 </template>
 
 <script>
 import Navbar from '../components/Navbars/Navbar'
 import { auth, db } from '../firebase'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -130,6 +126,14 @@ export default {
       this.email = userRecord.email
       
     })
+  },
+  computed: {
+    messageErrors () {
+      const errors = []
+      if (!this.$v.message.$dirty) return errors
+        !this.$v.message.required && errors.push('A Message Is Required')
+      return errors
+    },
   },
   data() {
     return {
@@ -148,19 +152,28 @@ export default {
           {
             icon: 'fa-book-medical',
             title: 'Medical Record',
-            text: 'Store and access your medical history from one place.  Records can be updated in real time by your doctor, providing you the most up-to-date data for blood pressure, blood level and cholesterol.'
+            text: 'Store your personal medical records digitally and receive medical updates in real-time.'
+          },
+          {
+            icon: 'fa-pills',
+            title: 'Track Medication',
+            text: 'Enter any medication taken and visually track your medication timetable through the app.'          
           },
           {
             icon: 'fa-stethoscope',
             title: 'Book Appointments',
-            text: 'E-Dochtúirs intuitive appointment booking system allows for quick and responsive online appointment bookings.'
+            text: 'Book appointments with your doctors online with E-Dochtúirs intuitive booking system.  Select online consultations to chat online.'
           },
           {
             icon: 'fa-prescription-bottle-alt',
             title: 'Request Prescriptions',
-            text: 'Request prescriptions online rather than having to make a trip to the clinic to pick up a physical copy of your prescriptions'          },
+            text: 'Request prescriptions online rather than having to make a trip to the clinic to pick up a physical copy of your prescriptions.'          
+          },
         ],
     }
+  },
+  validations: {
+    message: { required }
   },
   methods: {
     triggerSnackbar (message, color) {
@@ -169,18 +182,27 @@ export default {
       this.snackbar = true
     },
     submitQuery () {
-      var document = {
-        userID: this.currentUser,
-        userName: this.name,
-        email: this.email,
-        message: this.message,
-      }
-      db.collection("tickets").doc().set(document).then(() => {
-        this.message = null
-        this.triggerSnackbar("Your Query Has Been Successfully Logged!", "success")
-      }).catch(error => {
-        console.log(error)
-      })
+      this.$v.$touch()
+      this.formTouched = !this.$v.$anyDirty
+        this.errors = this.$v.$anyError
+        if (this.errors === false && this.formTouched === false){
+          var document = {
+            userID: this.currentUser,
+            userName: this.name,
+            email: this.email,
+            message: this.message,
+          }
+          db.collection("tickets").doc().set(document).then(() => {
+            this.message = null
+            this.triggerSnackbar("Your Query Has Been Successfully Logged!", "success")
+          }).catch(error => {
+            console.log(error)
+          })
+        }
+        else{
+          this.triggerSnackbar("There Were Errors With Your Form!", "error")
+        }
+
     },
   },
 };

@@ -6,14 +6,14 @@
         <!-- Left Card - Profile -->
         <v-col cols="12" s="12" sm="6" md="6" lg="6">
             <v-card width="800" >
-
-            <v-card-text v-if="showEditForm">
+    
+            <div v-if="showEditForm">
                 <v-card flat>   <!-- Full Name -->
-                <v-card-title class="text-uppercase">
-                    Profile
-                    <v-spacer></v-spacer>
-                    <v-icon right @click="toggleEditProfile()">fa-edit</v-icon>
-                </v-card-title>
+                <v-card-title class="text-uppercase primary lighten-1 white--text">
+                        Profile
+                        <v-spacer></v-spacer>
+                        <v-icon right class="white--text" @click="toggleEditProfile()">fa-edit</v-icon>
+                    </v-card-title>
                     <v-divider></v-divider>
                     <v-row>
                     <v-col cols="12" md="4">
@@ -111,22 +111,29 @@
                         </v-col>
                     </v-row> 
                     </v-card>
-            </v-card-text>
+            </div>
     
 
             <!-- EDIT FORM -->
             <v-form v-else @submit.prevent="updateProfile">
                 <v-card flat>
-                <v-card-title class="text-uppercase">Edit Profile</v-card-title>
+                <v-card-title class="text-uppercase primary lighten-1 white--text">Edit Profile
+                <v-spacer></v-spacer>
+                    <v-btn depressed color="primary lighten-1" @click="toggleEditProfile()">
+                    <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
+                    <span>Cancel</span>
+                    </v-btn>
+                </v-card-title>
+                
                 <v-divider></v-divider>
                 <v-card-text>
                     <v-row>
                     <v-col class="mt-n2" cols="12" md="6" lg="6">
+                        <!-- Firstname Edit -->
                         <v-text-field 
                         type="text"
                         name="firstname"
                         label="First Name"
-                        
                         :counter="15" 
                         v-model.trim="firstname" 
                         :error-messages="firstNameErrors"
@@ -137,6 +144,7 @@
                         >
                         </v-text-field>
                     </v-col>
+                    <!-- Surname Edit -->
                     <v-col class="mt-n2" cols="12" md="6" lg="6">
                         <v-text-field 
                         type="text"
@@ -152,7 +160,7 @@
                         >
                         </v-text-field>
                     </v-col>
-
+                    <!-- DOB Edit -->
                     <v-col class="mt-n2" cols="12" md="4" lg="4">
                         <v-menu
                         v-model="menu"
@@ -176,13 +184,14 @@
                         </template>
                         <v-date-picker
                         v-model.trim="date"
+                        :min="getLowestPossible()"
+                        :max="getEarliestPossible()"
                         @change="menu = false"  
                         >
                         </v-date-picker>
                         </v-menu>
                     </v-col>
-
-
+                    <!-- PPSN Edit -->
                     <v-col class="mt-n2" cols="12" md="4" lg="4">
                         <v-text-field 
                         type="text"
@@ -198,8 +207,7 @@
                         >
                         </v-text-field>
                     </v-col>
-
-
+                    <!-- Mobile Edit -->
                     <v-col class="mt-n2" cols="12" md="4" lg="4">
                         <v-text-field 
                         type="text"
@@ -214,7 +222,6 @@
                         >
                         </v-text-field>
                     </v-col>                    
-
                     </v-row>
                     <v-card-actions>
                         <v-row>
@@ -228,35 +235,27 @@
                         </v-row>
                     </v-card-actions>
                 </v-card-text>  
-                <v-divider class="mt-2"></v-divider>
-                    <v-card-actions>
-                        <v-btn
-                            color="primary"
-                            text
-                            @click="toggleEditProfile()">
-                            Cancel
-                        </v-btn>
-                    </v-card-actions>
                 </v-card>
             </v-form>
             </v-card>
 
             <v-card width="585" height="140" class="mt-5">
-                <v-col cols="12" lg="12" class="justify-center">
-                <v-switch
-                v-model="$vuetify.theme.dark"
-                hide-details
-                inset
-                label="Dark Mode"
-                ></v-switch>
-                </v-col>
+                <v-card-title class="primary lighten-1 white--text">Application Theme</v-card-title>
+                <v-card-text class="ml-15">
+                    <v-row>
+                        <v-col class="mt-n4">
+                        <v-switch
+                        v-model="$vuetify.theme.dark"
+                        hide-details
+                        inset
+                        label="Dark Mode"
+                        ></v-switch>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
             </v-card>
-
         </v-col>
-
-
         <v-col cols="12" s="12" sm="6" md="6" lg="6">
-      
             <v-card width="600">
             <v-card-text>
                 <CalendarAppointments />
@@ -264,12 +263,7 @@
             </v-card>   
 
             </v-col>
-
-
- 
     </v-row>  
-
-
 
 </v-container>
 </template>
@@ -281,6 +275,7 @@ import CalendarAppointments from '../components/PatientAppCalendar'
 import { mapState } from 'vuex'
 import { maxLength, minLength, alpha, numeric } from "vuelidate/lib/validators"
 
+import { auth, db } from '../firebase'
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 
@@ -335,46 +330,85 @@ export default {
             return errors
         },
     },
-  data() {
-    //
-    return{
-        firstname: this.$store.state.userProfile.firstname,
-        surname: this.$store.state.userProfile.surname,
-        date: this.$store.state.userProfile.date,
-        ppsn: this.$store.state.userProfile.ppsn,
-        mobile: this.$store.state.userProfile.mobile,
-        menu: false,
-        showEditForm: true,
-    }
-  },
-  validations: {
-        firstname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
-        surname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
-        ppsn: { 
-            ppsnValidate(ppsn){
-                return (
-                    /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
-                );
-            },
-        },
-        mobile: {numeric, minLength: minLength(9), maxLength: maxLength(14)},
+    created() {
+        this.currentUser = auth.currentUser.uid // Get current users ID
+    },
+    data() {
+        //
+        return{
+            firstname: this.$store.state.userProfile.firstname,
+            surname: this.$store.state.userProfile.surname,
+            date: this.$store.state.userProfile.date,
+            ppsn: this.$store.state.userProfile.ppsn,
+            mobile: this.$store.state.userProfile.mobile,
+            menu: false,
+            showEditForm: true,
 
-  },
-  methods: {
-      viewDOB () {
-          return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
-      },
-      toggleEditProfile(){
-          this.showEditForm = !this.showEditForm
-          this.$v.$reset()
+            dob: null,
+        }
+    },
+    validations: {
+            firstname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
+            surname: {minLength: minLength(3), maxLength: maxLength(15), alpha},
+            ppsn: { 
+                ppsnValidate(ppsn){
+                    return (
+                        /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
+                    );
+                },
+            },
+            mobile: {numeric, minLength: minLength(9), maxLength: maxLength(14)},
+
+    },
+    methods: {
+    //   viewDOB () {
+    //       return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
+    //   },
+
+    getEarliestPossible () {
+        db.collection("users").doc(this.currentUser).onSnapshot(doc => {
+            let patientRecord = doc.data()
+            patientRecord.id = doc.id
+            // Get DoB
+            this.dob = patientRecord.date
+        })
+    
+        let latest = new Date ()
+        latest.setFullYear(latest.getFullYear() - 16)
+        //Filter
+        var d = new Date(latest),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    },
+    getLowestPossible () {
+        let latest = new Date ()
+        latest.setFullYear(latest.getFullYear() - 90)
+        //Filter
+        var d = new Date(latest),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    },
+    toggleEditProfile(){
+        this.showEditForm = !this.showEditForm
+        this.$v.$reset()
 
             this.firstname = this.$store.state.userProfile.firstname
             this.surname = this.$store.state.userProfile.surname
             this.date = this.$store.state.userProfile.date
             this.ppsn = this.$store.state.userProfile.ppsn
             this.mobile = this.$store.state.userProfile.mobile
-      },
-      updateProfile(){
+    },
+    updateProfile(){
         this.$v.$touch()
         this.formTouched = !this.$v.$anyDirty
         this.errors = this.$v.$anyError
@@ -390,7 +424,7 @@ export default {
         this.showEditForm = !this.showEditForm
         })
         } 
-      },
-  } 
+    },
+} 
 };
 </script>

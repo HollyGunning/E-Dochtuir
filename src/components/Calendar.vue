@@ -4,7 +4,7 @@
 
         <!-- Contains the top toolbar with the today, prev, next btn options and a menu that switches the calendar view--> 
         <v-sheet height="64">
-            <v-toolbar  flat color="white">
+            <v-toolbar flat>
                 <v-btn outlined color="primary" @click="setToday">Today</v-btn>
                 <v-btn fab text small color="primary" @click="prev">
                     <v-icon small >mdi-chevron-left</v-icon>
