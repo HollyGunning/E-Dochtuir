@@ -143,7 +143,7 @@
 
                 <!-- SIGNUP FORM -->
                 <v-form class="px-2" v-else @submit.prevent="signup">
-                    <v-card-title class="text-uppercase">Sign Up</v-card-title>
+                    <v-card-title class="text-uppercase">Register</v-card-title>
                     <v-divider class="mx4"></v-divider>
                     <v-card-text>
                         <v-row>
@@ -343,7 +343,7 @@
                                     :disabled="loading"
                                     block class="primary white--text"
                                     @click.prevent="signup()">
-                                    <span>Sign Up</span>
+                                    <span>Register</span>
                                 </v-btn> 
                             </v-row>
                         </v-card-actions>

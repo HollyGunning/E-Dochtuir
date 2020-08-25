@@ -10,22 +10,34 @@
         <!-- UPCOMING APPOINTMENTS FILTER HERE -->
         <v-tab-item>
             <!-- For each appointment print out an appointment card with data corresponding to the appointmentID -->
-            <v-card outlined class="mt-2" v-for="appointment in appointments" :key="appointment.id">
-            <v-card-title class="text-uppercase">      
+            <v-card outlined class="mt-3" v-for="appointment in appointments" :key="appointment.id">
+            <v-card-title class="primary lighten-2 white--text">      
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the appointments -->
                 <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
             </v-card-title>
-            <v-card-text>
+            <v-card-text class="mt-6">
             <v-row class="mt-n8">
             <v-col cols="12" md="4">
-                <v-list>
+                <v-list >
                     <v-list-item>
                         <v-list-item-content>
                             <v-list-item-title class="overline grey--text mb-4">
                                 <v-icon>fa-id-card</v-icon>
                                 Appointment ID</v-list-item-title>
                                 <h3>{{ appointment.id }}</h3>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-clinic-medical</v-icon>
+                            Type</v-list-item-title>
+                            <h3>{{ appointment.appointmentType }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -85,14 +97,13 @@
         <!-- OLD APPOINTMENTS FILTER HERE -->
         <v-tab-item>
              <!-- For each old appointment print out an appointment card with data corresponding to the appointmentID -->
-            <v-card v-for="appointment in oldAppointments" :key="appointment.id"
-            outlined class="mt-2">
-            <v-card-title class="text-uppercase">      
+            <v-card class="mt-3" v-for="appointment in oldAppointments" :key="appointment.id" outlined>
+            <v-card-title class="primary lighten-2 white--text">      
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the appointments -->
                 <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
             </v-card-title>
-            <v-card-text>
+            <v-card-text class="mt-6">
             <v-row class="mt-n8">
             <v-col cols="12" md="4">
                 <v-list>
@@ -102,6 +113,18 @@
                             <v-icon>fa-id-card</v-icon>
                             Appointment ID</v-list-item-title>
                             <h3>{{ appointment.id }}</h3>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+            </v-col>
+            <v-col cols="6" md="4">
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-content>
+                        <v-list-item-title class="overline grey--text mb-4">
+                            <v-icon>fa-clinic-medical</v-icon>
+                            Type</v-list-item-title>
+                            <h3>{{ appointment.appointmentType }}</h3>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -159,6 +182,14 @@
             </v-card>
         </v-tab-item>
     </v-tabs-items>
+    <v-snackbar
+    :color="color"
+    v-model="snackbar"
+    :timeout="timeout"
+    :multi-line="multiLine"
+    >{{ snackbarText }}
+    </v-snackbar>
+
 </v-col></v-row>
 </template>
 
@@ -173,6 +204,11 @@ export default {
     },
     data() {
         return {
+            snackbar: false,
+            color: null,
+            multiLine: true,
+            timeout: 5000,
+            snackbarText: "",
             // Tabs for upcoming and past
             tab: null,
             tabs: [
@@ -230,8 +266,15 @@ export default {
         })    
     },
     methods: {
+        triggerSnackbar (message, color) {
+            this.snackbarText = message,
+            this.color = color,
+            this.snackbar = true
+        },
         // Delete appointments in real time, takes the id of the appointment and filters it out of the corresponding array
         toggleCancelAppointment (id) {
+            // Can only cancel appointments if not the day of appointment
+
             // Upcoming Appointments
             db.collection("appointments").doc(id).delete().then(() => {
                 this.appointments = this.appointments.filter(appointment => {
@@ -244,6 +287,8 @@ export default {
                     return appointment.id !=id
                 })
             })
+            this.triggerSnackbar("Appointment Has Been Deleted", "error")
+
         }, 
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <v-container >
  <AdminNavbar />
-
+    <!-- Display the admin users email -->
     <v-row>
     <v-col cols="12" s="12" sm="12" md="12" lg="12">
         <v-col class="mt-n4">
@@ -24,29 +24,29 @@
             </v-row>
         </v-card>
       </v-col>
-     
-
-        <v-card shaped>
-            <!--Title and Search -->
+        <!-- Card for User Records Search Bar -->
+        <v-card outlined>
             <v-card-title class="text-uppercase grey--text text--darken-1">
             User Management
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"
-                append-icon="mdi-magnify"
+                append-icon="fa-search"
                 label="Search"
                 single-line
                 hide-details
             ></v-text-field>
             </v-card-title>
-            
+        </v-card>
+        <!-- Card for the Data Table -->
+        <v-card outlined>
             <!-- Table -->
             <v-data-table
             :headers="headers"
             :items="users"
             :search="search"
-            :items-per-page="5"
-            class="elevation-8"
+            :items-per-page="10"
+            class="elevation-1"
             >
             <!-- selector for the user role -->
             <template v-slot:[`item.role`]="{item}"> 
@@ -61,12 +61,11 @@
             </template>
             </v-data-table>
         </v-card>
-      
     </v-col>
     </v-row>
     </v-container>
 </template>
-<script>
+<script> // import the admin navbar as well as auth, db and functions from firebase
 import AdminNavbar from '../components/Navbars/AdminNavbar'
 import {auth, db, functions} from '../firebase'
 export default {
@@ -107,7 +106,9 @@ export default {
         });
     },
     methods: {
+      // Update the role of the current user, used to update them from a patient to doctor
       changeRole(uid, event) {  
+        // Fires of a call to the cloud functions to setUserRole
         var addMessage = functions.httpsCallable("setUserRole");
         var data = { uid: uid, role: { [event]: true } };
         addMessage(data)
@@ -121,59 +122,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-   .mobile {
-      color: #333;
-    }
-    @media screen and (max-width: 768px) {
-      .mobile table.v-table tr {
-        max-width: 100%;
-        position: relative;
-        display: block;
-      }
-      .mobile table.v-table tr:nth-child(odd) {
-        border-left: 6px solid deeppink;
-      }
-      .mobile table.v-table tr:nth-child(even) {
-        border-left: 6px solid cyan;
-      }
-      .mobile table.v-table tr td {
-        display: flex;
-        width: 100%;
-        border-bottom: 1px solid #f5f5f5;
-        height: auto;
-        padding: 10px;
-      }
-      .mobile table.v-table tr td ul li:before {
-        content: attr(data-label);
-        padding-right: .5em;
-        text-align: left;
-        display: block;
-        color: #999;
-      }
-      .v-datatable__actions__select
-      {
-        width: 50%;
-        margin: 0px;
-        justify-content: flex-start;
-      }
-      .mobile .theme--light.v-table tbody tr:hover:not(.v-datatable__expand-row) {
-        background: transparent;
-      }
-    }
-    .flex-content {
-      padding: 0;
-      margin: 0;
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-    .flex-item {
-      padding: 5px;
-      width: 50%;
-      height: 40px;
-      font-weight: bold;
-    }
-</style>

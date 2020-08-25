@@ -1,9 +1,7 @@
 <template>
 <v-container>
 <Navbar />
-
 <v-row><v-col cols="12" md="12" lg="12">
-
   <v-card flat>
     <v-card-title class="primary lighten-1 white--text">Medical Record
     <v-spacer></v-spacer>

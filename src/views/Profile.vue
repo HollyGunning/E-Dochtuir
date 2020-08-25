@@ -2,11 +2,9 @@
 <v-container >
 <Navbar />    
  
-
     <v-row>
-
         <!-- Left Card - Profile -->
-        <v-col cols="12" s="12" sm="6" md="8" lg="8">
+        <v-col cols="12" s="12" sm="6" md="6" lg="6">
             <v-card width="800" >
 
             <v-card-text v-if="showEditForm">
@@ -217,8 +215,6 @@
                         </v-text-field>
                     </v-col>                    
 
-
-
                     </v-row>
                     <v-card-actions>
                         <v-row>
@@ -231,11 +227,6 @@
                             </v-btn>
                         </v-row>
                     </v-card-actions>
-                    <!-- <v-flex>
-                    <v-alert type="error" dismissible v-model="alert1">
-                        {{ editProfileError }}
-                    </v-alert>
-                    </v-flex> -->
                 </v-card-text>  
                 <v-divider class="mt-2"></v-divider>
                     <v-card-actions>
@@ -248,37 +239,9 @@
                     </v-card-actions>
                 </v-card>
             </v-form>
-
-
             </v-card>
-        </v-col>
 
-
-
-
-
-
-
-        <v-col cols="12" s="12" sm="6" md="4" lg="4">
-      
-            <v-card width="600" height="300">
-            <!-- <v-row justify="space-around" class="pt-3">
-            <v-avatar size="150" class="grey lighten-2">
-                <img src="https://cdn.vuetifyjs.com/images/cards/mountain.jpg">
-            </v-avatar>
-            </v-row> -->
-            <v-card-text class="text-center">
-                <v-row>
-                <!-- <v-layout column align-center> -->
-                    <v-flex class="mt-8">
-                        <h1> {{ userProfile.firstname }} {{ userProfile.surname }}</h1>
-                    </v-flex>
-                <!-- </v-layout> -->
-                </v-row>
-            </v-card-text>
-            </v-card>   
-
-            <v-card width="600" height="100" class="mt-5">
+            <v-card width="585" height="140" class="mt-5">
                 <v-col cols="12" lg="12" class="justify-center">
                 <v-switch
                 v-model="$vuetify.theme.dark"
@@ -288,10 +251,22 @@
                 ></v-switch>
                 </v-col>
             </v-card>
+
+        </v-col>
+
+
+        <v-col cols="12" s="12" sm="6" md="6" lg="6">
+      
+            <v-card width="600">
+            <v-card-text>
+                <CalendarAppointments />
+            </v-card-text>
+            </v-card>   
+
             </v-col>
 
 
-
+ 
     </v-row>  
 
 
@@ -301,6 +276,8 @@
 
 <script>
 import Navbar from '../components/Navbars/Navbar'
+import CalendarAppointments from '../components/PatientAppCalendar'
+
 import { mapState } from 'vuex'
 import { maxLength, minLength, alpha, numeric } from "vuelidate/lib/validators"
 
@@ -310,6 +287,7 @@ import parseISO from 'date-fns/parseISO'
 export default {
     components: {
         Navbar,
+        CalendarAppointments
     },
     computed: {
     ...mapState(['userProfile']),
