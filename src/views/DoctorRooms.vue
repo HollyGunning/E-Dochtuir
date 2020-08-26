@@ -1,42 +1,47 @@
 <template>
 <v-container>
 <DoctorNavbar />
-    <v-card>
+    <v-card v-if="joinRoom">
         <v-card-title></v-card-title>
-        
+        <v-card-text>
+        <v-row>
+            <v-col cols="12" sm="6" md="6" lg="6">
+            <v-select 
+            label="Todays Patients"
+            :items="patients"
+            item-text="name"
+            item-value="value"
+            outlined
+            @change="onPatientChanged($event)"
+            ></v-select>
+            </v-col>
+            <v-col cols="12" sm="4" md="4" lg="4">
+            <v-btn 
+            class="primary white--text"
+            block 
+            @click="createRoom()"
+            >
+            Join Room
+            </v-btn>
+            </v-col>
+        </v-row>
+        </v-card-text>
+    </v-card>
+
+    <v-card v-if="closeRoom">
+        <v-card-text>
             <v-row>
-                <v-col cols="12" sm="6" md="6" lg="6">
-                <v-select 
-                class="ml-9"
-                label="Todays Patients"
-                :items="patients"
-                item-text="name"
-                item-value="value"
-                outlined
-                @change="onPatientChanged($event)"
-                ></v-select>
-                </v-col>
-                <v-col cols="12" sm="4" md="4" lg="4">
+            <v-col cols="12" sm="4" md="4" lg="4">
                 <v-btn 
-                class="primary white--text ml-6 mt-3"
-                block 
-                @click="createRoom()"
-                >
-                Join Room
-                </v-btn>
-                </v-col>
-                               
-                                <v-col cols="12" sm="4" md="4" lg="4">
-                <v-btn 
-                class="primary white--text ml-6 mt-3"
+                class="primary white--text"
                 block 
                 @click="destroyRoom()"
                 >
                 Close Room
                 </v-btn>
-                </v-col>
+            </v-col>
             </v-row>
-        
+        </v-card-text>
     </v-card>
   
     <!-- Chat Card -->
@@ -143,7 +148,8 @@ export default {
             timeout: 5000,
             snackbarText: "",
             chatRoom: false,
-
+            joinRoom: true,
+            closeRoom: false,
             
             patients: [], // Patient array containing list of patients for todays date
             chosenPatient: null,
@@ -196,6 +202,8 @@ export default {
                                 doctorID: this.currentUser,
                                 patientID: this.chosenPatient,
                             }).then( () => {
+                                this.joinRoom = false
+                                this.closeRoom = true
                                 this.chatRoom = true
                             }).catch(error => {
                                 console.log("Error with Room Creation", error)
@@ -207,6 +215,8 @@ export default {
                         else{
                             this.triggerSnackbar("Chat Room Opened")
                             // Open the "chat" to this room as a card to test
+                            this.joinRoom = false
+                            this.closeRoom = true
                             this.chatRoom = true
                             this.loadMessages()
                         }
@@ -219,11 +229,13 @@ export default {
             }
         },
         destroyRoom () {
-            db.collection("rooms").doc(this.roomID).delete().then(() =>{
+            db.collection("rooms").doc(this.roomID).delete().then(() => {
                 this.triggerSnackbar("Room Has Been Deleted!", "success")
             }).then(() => {
                 this.roomID = null
                 this.chatRoom = false
+                this.closeRoom = false
+                this.joinRoom = true
             }).catch(error => {
                 console.log("Room Deletion Error", error)
             })

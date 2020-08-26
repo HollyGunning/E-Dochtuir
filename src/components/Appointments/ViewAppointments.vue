@@ -271,23 +271,41 @@ export default {
             this.color = color,
             this.snackbar = true
         },
+                // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
+        appendLeadingZeroes(n){
+            if(n <= 9){
+                return "0" + n;
+            }
+            return n
+        },
         // Delete appointments in real time, takes the id of the appointment and filters it out of the corresponding array
         toggleCancelAppointment (id) {
             // Can only cancel appointments if not the day of appointment
+            db.collection("appointments").doc(id).get().then(doc => {
+                let appointmentToCancel = doc.data()
+                let today = new Date ()           
+                let formattedDate = today.getFullYear() + "-" + this.appendLeadingZeroes(today.getMonth() + 1) + "-" + this.appendLeadingZeroes(today.getDate()) 
+                // Check to see if appointment is scheduled for today, only allow deletes not on same day
+                if(appointmentToCancel.appointmentDate == formattedDate){
+                    this.triggerSnackbar("You Cannot Delete Appointment on the Day of Appointment!", "error")
+                }
+                else{
+                    // Upcoming Appointments
+                    db.collection("appointments").doc(id).delete().then(() => {
+                        this.appointments = this.appointments.filter(appointment => {
+                            return appointment.id != id
+                        })
+                    })
+                    // Past Appointments
+                    db.collection("appointments").doc(id).delete().then(() => {
+                        this.oldAppointments = this.oldAppointments.filter(appointment => {
+                            return appointment.id !=id
+                        })
+                    })
+                    this.triggerSnackbar("Appointment Has Been Deleted", "success")
+                }
+            })
 
-            // Upcoming Appointments
-            db.collection("appointments").doc(id).delete().then(() => {
-                this.appointments = this.appointments.filter(appointment => {
-                    return appointment.id != id
-                })
-            })
-            // Past Appointments
-            db.collection("appointments").doc(id).delete().then(() => {
-                this.oldAppointments = this.oldAppointments.filter(appointment => {
-                    return appointment.id !=id
-                })
-            })
-            this.triggerSnackbar("Appointment Has Been Deleted", "error")
 
         }, 
     }

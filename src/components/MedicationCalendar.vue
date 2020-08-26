@@ -102,11 +102,12 @@
                              auto-grow
                              rows="1"
                              outlined 
-                             
+                            
 
 
                              ></v-textarea>
                         </v-col>
+
                         <!-- Select Time -->
                         <v-col cols="12" sm="6" md="6">
                         <v-menu
@@ -123,7 +124,7 @@
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
                                 v-model="time"
-                                label="Select Time*"
+                                label="First Dose Time*"
                                 prepend-icon="access_time"
                                 readonly
                                 v-bind="attrs"
@@ -148,6 +149,7 @@
                             :items="chooseDateOptions"
                             outlined
                             @change="setOption(dateOption)"
+
 
 
                             ></v-select>
@@ -220,7 +222,7 @@
                       <!-- Select a Colour --> 
                         <v-col cols="12" sm="6" md="6">
                        <v-menu
-                        v-model="menu3"
+                        v-model="menu4"
                         :close-on-content-click="false"
                         max-width="290"
                         >
