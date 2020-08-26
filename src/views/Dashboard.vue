@@ -4,13 +4,13 @@
 
      <v-container class="text-center">
        <v-card flat>
-         <v-card-title class="overline text-justify text-center"><h1>E-DOCHTÚIR features</h1></v-card-title>
+        <v-card-title class="text-uppercase primary lighten-1 white--text"><h1>Features</h1></v-card-title>
        </v-card>
         <v-row>
           <v-col v-for="({ icon, title, text }, i) in features" :key="i" cols="12" md="6">
             <v-card
               class="py-12 px-4"
-              color="grey lighten-5"
+              
               flat
             >
               <v-theme-provider dark>
@@ -27,7 +27,7 @@
                 </div>
               </v-theme-provider>
               <v-card-title
-                class="justify-center text-center font-weight-black text-uppercase"
+                class="justify-center text-center  text-uppercase"
                 v-text="title"
               ></v-card-title>
               <v-card-text
@@ -40,14 +40,14 @@
         </v-row>
      </v-container>
 
-<v-row align="center" justify="center"><v-col cols="12">
+<v-row><v-col cols="12">
   <v-card flat>
-    <v-card-title class="upperclass">Contact Us 
+    <v-card-title class="text-uppercase primary lighten-1 white--text">Contact Us 
     <v-spacer></v-spacer>
     </v-card-title>
     <v-form @submit.prevent="submitQuery">
-      <v-row class="mt-4" align="center" justify="center">  
-        <v-col cols="9">
+      <v-row class="mt-4">  
+        <v-col cols="12" s="12" sm="6" md="6" lg="6">
           <v-text-field
           label="Name"
           v-model="this.name"
@@ -55,7 +55,7 @@
           readonly
           ></v-text-field>
         </v-col>
-        <v-col cols="9">
+        <v-col cols="12" s="12" sm="6" md="6" lg="6">
           <v-text-field
           label="Email"
           v-model="this.email"
@@ -63,7 +63,7 @@
           readonly
           ></v-text-field>
         </v-col>
-        <v-col cols="9">
+        <v-col cols="12">
           <v-textarea
           label="Message"
           v-model="message"
@@ -103,6 +103,7 @@
       </v-snackbar>
   </v-card>
 </v-col></v-row>
+
 
 </v-container>
 </template>

@@ -75,11 +75,36 @@
                 color="white"
                 @click="selectedOpen = false"
                 >
-                Cancel
+                Close
                 </v-btn>
                 </v-toolbar>
                 <v-card-text>
-                <span v-html="selectedEvent.details"></span>
+                <v-row class="mt-n8">
+                <v-col cols="12" md="12" class="mt-4">
+                <v-list >
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title class="overline grey--text mb-4">
+                                <v-icon>fa-clinic-medical</v-icon>
+                                Appointment Type</v-list-item-title>
+                                <h3 v-html="selectedEvent.type"></h3>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+                </v-col>
+                <v-col cols="12" md="12">
+                <v-list >
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title class="overline grey--text mb-4">
+                                <v-icon>fa-info</v-icon>
+                                Details</v-list-item-title>
+                                <h3 v-html="selectedEvent.details"></h3>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+                </v-col>
+                </v-row>              
                 </v-card-text>
                 </v-card>
                 </v-menu>
@@ -134,6 +159,7 @@ export default {
                         let event = {
                         name: this.doctorName,
                         details : record.appointmentDetails,
+                        type: record.appointmentType + ' Appointment',
                         start: record.appointmentDate + " " + time,
                         end: record.appointmentDate + " " + endTime
                         }
