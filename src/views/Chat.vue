@@ -20,16 +20,21 @@
         <!-- Chat Card -->
         <v-card v-if="chatRoom" class="mt-6">
         <v-container>
-        <v-card outlined class="messages" v-chat-scroll>
+        <v-card outlined class="messages">
             <v-card-text class="chat-message" v-for="(message, index) in messages" :key="index">
-            <v-div class="right-bubble" v-if="message.name === userName ">
-               <v-subtitle-1 class="overline">{{ message.name }}&nbsp;</v-subtitle-1>
+            <v-col cols="12" md="6" lg="6">
+            <div class="right-bubble" v-if="message.name === userName ">
+                <div class="subtitle-1">{{ message.name }}&nbsp;</div>
                 <span class="green-text">{{ message.text }}</span>  
-            </v-div>
-            <v-div class="left-bubble right-align" v-if="message.name !== userName">
-                <v-subtitle-1 class="overline">{{ message.name }}&nbsp;</v-subtitle-1>
+            </div>
+            </v-col>
+            <v-col cols="12" md="6" lg="6">
+           <div class="left-bubble right-align" v-if="message.name !== userName">
+                <div class="subtitle-1">{{ message.name }}&nbsp;</div>
                 <span class="green-text">{{ message.text }}</span>
-            </v-div>
+            </div>
+            </v-col>
+ 
             </v-card-text>
         </v-card>
 
@@ -55,7 +60,7 @@
                     </v-btn>
                 </v-col>
                 <v-spacer></v-spacer>
-                <!-- <v-col cols="4">
+                <!-- <v-col cols="3">
                     <v-btn icon>
                         <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
                     </v-btn>  
@@ -96,7 +101,8 @@ export default {
             let user = doc.data()
             this.userName = user.firstname + ' ' + user.surname
         })
-        this.loadMessages() // Load in messages for this chat     
+        this.loadMessages() // Load in messages for this chat
+       
    },
     data() {
         return {
@@ -114,6 +120,7 @@ export default {
             chosenDoctor: null,
             message: null,
             messages: [],
+         
             //    file: [],
             //    LOADING_IMAGE_URL: null,
         }
@@ -254,57 +261,21 @@ export default {
   overflow: auto;
 }
 .chat-message {
-  width: 80%;
   min-height: 40px;
+  word-wrap: break-word;
+  margin-bottom: 10px;
+
 }
-.chat-message .right-bubble {
-  position: relative;
+.right-bubble {
   background: #dcf8c6;
-  border-top-left-radius: .4em;
-  border-bottom-left-radius: .4em;
-  border-bottom-right-radius: .4em;
+  width:50%;
+  margin-left: 50%;
   padding: 5px 10px 10px;
-  margin-bottom: 10px;
-  left: 50%;
-  width: 85%
 }
-.chat-message .right-bubble:after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  border: 1px solid transparent;
-  border-left-color: #dcf8c6;
-  border-right: 0;
-  border-top: 0;
-  margin-top: 1px;
-  margin-right: 200px;
-}
-.chat-message .left-bubble {
-  position: relative;
+.left-bubble {
   background: #efefef;
-  border-top-right-radius: .4em;
-  border-bottom-left-radius: .4em;
-  border-bottom-right-radius: .4em;
+  width:50%;
+  margin-right: 50%;
   padding: 5px 10px 10px;
-  margin-bottom: 10px;
-  left: 0%;
-  width: 200%;
-}
-.chat-message .left-bubble:after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  border: 1px solid transparent;
-  border-right-color: #efefef;
-  border-left: 0;
-  border-top: 0;
-  margin-top: 1px;
-  margin-left: 1px;
 }
 </style>
