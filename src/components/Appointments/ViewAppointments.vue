@@ -14,7 +14,7 @@
             <v-card-title class="primary lighten-2 white--text">      
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the appointments -->
-                <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
+                <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-trash</v-icon>
             </v-card-title>
             <v-card-text class="mt-6">
             <v-row class="mt-n8">
@@ -101,7 +101,7 @@
             <v-card-title class="primary lighten-2 white--text">      
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the appointments -->
-                <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-calendar-times</v-icon>
+                <v-icon right @click="toggleCancelAppointment(appointment.id)">fa-trash</v-icon>
             </v-card-title>
             <v-card-text class="mt-6">
             <v-row class="mt-n8">

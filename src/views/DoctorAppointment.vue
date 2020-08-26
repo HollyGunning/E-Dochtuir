@@ -1,11 +1,10 @@
 <template>
 <v-container>
 <DoctorNavbar />
-
+  <!-- Import the Calendar for the doctors appointments -->
   <v-card id="AppointmentCalendar" flat>
     <Calendar />
   </v-card>
-
 </v-container>
 </template>
 
