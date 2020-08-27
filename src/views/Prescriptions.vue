@@ -79,17 +79,7 @@
                 ></v-select>
             </v-col>
 
-            <!-- TEST -->
-            <v-col cols="12">
-
-            </v-col>
-
-
-
-
-
-
-
+         
          
             <v-col cols="12">
                 <!-- Asthma -->
@@ -97,9 +87,46 @@
                     <v-card-title class="primary lighten-1 white--text">Asthma Treatment</v-card-title>
                     <v-card-text>
                         <v-row>
-                            <v-col>
-                                Label
-                            </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">How Long With Asthma?</v-subheader>
+                            <v-select
+                            label="Select a Length of Time"
+                            v-model="asthma.asthmaLength"
+                            :items="asthmaLengthList"
+                            outlined
+                            :error-messages="asthmaLengthError"
+                            @click="$v.asthma.asthmaLength.$touch()"
+                            @blur="$v.asthma.asthmaLength.$touch()"
+                            ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">Have You Ever Required Oral Steroids?</v-subheader>
+                            <v-select
+                            label="Select"
+                            v-model="asthma.asthmaSteroids"
+                            :items="asthmaSteroidList"
+                            outlined
+                            :error-messages="asthmaSteroidsError"
+                            @click="$v.asthma.asthmaSteroids.$touch()"
+                            @blur="$v.asthma.asthmaSteroids.$touch()"
+                            ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">Asthma Severity</v-subheader>
+                            <v-btn-toggle
+                            v-model="asthma.asthmaSeverity" 
+                            color="primary" 
+                            group 
+                            :error-messages="asthmaSeverityError"
+                            @click="$v.asthma.asthmaSeverity.$touch()"
+                            @blur="$v.asthma.asthmaSeverity.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Mild Intermittent">Mild Intermittent</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="Mild Persistent">Mild Persistent</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="Moderate Persistent">Moderate Persistent</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="Severe Persistent">Severe Persistent</v-btn>
+                            </v-btn-toggle>
+                        </v-col>
                         </v-row>
                     </v-card-text>
                 </v-card>
@@ -348,6 +375,26 @@ export default {
                 !this.$v.ereDys.ereDysPrevious.required && errors.push('A Value Is Required')
             return errors
         },
+
+        // Asthma
+        asthmaLengthError () {
+            const errors = []
+            if(!this.$v.asthma.asthmaLength.$dirty) return errors
+                !this.$v.asthma.asthmaLength.required && errors.push('Time With Asthma Is Required')
+            return errors
+        },
+        asthmaSteroidsError () {
+            const errors = []
+            if(!this.$v.asthma.asthmaSteroids.$dirty) return errors
+                !this.$v.asthma.asthmaSteroids.required && errors.push('Any Steroids Is Required')
+            return errors
+        },
+        asthmaSeverityError () {
+            const errors = []
+            if(!this.$v.asthma.asthmaSeverity.$dirty) return errors
+                !this.$v.asthma.asthmaSeverity.required && errors.push('Asthma Severity Is Required')
+            return errors
+        },
     
     },
     created() {
@@ -429,7 +476,6 @@ export default {
                 ereDysDosage: null,
                 ereDysPrevious: null,
             },
-
             ereDysList: [
                 {text: 'Viagra', value: 'Viagra'},
                 {text: 'Sildenafil', value: 'Sildenafil'},
@@ -443,6 +489,24 @@ export default {
                 {text: '50 MG', value: '50 MG'},
                 {text: '100 MG', value: '100 MG'},
                 {text: 'Unsure', value: 'Unsure'},
+            ],
+
+            asthma: {
+                asthmaLength: null,
+                asthmaSteroids: null,
+                asthmaSeverity: null,
+            },
+            asthmaLengthList: [
+                {text:'Less Than 6 Months', value:'Less Than 6 Months'},
+                {text:'Over A Year', value:'Over A Year'},
+                {text:'Over 5 Years', value:'Over 5 Years'},
+                {text:'Since Birth', value:'Since Birth'}
+            ],
+            asthmaSteroidList: [
+                {text:'Never', value: 'Never'},
+                {text:'In The Last 6 Months', value: 'In The Last 6 Months'},
+                {text:'In The Last 12 Months', value: 'In The Last 12 Months'},
+                {text:'Over A Year Ago', value: 'Over A Year Ago'},
             ]
 
            
@@ -461,7 +525,11 @@ export default {
             ereDysDosage: { required },
             ereDysPrevious: { required },
         },
-
+        asthma: {
+            asthmaLength: { required },
+            asthmaSteroids: { required },
+            asthmaSeverity: { required },
+        }
 
 
     },
@@ -558,6 +626,11 @@ export default {
             this.ereDys.ereDysType = null
             this.ereDys.ereDysDosage = null
             this.ereDys.ereDysPrevious = null
+
+            // Clear Asthma
+            this.asthmaLength = null
+            this.asthmaSteroids = null
+            this.asthmaSeverity = null
         },
         // Submit request form
         requestPrescription () {
@@ -566,7 +639,31 @@ export default {
           
             }
             else if(this.chosenOption == 'Asthma Treatment'){
-                this.hideAllTreatments()
+                this.$v.$touch() // used to check the state of the form fields
+                this.formTouched = !this.$v.asthma.$anyDirty
+                this.errors = this.$v.asthma.$anyError
+
+                // If the form does not have any errors or each individual field has no invalid data 
+                if (this.errors === false && this.formTouched === false){      
+                    let addPrescription ={
+                        patientID: this.currentUser,
+                        chosenType: this.chosenOption,
+                        asthmaLength: this.asthma.asthmaLength,
+                        anySteroids: this.asthma.asthmaSteroids,
+                        asthmaSeverity: this.asthma.asthmaSeverity,
+                    }
+                db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
+                    this.clearForms()
+                    this.hideAllTreatments()
+                }).catch(error => {
+                    console.log("Prescription Error ", error)
+                    this.triggerSnackbar("There Were Errors With The Form!", "error")
+                })   
+                }
+                else{
+                    this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
+                } 
             
             }
             else if(this.chosenOption == 'Contraception'){
@@ -575,17 +672,16 @@ export default {
                 this.errors = this.$v.contraceptives.$anyError
 
                 // If the form does not have any errors or each individual field has no invalid data 
-                if (this.errors === false && this.formTouched === false){
-                         
-                let addPrescription ={
-                    patientID: this.currentUser,
-                    chosenType: this.chosenOption,
-                    contraception: this.contraceptives.contraceptiveType,
-                    periodRegulation: this.contraceptives.periodsRegular,
-                    previousUsage: this.contraceptives.previoulyTaken,
-                    sideEffects: this.contraceptives.sideEffects,
-                    effectsDescription: this.contraceptives.sideEffectDescription,
-                }
+                if (this.errors === false && this.formTouched === false){      
+                    let addPrescription ={
+                        patientID: this.currentUser,
+                        chosenType: this.chosenOption,
+                        contraception: this.contraceptives.contraceptiveType,
+                        periodRegulation: this.contraceptives.periodsRegular,
+                        previousUsage: this.contraceptives.previoulyTaken,
+                        sideEffects: this.contraceptives.sideEffects,
+                        effectsDescription: this.contraceptives.sideEffectDescription,
+                    }
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
@@ -613,10 +709,9 @@ export default {
               
             }
             else if(this.chosenOption == 'Erectile Dysfunction Treatment'){
-                 this.$v.$touch() // used to check the state of the form fields
+                this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.ereDys.$anyDirty
                 this.errors = this.$v.ereDys.$anyError
-
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){
                     let addPrescription = {
