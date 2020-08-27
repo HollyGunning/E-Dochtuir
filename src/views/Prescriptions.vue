@@ -199,7 +199,50 @@
                 <!-- ErecDys -->
                 <v-card v-if="showErecDys">
                     <v-card-title class="primary lighten-1 white--text">Erectile Dysfunction Treatment</v-card-title>
-                    <v-card-text></v-card-text>
+                    <v-card-text>
+                        <v-row>
+                        <v-col cols="12" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">Choose a EDT Type</v-subheader>
+                            <v-select
+                            label="Treatment Type"
+                            v-model="ereDys.ereDysType"
+                            :items="ereDysList"
+                            outlined
+                            :error-messages="ereDysTypeError"
+                            @input="$v.ereDys.ereDysType.$touch()"
+                            @blur="$v.ereDys.ereDysType.$touch()"
+                            >
+                            </v-select>   
+                        </v-col>
+                        <v-col cols="12" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">Select A Dosage</v-subheader>
+                            <v-select
+                            label="Treatment Type"
+                            v-model="ereDys.ereDysDosage"
+                            :items="ereDysDosageList"
+                            outlined
+                            :error-messages="ereDysDosageError"
+                            @input="$v.ereDys.ereDysDosage.$touch()"
+                            @blur="$v.ereDys.ereDysDosage.$touch()"
+                            >
+                            </v-select>   
+                        </v-col>
+                        <v-col cols="6" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">Previous Usage?</v-subheader>
+                            <v-btn-toggle
+                                v-model="ereDys.ereDysPrevious" 
+                                color="primary" 
+                                group 
+                                :error-messages="ereDysPreviousError"
+                                @click="$v.ereDys.ereDysPrevious.$touch()"
+                                @blur="$v.ereDys.ereDysPrevious.$touch()"
+                                >
+                                <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                                <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                            </v-btn-toggle>
+                        </v-col>
+                        </v-row>
+                    </v-card-text>
                 </v-card>
                 <!-- PreEj -->
                 <v-card v-if="showPreE">
@@ -254,34 +297,55 @@ export default {
         Navbar,
     },
     computed: {
+        // CONTRACEPTION
         contraceptiveTypeError () {
             const errors = []
             if(!this.$v.contraceptives.contraceptiveType.$dirty) return errors
-            !this.$v.contraceptives.contraceptiveType.required && errors.push('Please Select A Contraceptive Type')
+                !this.$v.contraceptives.contraceptiveType.required && errors.push('Please Select A Contraceptive Type')
             return errors
         },
         periodsRegularError () {
             const errors = []
             if(!this.$v.contraceptives.periodsRegular.$dirty) return errors
-            !this.$v.contraceptives.periodsRegular.required && errors.push('A Value Is Required')
+                !this.$v.contraceptives.periodsRegular.required && errors.push('A Value Is Required')
             return errors
         },
         previoulyTakenError () {
             const errors = []
             if(!this.$v.contraceptives.previoulyTaken.$dirty) return errors
-            !this.$v.contraceptives.previoulyTaken.required && errors.push('A Value Is Required')
+                !this.$v.contraceptives.previoulyTaken.required && errors.push('A Value Is Required')
             return errors
         },
         sideEffectsError () {
             const errors = []
             if(!this.$v.contraceptives.sideEffects.$dirty) return errors
-            !this.$v.contraceptives.sideEffects.required && errors.push('A Value Is Required')
+                !this.$v.contraceptives.sideEffects.required && errors.push('A Value Is Required')
             return errors
         },
         sideEffectDescriptionError () {
             const errors = []
             if(!this.$v.contraceptives.sideEffectDescription.$dirty) return errors
-            !this.$v.contraceptives.sideEffectDescription.required && errors.push('A Value Is Required')
+                !this.$v.contraceptives.sideEffectDescription.required && errors.push('A Value Is Required')
+            return errors
+        },
+
+        // EREDYS
+        ereDysTypeError () {
+            const errors = []
+            if(!this.$v.ereDys.ereDysType.$dirty) return errors
+                !this.$v.ereDys.ereDysType.required && errors.push('Please Select A Form Of Treatment')
+            return errors
+        },
+        ereDysDosageError () {
+            const errors = []
+            if(!this.$v.ereDys.ereDysDosage.$dirty) return errors
+                !this.$v.ereDys.ereDysDosage.required && errors.push('Dosage Is Required')
+            return errors
+        },
+        ereDysPreviousError () {
+            const errors = []
+            if(!this.$v.ereDys.ereDysPrevious.$dirty) return errors
+                !this.$v.ereDys.ereDysPrevious.required && errors.push('A Value Is Required')
             return errors
         },
     
@@ -345,7 +409,6 @@ export default {
                 sideEffects: null,
                 sideEffectDescription: null,
             },
-            
             contraceptiveList: [
                 {text: 'Azalia', value: "Azalia" },
                 {text: 'Cerazette', value: "Cerazette" },
@@ -359,17 +422,46 @@ export default {
                 {text: 'Yasmin', value: "Yasmin" },
                 {text: 'Zoely ', value: "Zoely " },
             ],
+
+            // EreDys
+            ereDys: {
+                ereDysType: null,
+                ereDysDosage: null,
+                ereDysPrevious: null,
+            },
+
+            ereDysList: [
+                {text: 'Viagra', value: 'Viagra'},
+                {text: 'Sildenafil', value: 'Sildenafil'},
+                {text: 'Cialis', value: 'Cialis'},
+                {text: 'Levitra', value: 'Levitra'},
+            ],
+            ereDysDosageList: [
+                {text: '2.5 MG', value: '2.5 MG'},
+                {text: '5 MG', value: '5 MG'},
+                {text: '25 MG', value: '25 MG'},
+                {text: '50 MG', value: '50 MG'},
+                {text: '100 MG', value: '100 MG'},
+                {text: 'Unsure', value: 'Unsure'},
+            ]
+
            
         }
     },
     validations: {
         contraceptives: {
-        contraceptiveType: { required },
-        periodsRegular: { required },
-        previoulyTaken: { required },
-        sideEffects: { required },
-        sideEffectDescription: { required },
-        }
+            contraceptiveType: { required },
+            periodsRegular: { required },
+            previoulyTaken: { required },
+            sideEffects: { required },
+            sideEffectDescription: { required },
+        },
+        ereDys: {
+            ereDysType: { required },
+            ereDysDosage: { required },
+            ereDysPrevious: { required },
+        },
+
 
 
     },
@@ -461,6 +553,11 @@ export default {
             this.contraceptives.previoulyTaken = null
             this.contraceptives.sideEffects = null
             this.contraceptives.sideEffectDescription = null
+
+            // Clear EDT
+            this.ereDys.ereDysType = null
+            this.ereDys.ereDysDosage = null
+            this.ereDys.ereDysPrevious = null
         },
         // Submit request form
         requestPrescription () {
@@ -473,7 +570,6 @@ export default {
             
             }
             else if(this.chosenOption == 'Contraception'){
-
                 this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.contraceptives.$anyDirty
                 this.errors = this.$v.contraceptives.$anyError
@@ -498,11 +594,9 @@ export default {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
                 })   
-
-
                 }
                 else{
-                    this.triggerSnackbar("Could Not Submit Contraception Request!", "error")
+                    this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 } 
                 
             }
@@ -519,8 +613,32 @@ export default {
               
             }
             else if(this.chosenOption == 'Erectile Dysfunction Treatment'){
-                this.hideAllTreatments()
-                
+                 this.$v.$touch() // used to check the state of the form fields
+                this.formTouched = !this.$v.ereDys.$anyDirty
+                this.errors = this.$v.ereDys.$anyError
+
+                // If the form does not have any errors or each individual field has no invalid data 
+                if (this.errors === false && this.formTouched === false){
+                    let addPrescription = {
+                        patientID: this.currentUser,
+                        chosenType: this.chosenOption,
+                        eDTreatment: this.ereDys.ereDysType,
+                        dosage: this.ereDys.ereDysDosage,
+                        previousUsage: this.ereDys.ereDysPrevious,
+                    }
+                    db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
+                    this.clearForms()
+                    this.hideAllTreatments()
+                    }).catch(error => {
+                        console.log("Prescription Error ", error)
+                        this.triggerSnackbar("There Were Errors With The Form!", "error")
+                    })   
+                }
+                else{
+                    this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
+                } 
+
             }
             else if(this.chosenOption == 'Premature Ejaculation Treatment'){
                 this.hideAllTreatments()
