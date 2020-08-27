@@ -454,12 +454,13 @@ export default {
             this.snackbar = null
         },
         clearForms () {
+            this.$v.$reset()
             // Clear contraceptive
-            this.contraceptiveType = null
-            this.periodsRegular = null
-            this.previoulyTaken = null
-            this.sideEffects = null
-            this.sideEffectDescription = null
+            this.contraceptives.contraceptiveType = null
+            this.contraceptives.periodsRegular = null
+            this.contraceptives.previoulyTaken = null
+            this.contraceptives.sideEffects = null
+            this.contraceptives.sideEffectDescription = null
         },
         // Submit request form
         requestPrescription () {
@@ -491,9 +492,8 @@ export default {
                 }
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
-                }).then(() =>{
-                    this.hideAllTreatments()
                     this.clearForms()
+                    this.hideAllTreatments()
                 }).catch(error => {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -529,7 +529,7 @@ export default {
             else{
                 this.hideAllTreatments()
                 this.clearForms()
-                this.triggerSnackbar("Error Submitting Any Treatment", "error")
+                this.triggerSnackbar("You Must Select A Gender & Treatment!", "error")
             }
         },
     },
