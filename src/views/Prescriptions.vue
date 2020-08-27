@@ -117,16 +117,19 @@
                                 <v-subheader class="overline ml-n5">Choose a contraceptive</v-subheader>
                                 <v-select
                                 label="Contraceptive Type"
-                                v-model="contraceptiveType"
+                                v-model="contraceptives.contraceptiveType"
                                 :items="contraceptiveList"
                                 outlined
+                                :error-messages="contraceptiveTypeError"
+                                @input="$v.contraceptives.contraceptiveType.$touch()"
+                                @blur="$v.contraceptives.contraceptiveType.$touch()"
                                 >
                                 </v-select>   
                             </v-col>
                             <v-col cols="6" md="6" lg="6">
                                 <v-subheader class="overline ml-n5">Regulated Periods?</v-subheader>
                                 <v-btn-toggle
-                                    v-model="periodsRegular" 
+                                    v-model="contraceptives.periodsRegular" 
                                     color="primary" 
                                     group 
                                     mandatory
@@ -138,7 +141,7 @@
                             <v-col cols="6" md="6" lg="6">
                                 <v-subheader class="overline ml-n5">Previous Usage?</v-subheader>
                                 <v-btn-toggle
-                                    v-model="previoulyTaken" 
+                                    v-model="contraceptives.previoulyTaken" 
                                     color="primary" 
                                     group 
                                     mandatory
@@ -151,7 +154,7 @@
                             <v-col cols="6" md="6" lg="6">
                                 <v-subheader class="overline ml-n5">Any Side Effects?</v-subheader>
                                 <v-btn-toggle
-                                    v-model="sideEffects" 
+                                    v-model="contraceptives.sideEffects" 
                                     color="primary" 
                                     group 
                                     mandatory
@@ -164,7 +167,7 @@
                             <v-col cols="12" md="6" lg="6">
                                 <v-textarea
                                 label="Describe side effects"
-                                v-model="sideEffectDescription"
+                                v-model="contraceptives.sideEffectDescription"
                                 outlined
                                 ></v-textarea>
                             </v-col>
@@ -245,8 +248,8 @@ export default {
     computed: {
         contraceptiveTypeError () {
             const errors = []
-            if(!this.$v.contraceptiveType.$dirty) return errors
-            !this.$v.contraceptiveType.required && errors.push('Please Select A Contraceptive Type')
+            if(!this.$v.contraceptives.contraceptiveType.$dirty) return errors
+            !this.$v.contraceptives.contraceptiveType.required && errors.push('Please Select A Contraceptive Type')
             return errors
         }
         // periodsRegular
@@ -294,7 +297,7 @@ export default {
             ],
 
 
-
+ 
             // Showing different treatments
             showAdrenaline: false,
             showAsthma: false,
@@ -306,7 +309,14 @@ export default {
             showPreE: false,
 
             // Contraception Card
-            contraceptiveType: null,
+            contraceptives: {
+                contraceptiveType: null,
+                periodsRegular: null,
+                previoulyTaken: null,
+                sideEffects: null,
+                sideEffectDescription: 'None'
+            },
+            
             contraceptiveList: [
                 {text: 'Azalia', value: "Azalia" },
                 {text: 'Cerazette', value: "Cerazette" },
@@ -320,18 +330,18 @@ export default {
                 {text: 'Yasmin', value: "Yasmin" },
                 {text: 'Zoely ', value: "Zoely " },
             ],
-            periodsRegular: null,
-            previoulyTaken: null,
-            sideEffects: null,
-            sideEffectDescription: 'None'
+           
         }
     },
     validations: {
+        contraceptives: {
         contraceptiveType: { required },
         // periodsRegular: { required },
         // previoulyTaken: { required },
         // sideEffects: { required },
         // sideEffectDescription: { required },
+        }
+
 
     },
     methods: {
@@ -433,6 +443,13 @@ export default {
             
             }
             else if(this.chosenOption == 'Contraception'){
+
+                this.$v.$touch() // used to check the state of the form fields
+                this.formTouched = !this.$v.contraceptives.$anyDirty
+                this.errors = this.$v.contraceptives.$anyError
+                // If the form does not have any errors or each individual field has no invalid data 
+                if (this.errors === false && this.formTouched === false){
+
                 let addPrescription ={
                     patientID: this.currentUser,
                     chosenType: this.chosenOption,
@@ -450,7 +467,14 @@ export default {
                 }).catch(error => {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
-                })            
+                })   
+
+
+                }
+                else{
+                    this.triggerSnackbar("Could Not Submit Contraception Request!", "error")
+                } 
+                
             }
             else if(this.chosenOption == 'Period Delay'){
                 this.hideAllTreatments()
