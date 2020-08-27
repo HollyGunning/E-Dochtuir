@@ -602,6 +602,18 @@ export default {
                 console.log("error selecting treatment!")
             }
         },
+        // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
+        appendLeadingZeroes(n){
+            if(n <= 9){
+                return "0" + n;
+            }
+            return n
+        },
+        getTodaysDate () {
+            let today = new Date()
+            let formattedDate = today.getFullYear() + "-" + this.appendLeadingZeroes(today.getMonth() + 1) + "-" + this.appendLeadingZeroes(today.getDate()) 
+            return formattedDate
+        },
         // Cancel the page
         cancel () {
             // this.$v.$reset()
@@ -642,11 +654,11 @@ export default {
                 this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.asthma.$anyDirty
                 this.errors = this.$v.asthma.$anyError
-
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
                         patientID: this.currentUser,
+                        dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         asthmaLength: this.asthma.asthmaLength,
                         anySteroids: this.asthma.asthmaSteroids,
@@ -675,6 +687,7 @@ export default {
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
                         patientID: this.currentUser,
+                        dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         contraception: this.contraceptives.contraceptiveType,
                         periodRegulation: this.contraceptives.periodsRegular,
@@ -716,6 +729,7 @@ export default {
                 if (this.errors === false && this.formTouched === false){
                     let addPrescription = {
                         patientID: this.currentUser,
+                        dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         eDTreatment: this.ereDys.ereDysType,
                         dosage: this.ereDys.ereDysDosage,
