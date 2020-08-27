@@ -133,7 +133,52 @@
                 <!-- Adrenaline -->
                 <v-card v-if="showAdrenaline">
                     <v-card-title class="primary lighten-1 white--text">Adrenaline Pen Treatment</v-card-title>
-                    <v-card-text></v-card-text>
+                    <v-card-text>
+                        <v-row>
+                        <v-col cols="12" md="12" lg="12">
+                        <v-subheader class="overline ml-n5">Have You Been Diagnosed With An Anaphylactic Allergy?</v-subheader>
+                        <v-btn-toggle
+                            v-model="adrenaline.adrenalineDiagnosis" 
+                            color="primary" 
+                            group 
+                            :error-messages="adrenalineDiagnosisError"
+                            @click="$v.adrenaline.adrenalineDiagnosis.$touch()"
+                            @blur="$v.adrenaline.adrenalineDiagnosis.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                        </v-btn-toggle>
+                        </v-col>
+                        <v-col cols="12" md="12" lg="12">
+                        <v-subheader class="overline ml-n5">Are You Trained To Use An Adrenaline Pen?</v-subheader>
+                        <v-btn-toggle
+                            v-model="adrenaline.adrenalinetrained" 
+                            color="primary" 
+                            group 
+                            :error-messages="adrenalinetrainedError"
+                            @click="$v.adrenaline.adrenalinetrained.$touch()"
+                            @blur="$v.adrenaline.adrenalinetrained.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                        </v-btn-toggle>
+                        </v-col>
+                        <v-col cols="12" md="12" lg="12">
+                        <v-subheader class="overline ml-n5">Are You Aware Of The Potential Symptoms of An Anaphylactic Reaction?</v-subheader>
+                        <v-btn-toggle
+                            v-model="adrenaline.adrenalinesymptoms" 
+                            color="primary" 
+                            group 
+                            :error-messages="adrenalineSymptomsError"
+                            @click="$v.adrenaline.adrenalinesymptoms.$touch()"
+                            @blur="$v.adrenaline.adrenalinesymptoms.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                        </v-btn-toggle>
+                        </v-col>
+                        </v-row>
+                    </v-card-text>
                 </v-card>
                 <!-- Contraception -->
                 <v-card v-if="showContraception">
@@ -211,11 +256,6 @@
                 <!-- Periods -->
                 <v-card v-if="showPeriodDelay">
                     <v-card-title class="primary lighten-1 white--text">Period Delay Pill</v-card-title>
-                    <v-card-text></v-card-text>
-                </v-card>
-                <!-- STI Test Kit -->
-                <v-card v-if="showSTIKit">
-                    <v-card-title class="primary lighten-1 white--text">STI Test Kit</v-card-title>
                     <v-card-text></v-card-text>
                 </v-card>
                 <!-- Thrush -->
@@ -395,7 +435,26 @@ export default {
                 !this.$v.asthma.asthmaSeverity.required && errors.push('Asthma Severity Is Required')
             return errors
         },
-    
+
+        // Adrenaline
+        adrenalineDiagnosisError () {
+            const errors = []
+            if(!this.$v.adrenaline.adrenalineDiagnosis.$dirty) return errors
+                !this.$v.adrenaline.adrenalineDiagnosis.required && errors.push('Asthma Severity Is Required')
+            return errors
+        },
+        adrenalinetrainedError () {
+            const errors = []
+            if(!this.$v.adrenaline.adrenalinetrained.$dirty) return errors
+                !this.$v.adrenaline.adrenalinetrained.required && errors.push('Asthma Severity Is Required')
+            return errors
+        },
+        adrenalineSymptomsError () {
+            const errors = []
+            if(!this.$v.adrenaline.adrenalinesymptoms.$dirty) return errors
+                !this.$v.adrenaline.adrenalinesymptoms.required && errors.push('Asthma Severity Is Required')
+            return errors
+        },
     },
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
@@ -425,7 +484,6 @@ export default {
                 { text: 'Asthma Treatment', value: 'Asthma Treatment'},
                 { text:'Contraceptive Pill & Patch', value: 'Contraception' },
                 { text:'Period Delay Pill', value: 'Period Delay' },
-                { text:'STI Test Kit', value: 'STI Test Kit' },
                 { text:'Thrush Treatment', value: 'Thrush Treatment' },    
             ],
             maleTreatments: [
@@ -433,7 +491,6 @@ export default {
                 { text: 'Asthma Treatment', value: 'Asthma Treatment'},
                 { text: 'Erectile Dysfunction Treatment', value: 'Erectile Dysfunction Treatment' },
                 { text: 'Premature Ejaculation Treatment', value: 'Premature Ejaculation Treatment' },
-                { text:'STI Test Kit', value: 'STI Test Kit' }, 
             ],
 
 
@@ -443,7 +500,6 @@ export default {
             showAsthma: false,
             showContraception: false,
             showPeriodDelay: false,
-            showSTIKit: false,
             showThrush: false,
             showErecDys: false,
             showPreE: false,
@@ -507,7 +563,13 @@ export default {
                 {text:'In The Last 6 Months', value: 'In The Last 6 Months'},
                 {text:'In The Last 12 Months', value: 'In The Last 12 Months'},
                 {text:'Over A Year Ago', value: 'Over A Year Ago'},
-            ]
+            ],
+
+            adrenaline: {
+                adrenalineDiagnosis: null,
+                adrenalinetrained: null,
+                adrenalinesymptoms: null,
+            },
 
            
         }
@@ -529,7 +591,12 @@ export default {
             asthmaLength: { required },
             asthmaSteroids: { required },
             asthmaSeverity: { required },
-        }
+        },
+        adrenaline: {
+            adrenalineDiagnosis: { required },
+            adrenalinetrained: { required },
+            adrenalinesymptoms: { required },
+        },
 
 
     },
@@ -559,7 +626,6 @@ export default {
             this.showAsthma = false,
             this.showContraception = false,
             this.showPeriodDelay = false,
-            this.showSTIKit = false,
             this.showThrush = false,
             this.showErecDys = false,
             this.showPreE = false
@@ -580,10 +646,6 @@ export default {
             else if(this.chosenOption == 'Period Delay'){
                 this.hideAllTreatments()
                 this.showPeriodDelay = true
-            }
-            else if(this.chosenOption == 'STI Test Kit'){
-                this.hideAllTreatments()
-                this.showSTIKit = true
             }
             else if(this.chosenOption == 'Thrush Treatment'){
                 this.hideAllTreatments()
@@ -622,7 +684,6 @@ export default {
             this.clearForms()
             this.chosenOption = null
             this.genderOption = null
-
             this.snackbar = null
         },
         clearForms () {
@@ -640,14 +701,44 @@ export default {
             this.ereDys.ereDysPrevious = null
 
             // Clear Asthma
-            this.asthmaLength = null
-            this.asthmaSteroids = null
-            this.asthmaSeverity = null
+            this.asthma.asthmaLength = null
+            this.asthma.asthmaSteroids = null
+            this.asthma.asthmaSeverity = null
+
+            // Clear Adrenaline
+            this.adrenaline.adrenalineDiagnosis = null
+            this.adrenaline.adrenalinetrained = null
+            this.adrenaline.adrenalinesymptoms = null
         },
         // Submit request form
         requestPrescription () {
             if (this.chosenOption == 'Adrenaline Pen Treatment'){
-                this.hideAllTreatments()
+                this.$v.$touch() // used to check the state of the form fields
+                this.formTouched = !this.$v.adrenaline.$anyDirty
+                this.errors = this.$v.adrenaline.$anyError
+                // If the form does not have any errors or each individual field has no invalid data 
+                if (this.errors === false && this.formTouched === false){      
+                    let addPrescription ={
+                        patientID: this.currentUser,
+                        dateRequested: this.getTodaysDate(),
+                        chosenType: this.chosenOption,
+                        adrenalineDiagnosis: this.adrenaline.adrenalineDiagnosis,
+                        trained: this.adrenaline.adrenalinetrained,
+                        recogniseSymptoms: this.adrenaline.adrenalinesymptoms,
+                     
+                    }
+                db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
+                    this.clearForms()
+                    this.hideAllTreatments()
+                }).catch(error => {
+                    console.log("Prescription Error ", error)
+                    this.triggerSnackbar("There Were Errors With The Form!", "error")
+                })   
+                }
+                else{
+                    this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
+                }
           
             }
             else if(this.chosenOption == 'Asthma Treatment'){
@@ -676,7 +767,6 @@ export default {
                 else{
                     this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 } 
-            
             }
             else if(this.chosenOption == 'Contraception'){
                 this.$v.$touch() // used to check the state of the form fields
@@ -712,10 +802,6 @@ export default {
             else if(this.chosenOption == 'Period Delay'){
                 this.hideAllTreatments()
                 
-            }
-            else if(this.chosenOption == 'STI Test Kit'){
-                this.hideAllTreatments()
-               
             }
             else if(this.chosenOption == 'Thrush Treatment'){
                 this.hideAllTreatments()
