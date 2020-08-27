@@ -132,7 +132,9 @@
                                     v-model="contraceptives.periodsRegular" 
                                     color="primary" 
                                     group 
-                                    mandatory
+                                    :error-messages="periodsRegularError"
+                                    @click="$v.contraceptives.periodsRegular.$touch()"
+                                    @blur="$v.contraceptives.periodsRegular.$touch()"
                                     >
                                     <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
                                     <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
@@ -144,8 +146,9 @@
                                     v-model="contraceptives.previoulyTaken" 
                                     color="primary" 
                                     group 
-                                    mandatory
-                                    
+                                    :error-messages="previoulyTakenError"
+                                    @input="$v.contraceptives.previoulyTaken.$touch()"
+                                    @blur="$v.contraceptives.previoulyTaken.$touch()"
                                     >
                                     <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
                                     <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
@@ -157,8 +160,9 @@
                                     v-model="contraceptives.sideEffects" 
                                     color="primary" 
                                     group 
-                                    mandatory
-                                    
+                                    :error-messages="sideEffectsError"
+                                    @input="$v.contraceptives.sideEffects.$touch()"
+                                    @blur="$v.contraceptives.sideEffects.$touch()"
                                     >
                                     <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
                                     <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
@@ -169,6 +173,9 @@
                                 label="Describe side effects"
                                 v-model="contraceptives.sideEffectDescription"
                                 outlined
+                                :error-messages="sideEffectDescriptionError"
+                                @input="$v.contraceptives.sideEffectDescription.$touch()"
+                                @blur="$v.contraceptives.sideEffectDescription.$touch()"
                                 ></v-textarea>
                             </v-col>
                         </v-row>
@@ -240,6 +247,7 @@
 <script>
 import Navbar from '../components/Navbars/Navbar'
 import { auth, db } from '../firebase'
+
 import { required } from "vuelidate/lib/validators"
 export default {
     components: {
@@ -251,11 +259,32 @@ export default {
             if(!this.$v.contraceptives.contraceptiveType.$dirty) return errors
             !this.$v.contraceptives.contraceptiveType.required && errors.push('Please Select A Contraceptive Type')
             return errors
-        }
-        // periodsRegular
-        // previoulyTaken
-        // sideEffects
-        // sideEffectDescription
+        },
+        periodsRegularError () {
+            const errors = []
+            if(!this.$v.contraceptives.periodsRegular.$dirty) return errors
+            !this.$v.contraceptives.periodsRegular.required && errors.push('A Value Is Required')
+            return errors
+        },
+        previoulyTakenError () {
+            const errors = []
+            if(!this.$v.contraceptives.previoulyTaken.$dirty) return errors
+            !this.$v.contraceptives.previoulyTaken.required && errors.push('A Value Is Required')
+            return errors
+        },
+        sideEffectsError () {
+            const errors = []
+            if(!this.$v.contraceptives.sideEffects.$dirty) return errors
+            !this.$v.contraceptives.sideEffects.required && errors.push('A Value Is Required')
+            return errors
+        },
+        sideEffectDescriptionError () {
+            const errors = []
+            if(!this.$v.contraceptives.sideEffectDescription.$dirty) return errors
+            !this.$v.contraceptives.sideEffectDescription.required && errors.push('A Value Is Required')
+            return errors
+        },
+    
     },
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
@@ -314,7 +343,7 @@ export default {
                 periodsRegular: null,
                 previoulyTaken: null,
                 sideEffects: null,
-                sideEffectDescription: 'None'
+                sideEffectDescription: null,
             },
             
             contraceptiveList: [
@@ -336,10 +365,10 @@ export default {
     validations: {
         contraceptives: {
         contraceptiveType: { required },
-        // periodsRegular: { required },
-        // previoulyTaken: { required },
-        // sideEffects: { required },
-        // sideEffectDescription: { required },
+        periodsRegular: { required },
+        previoulyTaken: { required },
+        sideEffects: { required },
+        sideEffectDescription: { required },
         }
 
 
@@ -447,17 +476,18 @@ export default {
                 this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.contraceptives.$anyDirty
                 this.errors = this.$v.contraceptives.$anyError
+
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){
-
+                         
                 let addPrescription ={
                     patientID: this.currentUser,
                     chosenType: this.chosenOption,
-                    contraception: this.contraceptiveType,
-                    periodRegulation: this.periodsRegular,
-                    previousUsage: this.previoulyTaken,
-                    sideEffects: this.sideEffects,
-                    effectsDescription: this.sideEffectDescription,
+                    contraception: this.contraceptives.contraceptiveType,
+                    periodRegulation: this.contraceptives.periodsRegular,
+                    previousUsage: this.contraceptives.previoulyTaken,
+                    sideEffects: this.contraceptives.sideEffects,
+                    effectsDescription: this.contraceptives.sideEffectDescription,
                 }
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")

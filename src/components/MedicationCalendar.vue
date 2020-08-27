@@ -73,7 +73,7 @@
                         <!-- Dose Amount -->
                         <v-col cols="12" sm="3" md="3">
                             <v-text-field
-                            label="Dose*"
+                            label="Dosage*"
                             type="number"
                             v-model="dose"
                             outlined
@@ -94,18 +94,18 @@
 
                             ></v-select>
                         </v-col>
-                        <!-- Additional Details --> 
-                        <v-col cols="12" sm="6" md="6">
-                             <v-textarea 
-                             label="Additional Detail"
-                             v-model="medicationDetails" 
-                             auto-grow
-                             rows="1"
-                             outlined 
-                            
 
 
-                             ></v-textarea>
+                        <v-col cols="12" sm="4" md="4">
+                            <v-text-field
+                            label="Times per Day"
+                            type="number"
+                            v-model="timesPerDay"
+                            outlined
+
+
+
+                            ></v-text-field>
                         </v-col>
 
                         <!-- Select Time -->
@@ -142,6 +142,7 @@
                         </v-col>
 
 
+                        <!-- Date Options -->
                         <v-col cols="12" sm="6" md="6">
                             <v-select   
                             label="Date Options"
@@ -244,6 +245,19 @@
                         </v-menu>
                         </v-col>
 
+                        <!-- Additional Details --> 
+                        <v-col cols="12" sm="6" md="6">
+                             <v-textarea 
+                             label="Additional Detail"
+                             v-model="medicationDetails" 
+                             auto-grow
+                             rows="1"
+                             outlined 
+                            
+
+
+                             ></v-textarea>
+                        </v-col>
 
 
                     </v-row>
@@ -307,11 +321,16 @@
 </template>
 
 <script>
-import { auth, db } from '../firebase'
+import { auth, db, fieldValue } from '../firebase'
 
 export default {
+    created() {
+        this.currentUser = auth.currentUser.uid // Get current users ID
+    },
     data() {
         return {
+            currentUser: null,
+
             focus: '',
             type: 'month',
             typeToLabel: {
@@ -342,6 +361,7 @@ export default {
                 { text: 'Milligram(s)', value: 'milligram' },
                 { text: 'Milliliter(s)', value: 'milliliter' },
             ],
+            timesPerDay: null,
             medicationDetails: null,
             time: null,
             
@@ -367,7 +387,7 @@ export default {
         }
     },
     mounted() {
-        this.getAppointments()
+        this.getMedication()
     },
     methods: {
         getTodaysDate () {
@@ -380,30 +400,36 @@ export default {
             latest.setMonth(latest.getMonth() + 1)
             return latest.toISOString()
         },
-        getAppointments () {
+        getMedication () {
             // Set current user to the currently logged in user
-            var currentUser = auth.currentUser.uid
-            db.collection("appointments").where("patientID", "==", currentUser).onSnapshot( snap => {
-                let appointment = snap.docChanges()
-                appointment.forEach(appointment => { 
-                    let record = appointment.doc.data()
+           
+            db.collection("users").doc(this.currentUser).get().then( snap => {
                 
-                    let time = record.appointmentTime.replace(".", ":")
-                    let endTime = time.substr(0, time.length -2)
-                    let endTimeMinutes = time.substr(time.length -2, 2)
-                    endTime = endTime + (parseInt(endTimeMinutes) + 25)
+                if(snap.data().medication != null){
+                    let medication = snap.data().medication
+                    console.log(medication)
+                    medication.forEach( medication => {
+                        let medicationRecord = medication
+                        console.log(medicationRecord)
 
-                    let event = {
-                        name: 'Appointment',
-                        details : record.appointmentDetails,
-                        start: record.appointmentDate + " " + time,
-                        end: record.appointmentDate + " " + endTime
-                    }
-                    this.events.push(event)
+                        // do calculations here for timeing etc
+
+
+
+                        // let event = {
+                        //     name: ,
+                        //     details: ,
+                        //     start: ,
+                        //     end: ,
+                        // }
+
+                    })
+                }
+         
                   
-                
-                })
             })
+  
+         
         },
         setOption () {
             // Switch between the two date picking options
@@ -419,40 +445,53 @@ export default {
             }
         },
         saveMedication () {
-      
-            // Check can these be added in optionally for display on card
-            // let dose = this.dose
-            // let unit = this.dosageUnit
 
-            // // These will need to be configured to start and end
-            // let time = this.time
-            // let dateMultiple = this.medDates
-            // let dateRange = this.dateRange
-            
 
-            let medication = {
-               name: this.medicationName,
-               details: this.medicationDetails,
-               start: this.medDates + " " + this.time,
-                end: this.medDates + " " + this.time,
+            console.log("Dates are ",this.medDates)
+            console.log("Dates are ", this.medBetweenDates)
+            let dates = []
+            if(this.medDates != null){
+                this.dates = this.medDates
+            }
+            else{
+                this.dates = this.medBetweenDates
+            }
+            // dates is returning null???
+            var addMedication = {
+                medication: this.medicationName,
+                dose: this.dose,
+                doseUnit: this.dosageUnit, 
+                perDay: this.timesPerDay,
+                startTime: this.time,
+                medDates: dates,
+                details: this.medicationDetails,
                 color: this.picker,
             }
-            this.events.push(medication)
 
-            this.medicationName = null
-            this.dose = null
-            this.dosageUnit = null
-            this.medicationDetails = null
-            this.time = null
-            this.medDates= []
-            this.medBetweenDates = null
-            this.picker = null
+
+            var medicationRecord = {
+                medication: fieldValue.arrayUnion(addMedication)
+            }
+
+            console.log("Medication Record", addMedication ,medicationRecord)
+
+            // db.collection("users").doc(this.currentUser).update(medicationRecord).then(() => {
+            //     // Clear the form values
+            //     this.medicationName = null
+            //     this.dose = null
+            //     this.dosageUnit = null
+            //     this.timesPerDay = null
+            //     this.time = null
+            //     this.medDates= null
+            //     this.medBetweenDates = null
+            //     this.medicationDetails = null
+            //     this.picker = null
+            // }).catch(error => {
+            //     console.log("Med Add ", error)
+            // }).then(() => {
+            //     console.log("Do stuff")
+            // })      
         },
-
-
-
-
-
 
         viewDay ({ date }) {
             this.focus = date

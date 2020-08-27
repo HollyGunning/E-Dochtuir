@@ -17,6 +17,10 @@ match /databases/{database}/documents {
     allow read, write: if request.auth.uid !=null;
   }
 
+  match /prescriptions/{prescriptionsId}{
+    allow read, write: if request.auth.uid !=null;
+  }
+  
   match /tickets/{ticketsId}{
     allow write: if request.auth.uid !=null;
   }

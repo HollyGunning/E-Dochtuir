@@ -6,7 +6,7 @@
         <v-card-text>
         <v-row>
         <v-col cols="12" md="6" lg="6">
-            <h2 class="overline black--text ml-4" justify="center">You do not have any appointments!</h2>
+            <h2 class="overline black--text ml-4" justify="center">You do not have any Online Appointments!</h2>
         </v-col>
         <v-col cols="12" md="6" lg="6">
             <router-link to="/appointments" tag="button">
@@ -18,23 +18,20 @@
     </v-card>
 
         <!-- Chat Card -->
-        <v-card v-if="chatRoom" class="mt-6">
+        <v-card v-if="chatRoom" class="mt-6 mb-9">
+        <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
         <v-container>
         <v-card outlined class="messages">
             <v-card-text class="chat-message" v-for="(message, index) in messages" :key="index">
-            <v-col cols="12" md="6" lg="6">
             <div class="right-bubble" v-if="message.name === userName ">
                 <div class="subtitle-1">{{ message.name }}&nbsp;</div>
                 <span class="green-text">{{ message.text }}</span>  
-            </div>
-            </v-col>
-            <v-col cols="12" md="6" lg="6">
+            </div>  
            <div class="left-bubble right-align" v-if="message.name !== userName">
                 <div class="subtitle-1">{{ message.name }}&nbsp;</div>
                 <span class="green-text">{{ message.text }}</span>
             </div>
-            </v-col>
- 
+           
             </v-card-text>
         </v-card>
 
