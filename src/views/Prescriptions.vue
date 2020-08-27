@@ -79,14 +79,29 @@
                 ></v-select>
             </v-col>
 
+            <!-- TEST -->
+            <v-col cols="12">
 
-            <!-- Contraceptive Form Info --> 
+            </v-col>
+
+
+
+
+
+
+
          
             <v-col cols="12">
                 <!-- Asthma -->
                 <v-card v-if="showAsthma">
                     <v-card-title class="primary lighten-1 white--text">Asthma Treatment</v-card-title>
-                    <v-card-text></v-card-text>
+                    <v-card-text>
+                        <v-row>
+                            <v-col>
+                                Label
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
                 </v-card>
                 <!-- Adrenaline -->
                 <v-card v-if="showAdrenaline">
@@ -96,7 +111,65 @@
                 <!-- Contraception -->
                 <v-card v-if="showContraception">
                     <v-card-title class="primary lighten-1 white--text">Contraception Pill & Patch</v-card-title>
-                    <v-card-text></v-card-text>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" md="6" lg="6">
+                                <v-subheader class="overline ml-n5">Choose a contraceptive</v-subheader>
+                                <v-select
+                                label="Contraceptive Type"
+                                v-model="contraceptiveType"
+                                :items="contraceptiveList"
+                                outlined
+                                >
+                                </v-select>   
+                            </v-col>
+                            <v-col cols="6" md="6" lg="6">
+                                <v-subheader class="overline ml-n5">Regulated Periods?</v-subheader>
+                                <v-btn-toggle
+                                    v-model="periodsRegular" 
+                                    color="primary" 
+                                    group 
+                                    mandatory
+                                    >
+                                    <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                                    <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                                </v-btn-toggle>
+                            </v-col>
+                            <v-col cols="6" md="6" lg="6">
+                                <v-subheader class="overline ml-n5">Previous Usage?</v-subheader>
+                                <v-btn-toggle
+                                    v-model="previoulyTaken" 
+                                    color="primary" 
+                                    group 
+                                    mandatory
+                                    
+                                    >
+                                    <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                                    <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                                </v-btn-toggle>
+                            </v-col>
+                            <v-col cols="6" md="6" lg="6">
+                                <v-subheader class="overline ml-n5">Any Side Effects?</v-subheader>
+                                <v-btn-toggle
+                                    v-model="sideEffects" 
+                                    color="primary" 
+                                    group 
+                                    mandatory
+                                    
+                                    >
+                                    <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                                    <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                                </v-btn-toggle>
+                            </v-col>
+                            <v-col cols="12" md="6" lg="6">
+                                <v-textarea
+                                label="Describe side effects"
+                                v-model="sideEffectDescription"
+                                outlined
+                                ></v-textarea>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
                 </v-card>
                 <!-- Periods -->
                 <v-card v-if="showPeriodDelay">
@@ -163,12 +236,26 @@
 
 <script>
 import Navbar from '../components/Navbars/Navbar'
+import { auth, db } from '../firebase'
+import { required } from "vuelidate/lib/validators"
 export default {
     components: {
         Navbar,
     },
+    computed: {
+        contraceptiveTypeError () {
+            const errors = []
+            if(!this.$v.contraceptiveType.$dirty) return errors
+            !this.$v.contraceptiveType.required && errors.push('Please Select A Contraceptive Type')
+            return errors
+        }
+        // periodsRegular
+        // previoulyTaken
+        // sideEffects
+        // sideEffectDescription
+    },
     created() {
-        
+        this.currentUser = auth.currentUser.uid // Get current users ID
     },
     data() {
         return {
@@ -217,10 +304,34 @@ export default {
             showThrush: false,
             showErecDys: false,
             showPreE: false,
-            
+
+            // Contraception Card
+            contraceptiveType: null,
+            contraceptiveList: [
+                {text: 'Azalia', value: "Azalia" },
+                {text: 'Cerazette', value: "Cerazette" },
+                {text: 'Cilest', value: "Cilest" },
+                {text: 'Elvina', value: "Elvina" },
+                {text: 'Elvinette', value: "Elvinette" },
+                {text: 'Evra Patches', value: "Evra Patches" },
+                {text: 'Freedonel', value: "Freedonel" },
+                {text: 'Leonore', value: "Leonore" },
+                {text: 'Microlite', value: "Microlite" },
+                {text: 'Yasmin', value: "Yasmin" },
+                {text: 'Zoely ', value: "Zoely " },
+            ],
+            periodsRegular: null,
+            previoulyTaken: null,
+            sideEffects: null,
+            sideEffectDescription: 'None'
         }
     },
     validations: {
+        contraceptiveType: { required },
+        // periodsRegular: { required },
+        // previoulyTaken: { required },
+        // sideEffects: { required },
+        // sideEffectDescription: { required },
 
     },
     methods: {
@@ -294,18 +405,78 @@ export default {
         },
         // Cancel the page
         cancel () {
-            this.dialog = false
             // this.$v.$reset()
-            // this.appointmentSelected = null
-            // this.chosenDoc = null
-            // this.appointmentDate = null
-            // this.additionalDetails = null
-            // this.selectedTime = null
+            this.dialog = false
+            this.hideAllTreatments()
+            this.clearForms()
+            this.chosenOption = null
+            this.genderOption = null
+
             this.snackbar = null
+        },
+        clearForms () {
+            // Clear contraceptive
+            this.contraceptiveType = null
+            this.periodsRegular = null
+            this.previoulyTaken = null
+            this.sideEffects = null
+            this.sideEffectDescription = null
         },
         // Submit request form
         requestPrescription () {
-
+            if (this.chosenOption == 'Adrenaline Pen Treatment'){
+                this.hideAllTreatments()
+          
+            }
+            else if(this.chosenOption == 'Asthma Treatment'){
+                this.hideAllTreatments()
+            
+            }
+            else if(this.chosenOption == 'Contraception'){
+                let addPrescription ={
+                    patientID: this.currentUser,
+                    chosenType: this.chosenOption,
+                    contraception: this.contraceptiveType,
+                    periodRegulation: this.periodsRegular,
+                    previousUsage: this.previoulyTaken,
+                    sideEffects: this.sideEffects,
+                    effectsDescription: this.sideEffectDescription,
+                }
+                db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
+                }).then(() =>{
+                    this.hideAllTreatments()
+                    this.clearForms()
+                }).catch(error => {
+                    console.log("Prescription Error ", error)
+                    this.triggerSnackbar("There Were Errors With The Form!", "error")
+                })            
+            }
+            else if(this.chosenOption == 'Period Delay'){
+                this.hideAllTreatments()
+                
+            }
+            else if(this.chosenOption == 'STI Test Kit'){
+                this.hideAllTreatments()
+               
+            }
+            else if(this.chosenOption == 'Thrush Treatment'){
+                this.hideAllTreatments()
+              
+            }
+            else if(this.chosenOption == 'Erectile Dysfunction Treatment'){
+                this.hideAllTreatments()
+                
+            }
+            else if(this.chosenOption == 'Premature Ejaculation Treatment'){
+                this.hideAllTreatments()
+               
+            }
+            else{
+                this.hideAllTreatments()
+                this.clearForms()
+                this.triggerSnackbar("Error Submitting Any Treatment", "error")
+            }
         },
     },
     
