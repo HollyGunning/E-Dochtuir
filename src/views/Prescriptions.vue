@@ -90,7 +90,7 @@
                         <v-col cols="12" sm="6" md="6" lg="6">
                             <v-subheader class="overline ml-n5">How Long With Asthma?</v-subheader>
                             <v-select
-                            label="Select a Length of Time"
+                            label="Select a Length of Time*"
                             v-model="asthma.asthmaLength"
                             :items="asthmaLengthList"
                             outlined
@@ -102,7 +102,7 @@
                         <v-col cols="12" sm="6" md="6" lg="6">
                             <v-subheader class="overline ml-n5">Have You Ever Required Oral Steroids?</v-subheader>
                             <v-select
-                            label="Select"
+                            label="Select*"
                             v-model="asthma.asthmaSteroids"
                             :items="asthmaSteroidList"
                             outlined
@@ -112,7 +112,7 @@
                             ></v-select>
                         </v-col>
                         <v-col cols="12" sm="6" md="6" lg="6">
-                            <v-subheader class="overline ml-n5">Asthma Severity</v-subheader>
+                            <v-subheader class="overline ml-n5">Asthma Severity*</v-subheader>
                             <v-btn-toggle
                             v-model="asthma.asthmaSeverity" 
                             color="primary" 
