@@ -314,7 +314,49 @@
                 <!-- PreEj -->
                 <v-card v-if="showPreE">
                     <v-card-title class="primary lighten-1 white--text">Premature Ejaculation Treatment</v-card-title>
-                    <v-card-text></v-card-text>
+                    <v-card-text>
+                        <v-row>
+                        <v-col cols="12" md="6" lg="6">
+                        <v-subheader class="overline ml-n5">How Long Have You Been Suffering From PE?</v-subheader>
+                        <v-select
+                        label="Duration of Suffering"
+                        v-model="pe.peDuration"
+                        :items="peDurationList"
+                        outlined
+                        :error-messages="peDurationError"
+                        @input="$v.pe.peDuration.$touch()"
+                        @blur="$v.pe.peDuration.$touch()"
+                        >
+                        </v-select>   
+                        </v-col>
+                        <v-col cols="12" md="6" lg="6">
+                        <v-subheader class="overline ml-n5">How Often Do You Experience PE?</v-subheader>
+                        <v-select
+                        label="How Often"
+                        v-model="pe.peOften"
+                        :items="peOftenList"
+                        outlined
+                        :error-messages="peOftenError"
+                        @input="$v.pe.peOften.$touch()"
+                        @blur="$v.pe.peOften.$touch()"
+                        >
+                        </v-select>   
+                        </v-col>
+                        <v-col cols="12" md="6" lg="6">
+                        <v-subheader class="overline ml-n5">When Does PE Occur?</v-subheader>
+                        <v-select
+                        label="How Often"
+                        v-model="pe.peOccur"
+                        :items="peOccurList"
+                        outlined
+                        :error-messages="peOccurError"
+                        @input="$v.pe.peOccur.$touch()"
+                        @blur="$v.pe.peOccur.$touch()"
+                        >
+                        </v-select>   
+                        </v-col>
+                        </v-row>
+                    </v-card-text>
                 </v-card>
             </v-col>
         
@@ -440,21 +482,43 @@ export default {
         adrenalineDiagnosisError () {
             const errors = []
             if(!this.$v.adrenaline.adrenalineDiagnosis.$dirty) return errors
-                !this.$v.adrenaline.adrenalineDiagnosis.required && errors.push('Asthma Severity Is Required')
+                !this.$v.adrenaline.adrenalineDiagnosis.required && errors.push('Adrenaline Diagnosis Is Required')
             return errors
         },
         adrenalinetrainedError () {
             const errors = []
             if(!this.$v.adrenaline.adrenalinetrained.$dirty) return errors
-                !this.$v.adrenaline.adrenalinetrained.required && errors.push('Asthma Severity Is Required')
+                !this.$v.adrenaline.adrenalinetrained.required && errors.push('Adrenaline Trained Is Required')
             return errors
         },
         adrenalineSymptomsError () {
             const errors = []
             if(!this.$v.adrenaline.adrenalinesymptoms.$dirty) return errors
-                !this.$v.adrenaline.adrenalinesymptoms.required && errors.push('Asthma Severity Is Required')
+                !this.$v.adrenaline.adrenalinesymptoms.required && errors.push('Adrenaline Symptoms Are Required')
             return errors
         },
+
+        // PE 
+        peDurationError () {
+            const errors = []
+            if(!this.$v.pe.peDuration.$dirty) return errors
+                !this.$v.pe.peDuration.required && errors.push('PE Duration Is Required')
+            return errors
+        },
+        peOftenError () {
+            const errors = []
+            if(!this.$v.pe.peOften.$dirty) return errors
+                !this.$v.pe.peOften.required && errors.push('How Often Is Required')
+            return errors
+        },
+        peOccurError () {
+            const errors = []
+            if(!this.$v.pe.peOccur.$dirty) return errors
+                !this.$v.pe.peOccur.required && errors.push('PE Occurence Is Required')
+            return errors
+        },
+
+
     },
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
@@ -564,12 +628,36 @@ export default {
                 {text:'In The Last 12 Months', value: 'In The Last 12 Months'},
                 {text:'Over A Year Ago', value: 'Over A Year Ago'},
             ],
-
             adrenaline: {
                 adrenalineDiagnosis: null,
                 adrenalinetrained: null,
                 adrenalinesymptoms: null,
             },
+
+            pe: {
+                peDuration: null,
+                peOften: null,
+                peOccur: null,
+            },
+            peDurationList: [
+                {text: 'Less Than 3 Months', valude: 'Less Than 3 Months'},
+                {text: 'Less Than 6 Months', valude: 'Less Than 6 Months'},
+                {text: 'Less Than 1 Year', valude: 'Less Than 1 Year'},
+                {text: 'Longer Than 5 Years', valude: 'Longer Than 5 Years'},
+                {text: 'Indefinetly', valude: 'Indefinetly'},
+            ],
+            peOftenList: [
+                {text: 'During Sex', value: 'During Sex'},
+                {text: 'Only With New Partner', value: 'During Sex With New Partner'},
+            ],
+            peOccurList: [
+                {text: 'During Foreplay', value: 'During Foreplay'},
+                {text: 'While Attempting Penetration', value: 'While Attempting Penetration'},
+                {text: 'Just After Penetration', value: 'Just After Penetration'},
+                {text: 'Less Than 2 Minutes After Penetration', value: 'Less Than 2 Minutes After Penetration'},
+                {text: 'More Than 2 Minutes After Penetration', value: 'More Than 2 Minutes After Penetration'},
+ 
+            ]
 
            
         }
@@ -596,6 +684,11 @@ export default {
             adrenalineDiagnosis: { required },
             adrenalinetrained: { required },
             adrenalinesymptoms: { required },
+        },
+        pe: {
+            peDuration: { required },
+            peOften: { required },
+            peOccur: { required },
         },
 
 
@@ -709,6 +802,11 @@ export default {
             this.adrenaline.adrenalineDiagnosis = null
             this.adrenaline.adrenalinetrained = null
             this.adrenaline.adrenalinesymptoms = null
+
+            // Clear PE
+            this.pe.peDuration = null
+            this.pe.peOften = null
+            this.pe.peOccur = null
         },
         // Submit request form
         requestPrescription () {
@@ -739,7 +837,6 @@ export default {
                 else{
                     this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 }
-          
             }
             else if(this.chosenOption == 'Asthma Treatment'){
                 this.$v.$touch() // used to check the state of the form fields
@@ -836,7 +933,32 @@ export default {
 
             }
             else if(this.chosenOption == 'Premature Ejaculation Treatment'){
-                this.hideAllTreatments()
+                this.$v.$touch() // used to check the state of the form fields
+                this.formTouched = !this.$v.pe.$anyDirty
+                this.errors = this.$v.pe.$anyError
+                // If the form does not have any errors or each individual field has no invalid data 
+                if (this.errors === false && this.formTouched === false){      
+                    let addPrescription ={
+                        patientID: this.currentUser,
+                        dateRequested: this.getTodaysDate(),
+                        chosenType: this.chosenOption,
+                        durationWith: this.pe.peDuration,
+                        howOften: this.pe.peOften,
+                        occurs: this.pe.peOccur,
+                     
+                    }
+                db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
+                    this.clearForms()
+                    this.hideAllTreatments()
+                }).catch(error => {
+                    console.log("Prescription Error ", error)
+                    this.triggerSnackbar("There Were Errors With The Form!", "error")
+                })   
+                }
+                else{
+                    this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
+                }
                
             }
             else{
