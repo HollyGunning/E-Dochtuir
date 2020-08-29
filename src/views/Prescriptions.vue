@@ -253,11 +253,6 @@
                         </v-row>
                     </v-card-text>
                 </v-card>
-                <!-- Periods -->
-                <v-card v-if="showPeriodDelay">
-                    <v-card-title class="primary lighten-1 white--text">Period Delay Pill</v-card-title>
-                    <v-card-text></v-card-text>
-                </v-card>
                 <!-- Thrush -->
                 <v-card v-if="showThrush">
                     <v-card-title class="primary lighten-1 white--text">Thrush Treatment</v-card-title>
@@ -345,7 +340,7 @@
                         <v-col cols="12" md="6" lg="6">
                         <v-subheader class="overline ml-n5">When Does PE Occur?</v-subheader>
                         <v-select
-                        label="How Often"
+                        label="Occurence"
                         v-model="pe.peOccur"
                         :items="peOccurList"
                         outlined
@@ -354,6 +349,20 @@
                         @blur="$v.pe.peOccur.$touch()"
                         >
                         </v-select>   
+                        </v-col>
+                        <v-col cols="6" md="6" lg="6">
+                            <v-subheader class="overline ml-n5">Choose A Medication</v-subheader>
+                            <v-btn-toggle
+                                v-model="pe.medication" 
+                                color="primary" 
+                                group 
+                                :error-messages="medicationError"
+                                @input="$v.pe.medication.$touch()"
+                                @blur="$v.pe.medication.$touch()"
+                                >
+                                <v-btn depressed x-large color="primary--text darken-1" value="EMLA">EMLA</v-btn>
+                                <v-btn depressed x-large color="primary--text darken-1" value="PRILIGY">PRILIGY</v-btn>
+                            </v-btn-toggle>
                         </v-col>
                         </v-row>
                     </v-card-text>
@@ -517,6 +526,12 @@ export default {
                 !this.$v.pe.peOccur.required && errors.push('PE Occurence Is Required')
             return errors
         },
+        medicationError () {
+            const errors = []
+            if(!this.$v.pe.medication.$dirty) return errors
+                !this.$v.pe.medication.required && errors.push('PE Medication Is Required')
+            return errors
+        },
 
 
     },
@@ -563,7 +578,6 @@ export default {
             showAdrenaline: false,
             showAsthma: false,
             showContraception: false,
-            showPeriodDelay: false,
             showThrush: false,
             showErecDys: false,
             showPreE: false,
@@ -638,6 +652,7 @@ export default {
                 peDuration: null,
                 peOften: null,
                 peOccur: null,
+                medication: null,
             },
             peDurationList: [
                 {text: 'Less Than 3 Months', valude: 'Less Than 3 Months'},
@@ -689,6 +704,7 @@ export default {
             peDuration: { required },
             peOften: { required },
             peOccur: { required },
+            medication: { required },
         },
 
 
@@ -718,7 +734,6 @@ export default {
             this.showAdrenaline = false,
             this.showAsthma = false,
             this.showContraception = false,
-            this.showPeriodDelay = false,
             this.showThrush = false,
             this.showErecDys = false,
             this.showPreE = false
@@ -735,10 +750,6 @@ export default {
             else if(this.chosenOption == 'Contraception'){
                 this.hideAllTreatments()
                 this.showContraception = true
-            }
-            else if(this.chosenOption == 'Period Delay'){
-                this.hideAllTreatments()
-                this.showPeriodDelay = true
             }
             else if(this.chosenOption == 'Thrush Treatment'){
                 this.hideAllTreatments()
@@ -807,6 +818,7 @@ export default {
             this.pe.peDuration = null
             this.pe.peOften = null
             this.pe.peOccur = null
+            this.pe.medication = null
         },
         // Submit request form
         requestPrescription () {
@@ -945,7 +957,7 @@ export default {
                         durationWith: this.pe.peDuration,
                         howOften: this.pe.peOften,
                         occurs: this.pe.peOccur,
-                     
+                        medication: this.pe.medication,
                     }
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
@@ -964,7 +976,7 @@ export default {
             else{
                 this.hideAllTreatments()
                 this.clearForms()
-                this.triggerSnackbar("You Must Select A Gender & Treatment!", "error")
+                this.triggerSnackbar("You Must Select A Treatment!", "error")
             }
         },
     },
