@@ -49,9 +49,9 @@
         <v-card>
             <v-form @submit.prevent="saveMedication()">
             <!-- <v-card-title class="primary lighten-1 white--text">Add Medication -->
-                <v-card-title :color="selectedEvent.color">Add Medication
+                <v-card-title class="primary white--text">Add Medication
                 <v-spacer></v-spacer>
-                <v-btn class="mr-6" icon dark @click="dialog = false"> 
+                <v-btn class="mr-6" icon dark @click="cancel()"> 
                 <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
                 <span>Cancel</span>
                 </v-btn>
@@ -414,6 +414,20 @@ export default {
   
          
         },
+        cancel () {
+            this.dialog = false
+            this.clearForms()
+        },
+        clearForms() {
+            this.$v.$reset()
+            this.medicationName = null
+            this.dose = null
+            this.dosageUnit = null
+            this.time = null
+            this.medDates= null
+            this.medicationDetails = null
+            this.picker = null
+        },
         saveMedication () {
             this.$v.$touch() // used to check the state of the form fields
             this.formTouched = !this.$v.$anyDirty
@@ -439,13 +453,7 @@ export default {
 
                 db.collection("users").doc(this.currentUser).update(medicationRecord).then(() => {
                     // Clear the form values
-                    this.medicationName = null
-                    this.dose = null
-                    this.dosageUnit = null
-                    this.time = null
-                    this.medDates= null
-                    this.medicationDetails = null
-                    this.picker = null
+                        this.clearForms()
                     }).then(() => {
                         console.log("Submitted!")
                         this.dialog = false
