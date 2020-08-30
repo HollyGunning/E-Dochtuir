@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import * as fb from '../firebase'
 import router from '../router/index'
 
+import {auth} from '../firebase'
+
 Vue.use(Vuex)
 
 
@@ -17,12 +19,10 @@ export default new Vuex.Store({
 
   },
 
-
   mutations: {
     setUserProfile(state, payload) {
       state.userProfile = payload
     },
-
     setRegisterError(state, payload){
       state.registerError = payload
     },
@@ -80,10 +80,13 @@ export default new Vuex.Store({
     // LOGOUT
     async logout({ commit  }){
       await fb.auth.signOut()
+      console.log("User signed out")
+      console.log(auth.currentUser)
 
-      
       // clear userProfile and redirect to /login
       commit('setUserProfile', {})
+
+
 
       // commit('setUser', null)
 
