@@ -1,10 +1,9 @@
 <template>
     <v-row class="fill-height">
         <v-col>
-
         <!-- Contains the top toolbar with the today, prev, next btn options and a menu that switches the calendar view--> 
         <v-sheet height="64">
-            <v-toolbar flat color="white">
+            <v-toolbar flat>
                 <v-btn outlined color="primary" class="mr-2" @click="dialog = true">
                     Add Medication
                 </v-btn>
@@ -202,10 +201,6 @@
                         ></v-color-picker>
                         </v-menu>
                         </v-col>
-
-
-
-
                     </v-row>
                 </v-container>
             </v-card-text>
@@ -239,25 +234,64 @@
                 :activator="selectedElement"
                 offset-x
                 >
-                <v-card
-                color="grey lighten-4"
-                min-width="350px"
-                flat
-                >
-                <v-toolbar class="primary" :color="selectedEvent.color" dark>
-                <v-toolbar-title class="primary white--text" v-html="selectedEvent.name"></v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn
-                text
-                color="white"
-                @click="selectedOpen = false"
-                >
-                Cancel
-                </v-btn>
-                </v-toolbar>
-                <v-card-text>
-                <span v-html="selectedEvent.details"></span>
-                </v-card-text>
+                <v-card color="grey lighten-4" min-width="350px" flat>
+                    <v-toolbar :color="selectedEvent.color" dark>
+                        <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-btn icon @click="deleteEvent(selectedEvent.id)">
+                            <v-icon>fa-trash</v-icon>
+                        </v-btn>
+                        <v-btn
+                        text
+                        color="white"
+                        @click="selectedOpen = false"
+                        >
+                        <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
+                        <span>Cancel</span>
+                        </v-btn>
+                    </v-toolbar>
+                    <v-card-text>
+                        <!-- <span v-html="selectedEvent.details"></span> -->
+                            <v-row class="mt-n8">
+                            <v-col cols="12" md="12" class="mt-4">
+                                <v-list >
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                            <v-list-item-title class="overline grey--text mb-4">
+                                                <v-icon>fa-info</v-icon>
+                                                Medication Details</v-list-item-title>
+                                                <h3 v-html="selectedEvent.details"></h3>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-list>
+                           </v-col>
+                            <v-col cols="12" md="12" class="mt-4">
+                                <v-list >
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                            <v-list-item-title class="overline grey--text mb-4">
+                                                <v-icon>fa-syringe</v-icon>
+                                                Dose</v-list-item-title>
+                                                <h3 v-html="selectedEvent.dose"></h3>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-list>
+                           </v-col>
+                            <v-col cols="12" md="12" class="mt-4">
+                                <v-list >
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                            <v-list-item-title class="overline grey--text mb-4">
+                                                <v-icon>fa-pills</v-icon>
+                                                Dosage Unit</v-list-item-title>
+                                                <h3 v-html="selectedEvent.dosageUnit"></h3>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                </v-list>
+                           </v-col>
+                           </v-row>
+                    
+                    </v-card-text>
                 </v-card>
                 </v-menu>
 
@@ -400,6 +434,8 @@ export default {
                         let event = {
                             name: medicationRecord.medication,
                             details: medicationRecord.details,
+                            dose: medicationRecord.dose,
+                            dosageUnit: medicationRecord.doseUnit,
                             start: medicationRecord.dateTaken + " " + time,
                             end: medicationRecord.dateTaken + " " + time,
                             // color: medicationRecord.color,

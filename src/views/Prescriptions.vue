@@ -24,6 +24,22 @@
               <!-- <ViewAppointments /> -->
           </v-card>
         </template>
+                <!-- No Gender Defined Card --> 
+            <v-card v-if="noGenderView">
+                <v-card-title></v-card-title>
+                <v-card-text>
+                <v-row>
+                <v-col cols="12" md="6" lg="6">
+                    <h2 class="overline black--text ml-4" justify="center">You Have Not Defined You're Gender!</h2>
+                </v-col>
+                <v-col cols="12" md="6" lg="6">
+                    <router-link to="/medicalRecords" tag="button">
+                        <v-btn class="primary white--text">Go To Medical Record</v-btn>
+                    </router-link>
+                </v-col>
+                </v-row>
+                </v-card-text>
+            </v-card>
         <!-- Book appointment starts here -->
         <v-card>   
         <v-card-title class="primary white--text">
@@ -39,20 +55,6 @@
         <v-card-text>
           <v-row>     
               
-            <!-- Date Options -->
-            <v-col cols="12" sm="4" md="4">
-                <v-select   
-                label="Gender for Treatment"
-                v-model="genderOption"
-                :items="chooseGenderOptions"
-                outlined
-                @change="setGenderOption(genderOption)"
-
-
-
-                ></v-select>
-            </v-col>
-
             <v-col cols="12" sm="4" md="4" v-if="showFemaleT">
                 <v-select
                 label="Female Treatments"
@@ -60,8 +62,6 @@
                 :items="femaleTreatments"
                 outlined
                 @change="setTreatmentOption(chosenOption)"
-
-
 
                 ></v-select>
             </v-col>
@@ -537,6 +537,7 @@ export default {
     },
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
+        this.setGenderOption ()
     },
     data() {
         return {
@@ -548,12 +549,8 @@ export default {
             snackbarText: "",
             dialog: false, // Dialog for overall dialog panel
 
-
+            noGenderView: false, // Show if no gender is defined
             genderOption: null,
-            chooseGenderOptions: [
-                { text: 'Male', value: 'Male'},
-                { text: 'Female', value: 'Female' }
-            ],
             showFemaleT: false,
             showMaleT: false,
             
@@ -717,17 +714,25 @@ export default {
             this.snackbar = true
         },
         setGenderOption () {
+            db.collection("users").doc(this.currentUser).get().then(( snap => {
+                this.genderOption = snap.data().gender // Return the gender of the patient
+            }))
+        
             if(this.genderOption == 'Male'){
                 this.hideAllTreatments()
                 this.showFemaleT = false
                 this.showMaleT = true
                 this.chosenOption = null
             }
-            else{
+            else if  (this.genderOption == 'Female'){
                 this.hideAllTreatments()
                 this.showMaleT= false
                 this.showFemaleT = true
                 this.chosenOption = null
+            }
+            else{
+                // No gender defined
+                this.noGenderView = true
             }
         },
         hideAllTreatments () {

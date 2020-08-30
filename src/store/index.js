@@ -80,6 +80,8 @@ export default new Vuex.Store({
     // LOGOUT
     async logout({ commit  }){
       await fb.auth.signOut()
+
+      
       // clear userProfile and redirect to /login
       commit('setUserProfile', {})
 
