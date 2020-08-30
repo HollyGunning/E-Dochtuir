@@ -1,13 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-
 import {auth} from '../firebase'
-// import firebase from 'firebase/app'
+
 import Admin from '@/views/Admin.vue'
 import Doctor from '@/views/Doctor.vue'
 import DoctorAppointment from '@/views/DoctorAppointment.vue'
-
 import Dashboard from '@/views/Dashboard.vue'
 import Profile from '@/views/Profile.vue'
 import MedicalRecord from '@/views/MedicalRecord.vue'
@@ -19,9 +17,7 @@ import DoctorRooms from '@/views/DoctorRooms.vue'
 import Login from '@/views/Login.vue'
 import NotFound from '../components/404.vue'
 
-
 Vue.use(VueRouter)
-
 
 const routes = [
   {
@@ -53,8 +49,6 @@ const routes = [
       requiresAuth: true
     }
   },
-
-
   {
     path: '/',
     name: 'dashboard',
@@ -133,42 +127,33 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-
+  // Check for requiredAuth and current user
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
-
-  
   if (requiresAuth && !auth.currentUser) {
     next('/login')
   } else {
     next()
   }
 
-
   auth.onAuthStateChanged(user => {
-
-    if (user) {
+    if (user != null && user != undefined ) {
       auth.currentUser.getIdTokenResult()
         .then(function ({claims}) {
-
           if (claims.patient) {
             if (to.path != '/profile' && to.path != '/appointments' && to.path != '/prescriptions' && to.path != '/chat' && to.path != '/medication' && to.path != '/medicalRecord')
               return next ({
                 path: './'
               })
-            
-
           } else if (claims.admin) {
             if (to.path != '/admin')
               return next ({
                 path: './admin'
               })
-
           } else if (claims.doctor) {
             if (to.path != '/doctor' && to.path != '/doctorAppointment' && to.path != '/doctorRooms')
             return next ({
               path: './doctor'
             })
-
           }
         })
     } 
@@ -181,12 +166,8 @@ router.beforeEach((to, from, next) => {
           }
         })
       } 
-      else {
-        next()
-      }
     }
   })
-  next()
 })
 
 export default router
