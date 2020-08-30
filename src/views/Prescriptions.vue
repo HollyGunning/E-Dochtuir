@@ -24,22 +24,6 @@
               <!-- <ViewAppointments /> -->
           </v-card>
         </template>
-                <!-- No Gender Defined Card --> 
-            <v-card v-if="noGenderView">
-                <v-card-title></v-card-title>
-                <v-card-text>
-                <v-row>
-                <v-col cols="12" md="6" lg="6">
-                    <h2 class="overline black--text ml-4" justify="center">You Have Not Defined You're Gender!</h2>
-                </v-col>
-                <v-col cols="12" md="6" lg="6">
-                    <router-link to="/medicalRecords" tag="button">
-                        <v-btn class="primary white--text">Go To Medical Record</v-btn>
-                    </router-link>
-                </v-col>
-                </v-row>
-                </v-card-text>
-            </v-card>
         <!-- Book appointment starts here -->
         <v-card>   
         <v-card-title class="primary white--text">
@@ -53,6 +37,23 @@
         <v-divider class="mx4"></v-divider>
         <v-form @submit.prevent="requestPrescription">
         <v-card-text>
+            <!-- No Gender Defined Card --> 
+            <v-card v-if="noGenderView">
+                <v-card-title></v-card-title>
+                <v-card-text>
+                <v-row>
+                <v-col cols="12" md="6" lg="6">
+                    <h2 class="overline black--text ml-4" justify="center">You Have Not Selected Your Gender In Medical Record!</h2>
+                </v-col>
+                <v-col cols="12" md="6" lg="6">
+                    <router-link to="/medicalRecord" tag="button">
+                        <v-btn class="primary white--text">Go To Medical Record</v-btn>
+                    </router-link>
+                </v-col>
+                </v-row>
+                </v-card-text>
+            </v-card>
+
           <v-row>     
               
             <v-col cols="12" sm="4" md="4" v-if="showFemaleT">
@@ -65,7 +66,6 @@
 
                 ></v-select>
             </v-col>
-
             <v-col cols="12" sm="4" md="4" v-if="showMaleT">
                 <v-select
                 label="Male Treatments"
@@ -73,9 +73,6 @@
                 :items="maleTreatments"
                 outlined
                 @change="setTreatmentOption(chosenOption)"
-
-
-
                 ></v-select>
             </v-col>
 
@@ -375,7 +372,8 @@
           </v-row>
           <v-card-actions>
           <v-row>
-              <v-btn
+              <v-btn 
+              v-if="requestBtn"
               type="submit"
               block class="primary white--text"
               @click.prevent="requestPrescription()">
@@ -551,6 +549,7 @@ export default {
 
             noGenderView: false, // Show if no gender is defined
             genderOption: null,
+            requestBtn: false,
             showFemaleT: false,
             showMaleT: false,
             
@@ -670,8 +669,6 @@ export default {
                 {text: 'More Than 2 Minutes After Penetration', value: 'More Than 2 Minutes After Penetration'},
  
             ]
-
-           
         }
     },
     validations: {
@@ -716,24 +713,30 @@ export default {
         setGenderOption () {
             db.collection("users").doc(this.currentUser).get().then(( snap => {
                 this.genderOption = snap.data().gender // Return the gender of the patient
-            }))
-        
-            if(this.genderOption == 'Male'){
+
+                if(this.genderOption == 'Male'){
                 this.hideAllTreatments()
+                this.requestBtn = true
                 this.showFemaleT = false
                 this.showMaleT = true
                 this.chosenOption = null
-            }
-            else if  (this.genderOption == 'Female'){
-                this.hideAllTreatments()
-                this.showMaleT= false
-                this.showFemaleT = true
-                this.chosenOption = null
-            }
-            else{
-                // No gender defined
-                this.noGenderView = true
-            }
+                }
+                else if  (this.genderOption == 'Female'){
+                    this.requestBtn = true
+                    this.hideAllTreatments()
+                    this.showMaleT= false
+                    this.showFemaleT = true
+                    this.chosenOption = null
+                }
+                else{
+                    // No gender defined
+                    this.requestBtn = false
+                    this.noGenderView = true
+                }
+
+            }))
+        
+
         },
         hideAllTreatments () {
             this.showAdrenaline = false,
