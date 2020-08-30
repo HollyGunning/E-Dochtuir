@@ -18,7 +18,7 @@ import Login from '@/views/Login.vue'
 import NotFound from '../components/404.vue'
 
 Vue.use(VueRouter)
-
+// Each of the individual page routes
 const routes = [
   {
     path: '/login',
@@ -134,7 +134,7 @@ router.beforeEach((to, from, next) => {
   } else {
     next()
   }
-
+  // if auth state is authenticated user then do checks for different roles otherwise redirect to login
   auth.onAuthStateChanged(user => {
     if (user != null && user != undefined ) {
       auth.currentUser.getIdTokenResult()
