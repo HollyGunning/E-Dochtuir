@@ -25,7 +25,6 @@ auth.onAuthStateChanged(user => {
     }).$mount('#app')
   }
 
-
   if (user) {
 
     // Get the token of the user to see if they are admin or not
@@ -36,5 +35,4 @@ auth.onAuthStateChanged(user => {
     // User is signed in 
     store.dispatch('fetchUserProfile', user)
   }
-
 })

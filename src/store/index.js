@@ -3,22 +3,16 @@ import Vuex from 'vuex'
 import * as fb from '../firebase'
 import router from '../router/index'
 
-import {auth} from '../firebase'
-
 Vue.use(Vuex)
-
-
 
 export default new Vuex.Store({
   state: {
     userProfile: {},
-   
     registerError: {},
     loginError: {},
     loading: false,
 
   },
-
   mutations: {
     setUserProfile(state, payload) {
       state.userProfile = payload
@@ -33,7 +27,6 @@ export default new Vuex.Store({
       state.loading = payload
     },
   },
-
   actions: {
     // SIGNUP
     async signup({ commit }, payload) {
@@ -59,7 +52,6 @@ export default new Vuex.Store({
           commit('setLoading', false)
       })
     },
-
     // LOGIN
     async login({ commit }, payload) {
       commit('setLoading', true)
@@ -69,7 +61,6 @@ export default new Vuex.Store({
         commit('setLoading', false)
         console.log(user)
  
-
       }).catch(loginError => {
         console.log(loginError.message)
         commit('setLoginError', loginError.message)
@@ -80,16 +71,8 @@ export default new Vuex.Store({
     // LOGOUT
     async logout({ commit  }){
       await fb.auth.signOut()
-      console.log("User signed out")
-      console.log(auth.currentUser)
-
       // clear userProfile and redirect to /login
       commit('setUserProfile', {})
-
-
-
-      // commit('setUser', null)
-
       router.push('/login')
     },    
 
@@ -101,19 +84,11 @@ export default new Vuex.Store({
    
       // set user profile in state
       commit('setUserProfile', userProfile.data())
-
-      
-
       // change route to dashboard
       if (router.currentRoute.path === '/login') {
         router.push('/')
       } 
-
-
     },
-
-
-
 
     async updateProfile({ commit, dispatch }, user) {
       
@@ -134,18 +109,12 @@ export default new Vuex.Store({
       commit('setLoading', false)
       dispatch('fetchUserProfile', { uid: userId })
       }
-
-
   }, // actions end
-
   getters: {
     userProfile (state) {
       return state.userProfile
     },
- 
   },
-
-  
   modules: {
   }
 })
