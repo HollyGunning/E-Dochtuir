@@ -56,7 +56,7 @@
 
           <v-row>     
               
-            <v-col cols="12" sm="4" md="4" v-if="showFemaleT">
+            <v-col cols="12" s="6" sm="6" md="6" lg="12" v-if="showFemaleT">
                 <v-select
                 label="Female Treatments"
                 v-model="chosenOption"
@@ -66,7 +66,7 @@
 
                 ></v-select>
             </v-col>
-            <v-col cols="12" sm="4" md="4" v-if="showMaleT">
+            <v-col cols="12" s="6" sm="6" md="6" lg="12" v-if="showMaleT">
                 <v-select
                 label="Male Treatments"
                 v-model="chosenOption"
@@ -75,7 +75,21 @@
                 @change="setTreatmentOption(chosenOption)"
                 ></v-select>
             </v-col>
-
+            <v-col cols="12" md="6">
+                <v-select 
+                name="selectDoctor"
+                v-model="chosenDoc"
+                :items="doctors"
+                item-text="name"
+                item-value="value"
+                label="Select a Doctor"
+                outlined
+                :error-messages="selectDocError"
+                @input="$v.chosenDoc.$touch()"
+                @blur="$v.chosenDoc.$touch()"
+                @change="onDropdownChanged($event)"
+                ></v-select>  
+            </v-col>
          
          
             <v-col cols="12">
@@ -461,6 +475,12 @@ export default {
         ViewPrescriptions,
     },
     computed: {
+        selectDocError () {
+            const errors = []
+            if(!this.$v.chosenDoc.$dirty) return errors
+            !this.$v.chosenDoc.required && errors.push('Please Select A Doctor')
+            return errors
+        },
         // CONTRACEPTION
         contraceptiveTypeError () {
             const errors = []
@@ -604,6 +624,24 @@ export default {
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
         this.setGenderOption ()
+        // This query first gets the list of users whos role is doctor from the roles collection
+        db.collection("roles").where("role.doctor", "==", true).get().then(snap => {
+            // For each doctor document store the doc.id, which is the same ID used for the users colection doc.id, into doctorID 
+            snap.forEach(doc => {
+            var doctorID = doc.id
+            // Then query the users collection with the doctorID to find corresponding record based on same ID
+            // so that the v-select for doctor can access the name of the doctor
+            db.collection("users").doc(doctorID).get().then(doc => {
+                var docID = doc.id
+                var doctorFirstName = doc.data().firstname
+                var doctorSurname = doc.data().surname
+                this.doctors.push({
+                name: doctorFirstName + " " + doctorSurname,
+                value: docID
+                })
+            })
+            })
+        })
     },
     data() {
         return {
@@ -615,8 +653,11 @@ export default {
             snackbarText: "",
             dialog: false, // Dialog for overall dialog panel
 
+            doctors: [],  // Doctors array contains a list of doctors  
+            chosenDoc: null, // Chosen Doc stores the value of selected doctor, derived of onDropdownChanged()
             noGenderView: false, // Show if no gender is defined
             genderOption: null,
+            name: null,
             requestBtn: false,
             showFemaleT: false,
             showMaleT: false,
@@ -745,6 +786,7 @@ export default {
         }
     },
     validations: {
+        chosenDoc: { required },
         contraceptives: {
             contraceptiveType: { required },
             periodsRegular: { required },
@@ -790,7 +832,7 @@ export default {
         setGenderOption () {
             db.collection("users").doc(this.currentUser).get().then(( snap => {
                 this.genderOption = snap.data().gender // Return the gender of the patient
-
+                this.name = snap.data().firstname + " " + snap.data().surname
                 if(this.genderOption == 'Male'){
                 this.hideAllTreatments()
                 this.requestBtn = true
@@ -823,34 +865,47 @@ export default {
             this.showErecDys = false,
             this.showPreE = false
         },
+        //Doctor is changed
+        onDropdownChanged(value) {
+            db.collection("prescriptions").where("requestedDate", "==", this.getTodaysDate())
+                .where("patientID", "==", this.currentUser).get().then(() => {
+                    
+                this.chosenDoc = value
+                this.hideAllTreatments()
+                this.clearForms()
+                this.setTreatmentOption()
+  
+            })
+        },
         setTreatmentOption () {
-            if (this.chosenOption == 'Adrenaline Pen Treatment'){
+            this.clearForms()
+            if (this.chosenOption == 'Adrenaline Pen Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
                 this.showAdrenaline = true
             }
-            else if(this.chosenOption == 'Asthma Treatment'){
+            else if(this.chosenOption == 'Asthma Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
                 this.showAsthma = true
             }
-            else if(this.chosenOption == 'Contraception'){
+            else if(this.chosenOption == 'Contraception' && this.chosenDoc !=null){
                 this.hideAllTreatments()
                 this.showContraception = true
             }
-            else if(this.chosenOption == 'Thrush Treatment'){
+            else if(this.chosenOption == 'Thrush Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
                 this.showThrush = true
             }
-            else if(this.chosenOption == 'Erectile Dysfunction Treatment'){
+            else if(this.chosenOption == 'Erectile Dysfunction Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
                 this.showErecDys = true
             }
-            else if(this.chosenOption == 'Premature Ejaculation Treatment'){
+            else if(this.chosenOption == 'Premature Ejaculation Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
                 this.showPreE = true
             }
             else{
                 this.hideAllTreatments()
-                console.log("error selecting treatment!")
+                console.log("Treatment & Doctor Must Be Selected!")
             }
         },
         // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
@@ -872,7 +927,7 @@ export default {
             this.hideAllTreatments()
             this.clearForms()
             this.chosenOption = null
-            this.genderOption = null
+            this.chosenDoc = null
             this.snackbar = null
         },
         clearForms () {
@@ -914,7 +969,9 @@ export default {
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
+                        patientName: this.name,
                         patientID: this.currentUser,
+                        doctor: this.chosenDoc,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         status: this.status,
@@ -926,7 +983,12 @@ export default {
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
+                    this.chosenOption = null
+                    this.chosenDoc = null
                     this.hideAllTreatments()
+                }).then(() => {
+                    // Close the form
+                    this.dialog = false
                 }).catch(error => {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -944,6 +1006,8 @@ export default {
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
                         patientID: this.currentUser,
+                        patientName: this.name,
+                        doctor: this.chosenDoc,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         status: this.status,
@@ -954,7 +1018,12 @@ export default {
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
+                    this.chosenOption = null
+                    this.chosenDoc = null
                     this.hideAllTreatments()
+                }).then(() => {
+                    // Close the form
+                    this.dialog = false
                 }).catch(error => {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -972,7 +1041,9 @@ export default {
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
+                        patientName: this.name,
                         patientID: this.currentUser,
+                        doctor: this.chosenDoc,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         status: this.status,
@@ -985,7 +1056,12 @@ export default {
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
+                    this.chosenOption = null
+                    this.chosenDoc = null
                     this.hideAllTreatments()
+                }).then(() => {
+                    // Close the form
+                    this.dialog = false
                 }).catch(error => {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -1002,7 +1078,9 @@ export default {
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
+                        patientName: this.name,
                         patientID: this.currentUser,
+                        doctor: this.chosenDoc,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         status: this.status,
@@ -1013,7 +1091,12 @@ export default {
                     db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                         this.triggerSnackbar("Request Has Been Submitted", "success")
                         this.clearForms()
+                        this.chosenOption = null
+                        this.chosenDoc = null
                         this.hideAllTreatments()
+                    }).then(() => {
+                    // Close the form
+                    this.dialog = false
                     }).catch(error => {
                         console.log("Prescription Error ", error)
                         this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -1031,7 +1114,9 @@ export default {
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){
                     let addPrescription = {
+                        patientName: this.name,
                         patientID: this.currentUser,
+                        doctor: this.chosenDoc,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         status: this.status,
@@ -1042,7 +1127,12 @@ export default {
                     db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
+                    this.chosenOption = null
+                    this.chosenDoc = null
                     this.hideAllTreatments()
+                    }).then(() => {
+                    // Close the form
+                    this.dialog = false
                     }).catch(error => {
                         console.log("Prescription Error ", error)
                         this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -1059,8 +1149,10 @@ export default {
                 this.errors = this.$v.pe.$anyError
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){      
-                    let addPrescription ={
+                    let addPrescription = {
+                        patientName: this.name,
                         patientID: this.currentUser,
+                        doctor: this.chosenDoc,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
                         status: this.status,
@@ -1072,7 +1164,12 @@ export default {
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
+                    this.chosenOption = null
+                    this.chosenDoc = null
                     this.hideAllTreatments()
+                }).then(() => {
+                    // Close the form
+                    this.dialog = false
                 }).catch(error => {
                     console.log("Prescription Error ", error)
                     this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -1089,7 +1186,6 @@ export default {
                 this.triggerSnackbar("You Must Select A Treatment!", "error")
             }
         },
-    },
-    
+    }, 
 }
 </script>

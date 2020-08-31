@@ -126,6 +126,18 @@
                         </v-list-item>
                     </v-list>
                 </v-col>
+                <v-col cols="6" md="4">
+                    <v-list>
+                        <v-list-item>
+                            <v-list-item-content>
+                            <v-list-item-title class="overline grey--text mb-4">
+                                <v-icon>fa-info</v-icon>
+                                Additional Details</v-list-item-title>
+                                <h3>{{ prescription.additionalDetails }}</h3>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list>
+                </v-col>
                 </v-row>
                 </v-card-text>
                 </v-card>
@@ -221,7 +233,7 @@ import {auth, db} from '../../firebase'
 export default {
     created() {
         this.currentUser = auth.currentUser.uid
-        db.collection("prescriptions").where("patientID", "==", this.currentUser).onSnapshot(snap => {
+        db.collection("prescriptions").where("patientID", "==", this.currentUser).orderBy("dateRequested").onSnapshot(snap => {
             let prescriptions = snap.docChanges()
             prescriptions.forEach(async (prescriptions) => {
                 if(prescriptions.type == "added"){
