@@ -21,7 +21,7 @@
               </v-btn>
             </v-card-title>
               <!-- View Prescriptions Component is imported here, makes it easier to keep the code tidier --> 
-              <!-- <ViewAppointments /> -->
+              <ViewPrescriptions />
           </v-card>
         </template>
         <!-- Book appointment starts here -->
@@ -253,7 +253,53 @@
                 <!-- Thrush -->
                 <v-card v-if="showThrush">
                     <v-card-title class="primary lighten-1 white--text">Thrush Treatment</v-card-title>
-                    <v-card-text></v-card-text>
+                    <v-card-text>
+                        <v-row>
+                        <v-col cols="12" md="12" lg="12">
+                        <v-subheader class="overline ml-n5">Have You Had Any Severe Lower Abdominal Pain In The Past 48 Hours?</v-subheader>
+                        <v-btn-toggle
+                            v-model="thrush.thrushAbdoPain" 
+                            color="primary" 
+                            group 
+                            :error-messages="thrushAbdoPainError"
+                            @click="$v.thrush.thrushAbdoPain.$touch()"
+                            @blur="$v.thrush.thrushAbdoPain.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                        </v-btn-toggle>
+                        </v-col>
+                        <v-col cols="12" md="12" lg="12">
+                        <v-subheader class="overline ml-n5">Are There Any Blisters Or Rashes On Or Around The Vaginal Skin?</v-subheader>
+                        <v-btn-toggle
+                            v-model="thrush.thrushSkinIssues" 
+                            color="primary" 
+                            group 
+                            :error-messages="thrushSkinIssuesError"
+                            @click="$v.thrush.thrushSkinIssues.$touch()"
+                            @blur="$v.thrush.thrushSkinIssues.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                        </v-btn-toggle>
+                        </v-col>
+                        <v-col cols="12" md="12" lg="12">
+                        <v-subheader class="overline ml-n5">Are There Any Blisters Or Rashes On Or Around The Vaginal Skin?</v-subheader>
+                        <v-btn-toggle
+                            v-model="thrush.thrushUrinary" 
+                            color="primary" 
+                            group 
+                            :error-messages="thrushUrinaryError"
+                            @click="$v.thrush.thrushUrinary.$touch()"
+                            @blur="$v.thrush.thrushUrinary.$touch()"
+                            >
+                            <v-btn depressed x-large color="primary--text darken-1" value="Yes">Yes</v-btn>
+                            <v-btn depressed x-large color="primary--text darken-1" value="No">No</v-btn>
+                        </v-btn-toggle>
+                        </v-col>
+
+                        </v-row>
+                    </v-card-text>
                 </v-card>
                 <!-- ErecDys -->
                 <v-card v-if="showErecDys">
@@ -405,12 +451,14 @@
 
 <script>
 import Navbar from '../components/Navbars/Navbar'
+import ViewPrescriptions from '../components/Prescriptions/ViewPrescriptions'
 import { auth, db } from '../firebase'
 
 import { required } from "vuelidate/lib/validators"
 export default {
     components: {
         Navbar,
+        ViewPrescriptions,
     },
     computed: {
         // CONTRACEPTION
@@ -531,6 +579,26 @@ export default {
             return errors
         },
 
+        // Thrush
+        thrushAbdoPainError () {
+            const errors = []
+            if(!this.$v.thrush.thrushAbdoPain.$dirty) return errors
+                !this.$v.thrush.thrushAbdoPain.required && errors.push('Thrush Abdominal Pain Confirmation Is Required')
+            return errors
+        },
+        thrushSkinIssuesError () {
+            const errors = []
+            if(!this.$v.thrush.thrushSkinIssues.$dirty) return errors
+                !this.$v.thrush.thrushSkinIssues.required && errors.push('Skin Condition Confirmation Is Required')
+            return errors
+        },
+        thrushUrinaryError () {
+            const errors = []
+            if(!this.$v.thrush.thrushUrinary.$dirty) return errors
+                !this.$v.thrush.thrushUrinary.required && errors.push('Urinary Condition Confirmation Is Required')
+            return errors
+        },
+
 
     },
     created() {
@@ -552,13 +620,12 @@ export default {
             requestBtn: false,
             showFemaleT: false,
             showMaleT: false,
-            
+            status: "Pending Review",
             chosenOption: null,
             femaleTreatments: [
                 { text: 'Adrenaline Pen Treatment', value: 'Adrenaline Pen Treatment'},
                 { text: 'Asthma Treatment', value: 'Asthma Treatment'},
                 { text:'Contraceptive Pill & Patch', value: 'Contraception' },
-                { text:'Period Delay Pill', value: 'Period Delay' },
                 { text:'Thrush Treatment', value: 'Thrush Treatment' },    
             ],
             maleTreatments: [
@@ -668,7 +735,13 @@ export default {
                 {text: 'Less Than 2 Minutes After Penetration', value: 'Less Than 2 Minutes After Penetration'},
                 {text: 'More Than 2 Minutes After Penetration', value: 'More Than 2 Minutes After Penetration'},
  
-            ]
+            ],
+
+            thrush: {
+               thrushAbdoPain: null, 
+               thrushSkinIssues: null,
+               thrushUrinary: null,
+            },
         }
     },
     validations: {
@@ -700,7 +773,11 @@ export default {
             peOccur: { required },
             medication: { required },
         },
-
+        thrush: {
+            thrushAbdoPain: { required },
+            thrushSkinIssues: { required}, 
+            thrushUrinary: { required },
+        },
 
     },
     methods: {
@@ -806,27 +883,27 @@ export default {
             this.contraceptives.previoulyTaken = null
             this.contraceptives.sideEffects = null
             this.contraceptives.sideEffectDescription = null
-
             // Clear EDT
             this.ereDys.ereDysType = null
             this.ereDys.ereDysDosage = null
             this.ereDys.ereDysPrevious = null
-
             // Clear Asthma
             this.asthma.asthmaLength = null
             this.asthma.asthmaSteroids = null
             this.asthma.asthmaSeverity = null
-
             // Clear Adrenaline
             this.adrenaline.adrenalineDiagnosis = null
             this.adrenaline.adrenalinetrained = null
             this.adrenaline.adrenalinesymptoms = null
-
             // Clear PE
             this.pe.peDuration = null
             this.pe.peOften = null
             this.pe.peOccur = null
             this.pe.medication = null
+            // Clear Thrush
+            this.thrush.thrushAbdoPain = null
+            this.thrush.thrushSkinIssues = null,
+            this.thrush.thrushUrinary = null
         },
         // Submit request form
         requestPrescription () {
@@ -840,6 +917,7 @@ export default {
                         patientID: this.currentUser,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
+                        status: this.status,
                         adrenalineDiagnosis: this.adrenaline.adrenalineDiagnosis,
                         trained: this.adrenaline.adrenalinetrained,
                         recogniseSymptoms: this.adrenaline.adrenalinesymptoms,
@@ -868,6 +946,7 @@ export default {
                         patientID: this.currentUser,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
+                        status: this.status,
                         asthmaLength: this.asthma.asthmaLength,
                         anySteroids: this.asthma.asthmaSteroids,
                         asthmaSeverity: this.asthma.asthmaSeverity,
@@ -896,6 +975,7 @@ export default {
                         patientID: this.currentUser,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
+                        status: this.status,
                         contraception: this.contraceptives.contraceptiveType,
                         periodRegulation: this.contraceptives.periodsRegular,
                         previousUsage: this.contraceptives.previoulyTaken,
@@ -914,14 +994,34 @@ export default {
                 else{
                     this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 } 
-                
-            }
-            else if(this.chosenOption == 'Period Delay'){
-                this.hideAllTreatments()
-                
             }
             else if(this.chosenOption == 'Thrush Treatment'){
-                this.hideAllTreatments()
+                this.$v.$touch() // used to check the state of the form fields
+                this.formTouched = !this.$v.thrush.$anyDirty
+                this.errors = this.$v.thrush.$anyError
+                // If the form does not have any errors or each individual field has no invalid data 
+                if (this.errors === false && this.formTouched === false){      
+                    let addPrescription ={
+                        patientID: this.currentUser,
+                        dateRequested: this.getTodaysDate(),
+                        chosenType: this.chosenOption,
+                        status: this.status,
+                        abdominalPain: this.thrush.thrushAbdoPain,
+                        skinIssues: this.thrush.thrushSkinIssues,
+                        urinaryIssue: this.thrush.thrushUrinary,
+                    }
+                    db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                        this.triggerSnackbar("Request Has Been Submitted", "success")
+                        this.clearForms()
+                        this.hideAllTreatments()
+                    }).catch(error => {
+                        console.log("Prescription Error ", error)
+                        this.triggerSnackbar("There Were Errors With The Form!", "error")
+                    })   
+                }
+                else{
+                    this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
+                } 
               
             }
             else if(this.chosenOption == 'Erectile Dysfunction Treatment'){
@@ -934,6 +1034,7 @@ export default {
                         patientID: this.currentUser,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
+                        status: this.status,
                         eDTreatment: this.ereDys.ereDysType,
                         dosage: this.ereDys.ereDysDosage,
                         previousUsage: this.ereDys.ereDysPrevious,
@@ -962,6 +1063,7 @@ export default {
                         patientID: this.currentUser,
                         dateRequested: this.getTodaysDate(),
                         chosenType: this.chosenOption,
+                        status: this.status,
                         durationWith: this.pe.peDuration,
                         howOften: this.pe.peOften,
                         occurs: this.pe.peOccur,
