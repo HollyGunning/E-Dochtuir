@@ -302,7 +302,7 @@ export default {
                             return appointment.id !=id
                         })
                     })
-                    this.triggerSnackbar("Appointment Has Been Deleted", "success")
+                    this.triggerSnackbar("Appointment Has Been Successfully Deleted!", "success")
                 }
             })
 
