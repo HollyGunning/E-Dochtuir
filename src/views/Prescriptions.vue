@@ -869,54 +869,103 @@ export default {
         onDropdownChanged(value) {
             db.collection("prescriptions").where("requestedDate", "==", this.getTodaysDate())
                 .where("patientID", "==", this.currentUser).get().then(() => {
-                    
                 this.chosenDoc = value
                 this.hideAllTreatments()
                 this.clearForms()
                 this.setTreatmentOption()
-  
             })
         },
         setTreatmentOption () {
             this.clearForms()
-
-
-            if (this.chosenOption == 'Adrenaline Pen Treatment' && this.chosenDoc !=null){
+            if (this.chosenOption == 'Adrenaline Pen Treatment' && this.chosenDoc != null){
                 this.hideAllTreatments()
-                
-                db.collection("prescriptions").where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
                     let prescriptions = snap.docChanges()
                     let show = true
                     prescriptions.forEach(prescriptions => {
                         let presDoc = prescriptions.doc.data()
                         if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
                             show = false
-                            this.triggerSnackbar("You Have Already Made A Prescription Request For This Treatment!", "error")
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For Adrenaline Pen Treatment!", "error")
                         }
                     })
                     this.showAdrenaline = show
                 })
-
             }
             else if(this.chosenOption == 'Asthma Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                this.showAsthma = true
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
+                    let prescriptions = snap.docChanges()
+                    let show = true
+                    prescriptions.forEach(prescriptions => {
+                        let presDoc = prescriptions.doc.data()
+                        if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
+                            show = false
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For Asthma Treatment!", "error")
+                        }
+                    })
+                    this.showAsthma = show
+                })      
             }
             else if(this.chosenOption == 'Contraception' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                this.showContraception = true
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
+                    let prescriptions = snap.docChanges()
+                    let show = true
+                    prescriptions.forEach(prescriptions => {
+                        let presDoc = prescriptions.doc.data()
+                        if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
+                            show = false
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For Contraceptive Pill & Patch!", "error")
+                        }
+                    })
+                     this.showContraception = show
+                })
             }
             else if(this.chosenOption == 'Thrush Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                this.showThrush = true
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
+                    let prescriptions = snap.docChanges()
+                    let show = true
+                    prescriptions.forEach(prescriptions => {
+                        let presDoc = prescriptions.doc.data()
+                        if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
+                            show = false
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For Thrush Treatment!", "error")
+                        }
+                    })
+                    this.showThrush = show
+                })
             }
             else if(this.chosenOption == 'Erectile Dysfunction Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                this.showErecDys = true
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
+                    let prescriptions = snap.docChanges()
+                    let show = true
+                    prescriptions.forEach(prescriptions => {
+                        let presDoc = prescriptions.doc.data()
+                        if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
+                            show = false
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For Erectile Dysfunction Treatment!", "error")
+                        }
+                    })
+                    this.showErecDys = show
+                })
             }
             else if(this.chosenOption == 'Premature Ejaculation Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                this.showPreE = true
+                                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
+                    let prescriptions = snap.docChanges()
+                    let show = true
+                    prescriptions.forEach(prescriptions => {
+                        let presDoc = prescriptions.doc.data()
+                        if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
+                            show = false
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For Premature Ejaculation Treatment!", "error")
+                        }
+                    })
+                    this.showPreE = show
+                })
             }
             else{
                 this.hideAllTreatments()
@@ -995,9 +1044,8 @@ export default {
                         trained: this.adrenaline.adrenalinetrained,
                         recogniseSymptoms: this.adrenaline.adrenalinesymptoms,
                     }
+                this.triggerSnackbar("Request Has Been Submitted", "success")
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
-                    this.snackbar = null
-                    this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
                     this.chosenOption = null
                     this.chosenDoc = null
@@ -1030,14 +1078,12 @@ export default {
                         anySteroids: this.asthma.asthmaSteroids,
                         asthmaSeverity: this.asthma.asthmaSeverity,
                     }
+                this.triggerSnackbar("Request Has Been Submitted", "success")
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
-                    
                     this.clearForms()
                     this.chosenOption = null
                     this.chosenDoc = null
-                    this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.hideAllTreatments()
-                }).then(() => {
                     // Close the form
                     this.dialog = false
                 }).catch(error => {
@@ -1053,7 +1099,6 @@ export default {
                 this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.contraceptives.$anyDirty
                 this.errors = this.$v.contraceptives.$anyError
-
                 // If the form does not have any errors or each individual field has no invalid data 
                 if (this.errors === false && this.formTouched === false){      
                     let addPrescription ={
@@ -1069,13 +1114,12 @@ export default {
                         sideEffects: this.contraceptives.sideEffects,
                         effectsDescription: this.contraceptives.sideEffectDescription,
                     }
+                this.triggerSnackbar("Request Has Been Submitted", "success")
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
-                    this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
-                    // this.chosenOption = null
+                    this.chosenOption = null
                     this.chosenDoc = null
                     this.hideAllTreatments()
-                }).then(() => {
                     // Close the form
                     this.dialog = false
                 }).catch(error => {
@@ -1104,15 +1148,14 @@ export default {
                         skinIssues: this.thrush.thrushSkinIssues,
                         urinaryIssue: this.thrush.thrushUrinary,
                     }
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
                     db.collection("prescriptions").doc().set(addPrescription).then(()=>{
-                        this.triggerSnackbar("Request Has Been Submitted", "success")
                         this.clearForms()
                         this.chosenOption = null
                         this.chosenDoc = null
                         this.hideAllTreatments()
-                    }).then(() => {
-                    // Close the form
-                    this.dialog = false
+                        // Close the form
+                        this.dialog = false
                     }).catch(error => {
                         console.log("Prescription Error ", error)
                         this.triggerSnackbar("There Were Errors With The Form!", "error")
@@ -1121,7 +1164,6 @@ export default {
                 else{
                     this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 } 
-              
             }
             else if(this.chosenOption == 'Erectile Dysfunction Treatment'){
                 this.$v.$touch() // used to check the state of the form fields
@@ -1140,13 +1182,12 @@ export default {
                         dosage: this.ereDys.ereDysDosage,
                         previousUsage: this.ereDys.ereDysPrevious,
                     }
-                    db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
+                    db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.clearForms()
                     this.chosenOption = null
                     this.chosenDoc = null
                     this.hideAllTreatments()
-                    }).then(() => {
                     // Close the form
                     this.dialog = false
                     }).catch(error => {
@@ -1157,7 +1198,6 @@ export default {
                 else{
                     this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 } 
-
             }
             else if(this.chosenOption == 'Premature Ejaculation Treatment'){
                 this.$v.$touch() // used to check the state of the form fields
@@ -1177,13 +1217,12 @@ export default {
                         occurs: this.pe.peOccur,
                         medication: this.pe.medication,
                     }
+                this.triggerSnackbar("Request Has Been Submitted", "success")
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
-                    this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
                     this.chosenOption = null
                     this.chosenDoc = null
                     this.hideAllTreatments()
-                }).then(() => {
                     // Close the form
                     this.dialog = false
                 }).catch(error => {
