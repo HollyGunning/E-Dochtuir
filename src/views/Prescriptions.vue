@@ -879,9 +879,24 @@ export default {
         },
         setTreatmentOption () {
             this.clearForms()
+
+
             if (this.chosenOption == 'Adrenaline Pen Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                this.showAdrenaline = true
+                
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                    let prescriptions = snap.docChanges()
+                    let show = true
+                    prescriptions.forEach(prescriptions => {
+                        let presDoc = prescriptions.doc.data()
+                        if(presDoc.chosenType == this.chosenOption && presDoc.status == this.status){
+                            show = false
+                            this.triggerSnackbar("You Have Already Made A Prescription Request For This Treatment!", "error")
+                        }
+                    })
+                    this.showAdrenaline = show
+                })
+
             }
             else if(this.chosenOption == 'Asthma Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
@@ -962,6 +977,7 @@ export default {
         },
         // Submit request form
         requestPrescription () {
+            
             if (this.chosenOption == 'Adrenaline Pen Treatment'){
                 this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.adrenaline.$anyDirty
@@ -978,15 +994,14 @@ export default {
                         adrenalineDiagnosis: this.adrenaline.adrenalineDiagnosis,
                         trained: this.adrenaline.adrenalinetrained,
                         recogniseSymptoms: this.adrenaline.adrenalinesymptoms,
-                     
                     }
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
+                    this.snackbar = null
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
                     this.chosenOption = null
                     this.chosenDoc = null
                     this.hideAllTreatments()
-                }).then(() => {
                     // Close the form
                     this.dialog = false
                 }).catch(error => {
@@ -1016,10 +1031,11 @@ export default {
                         asthmaSeverity: this.asthma.asthmaSeverity,
                     }
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
-                    this.triggerSnackbar("Request Has Been Submitted", "success")
+                    
                     this.clearForms()
                     this.chosenOption = null
                     this.chosenDoc = null
+                    this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.hideAllTreatments()
                 }).then(() => {
                     // Close the form
@@ -1056,7 +1072,7 @@ export default {
                 db.collection("prescriptions").doc().set(addPrescription).then(()=>{
                     this.triggerSnackbar("Request Has Been Submitted", "success")
                     this.clearForms()
-                    this.chosenOption = null
+                    // this.chosenOption = null
                     this.chosenDoc = null
                     this.hideAllTreatments()
                 }).then(() => {
