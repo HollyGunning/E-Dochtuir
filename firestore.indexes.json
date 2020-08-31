@@ -1,6 +1,20 @@
 {
   "indexes": [
     {
+      "collectionGroup": "prescriptions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "patientID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateRequested",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "appointments",
       "queryScope": "COLLECTION",
       "fields": [
