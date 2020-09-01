@@ -21,7 +21,7 @@
             <v-card outlined>
           <v-data-table
           :headers="headers"
-          :items="patients"
+          :items="prescriptionsPending"
           :search="search"
           :items-per-page="10"
           class="elevation-1"
@@ -31,7 +31,7 @@
             <v-icon
             class="mr-2"
             :key="item.id"
-            :items="patients"
+            :items="prescriptionsPending"
             v-bind="attrs"
             v-on="on"
             @click="storeID(item.id)"
@@ -53,48 +53,265 @@
           <span class="ml-10">Review Prescription</span>
         </v-card-title>
         <v-row><v-col cols="12" md="12" lg="12">
-            <v-card v-if="showContraception">
-                <v-card-title></v-card-title>
+            <!-- Contraception -->
+            <v-card flat v-if="showContraception">
+                <v-card-title class="mb-4 primary lighten-2 white--text">Contraceptive Pill & Patches Request</v-card-title>
                 <v-card-text>
-                    Contraception
+                    <v-row>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Contraceptive Type"
+                        v-model="contraceptiveType"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Regular Periods"
+                        v-model="period"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Previous Usage"
+                        v-model="previousUsage"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Side Effects"
+                        v-model="sideEffects"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="12" md="8" lg="8">
+                        <v-text-field
+                        label="Side Effects Description"
+                        v-model="description"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    </v-row>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="showThrush">
-                <v-card-title></v-card-title>
+            <v-card flat v-if="showThrush">
+                <v-card-title class="mb-4 primary lighten-2 white--text">Thrush Treatment Request</v-card-title>
                 <v-card-text>
-                    Thrush
+                <v-row>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Severe Abdominal Pain"
+                        v-model="abdominalPain"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Blisters/Rashes on Skin Around Vagina"
+                        v-model="skinIssues"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Pain Urinating/Increase Urinary Frequency"
+                        v-model="urinaryIssue"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="showAdrenaline">
-                <v-card-title></v-card-title>
+            <v-card flat v-if="showAdrenaline">
+                <v-card-title class="mb-4 primary lighten-2 white--text">Adrenaline Pen Treatment Request</v-card-title>
                 <v-card-text>
-                    Adrenaline
+                <v-row>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Diagnosed with an Anaphylactic Allergy by a Doctor"
+                        v-model="diagnosed"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Trained to use a Prefilled Adrenaline Injectable Pen"
+                        v-model="trained"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Recognises Signs & Symptoms of an Anaphylactic Reaction"
+                        v-model="recogniseSymptoms"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="showAsthma">
-                <v-card-title></v-card-title>
+            <v-card flat v-if="showAsthma">
+                <v-card-title class="mb-4 primary lighten-2 white--text">Asthma Treatment Request</v-card-title>
                 <v-card-text>
-                    Asthma
+                <v-row>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Asthma Condition"
+                        v-model="asthmaCondition"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Asthma Severity"
+                        v-model="asthmaSeverity"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Have Oral Steroids ever been Required"
+                        v-model="steroids"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="showPreE">
-                <v-card-title></v-card-title>
+            <v-card flat v-if="showPreE">
+                <v-card-title class="mb-4 primary lighten-2 white--text">Premature Ejaculation Treatment</v-card-title>
                 <v-card-text>
-                    PreE
+                    <v-row>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Time Sexually Active"
+                        v-model="durationWith"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="When is it Experienced"
+                        v-model="often"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="When does Ejaculation Occur"
+                        v-model="occurs"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Medication Requested"
+                        v-model="medicationRequest"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    </v-row>
                 </v-card-text>
             </v-card>
 
-            <v-card v-if="showErecDys">
-                <v-card-title></v-card-title>
+            <v-card flat v-if="showErecDys">
+                <v-card-title class="mb-4 primary lighten-2 white--text">Erectile Dysfunction Treatment</v-card-title>
                 <v-card-text>
-                    ED
+                <v-row>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Medication Requested"
+                        v-model="eDTreatment"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Dosage Requested"
+                        v-model="eDDosage"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                    <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                        <v-text-field
+                        label="Any Prior Usage"
+                        v-model="eDpreviousUsage"
+                        outlined
+                        readonly
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
                 </v-card-text>
             </v-card>
         </v-col></v-row>
+
+        <!-- FOR DOCTOR USE --> 
+        <v-card flat>
+            <v-card-title>
+                <v-divider></v-divider>
+            </v-card-title>
+            <v-card-text>  
+            <v-row>
+                <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4">
+                    <v-select
+                    label="Select Response"
+                    v-model="response"
+                    :items="responses"
+                    outlined
+                    @change="responseChanges(response)"
+                    ></v-select>
+                </v-col>
+                <v-col class="mt-n3" cols="12" sm="6" md="8" lg="8" v-if="showDenied">
+                    <v-textarea
+                    label="Reason"
+                    v-model="reasonDenied"
+                    outlined
+                    counter="250"
+                    maxlength="250"
+                    ></v-textarea>
+                </v-col>
+            </v-row>
+            </v-card-text>
+            <v-card-actions>
+            <v-col cols="12">
+                <v-btn
+                type="submit"
+                block class="primary white--text"
+                @click.prevent="resolveRequest()">
+                <span>Resolve Request</span>
+                </v-btn>
+            </v-col>  
+            </v-card-actions>
+        </v-card>
+      
+
+
     </v-card>
 
     </v-dialog>
@@ -236,18 +453,15 @@ export default {
                 if(prescriptionToHandle.type == "added"){
                      let prescription = prescriptionToHandle.doc.data()
                     prescription.id = prescriptionToHandle.doc.id
-
-                    let patient = {
-                        id: prescription.id,
-                        name: prescription.patientName,
-                        prescription: prescription.chosenType,
-                        requestDate: prescription.dateRequested,
-                    }
-                    this.patients.push(patient)
-
-                    //Only show prescriptions of status pending ot the doctor
+                    //Only show prescriptions of status pending to the doctor
                     if(prescription.status == "Pending Review"){
-                        this.prescriptionsPending.push(prescription)
+                        let patient = {
+                            id: prescription.id,
+                            name: prescription.patientName,
+                            prescription: prescription.chosenType,
+                            requestDate: prescription.dateRequested,
+                        }
+                        this.prescriptionsPending.push(patient)
                     }
                     else if (prescription.status == "Accepted"){
                         this.prescriptionsAccepted.push(prescription)
@@ -271,7 +485,6 @@ export default {
             prescriptionRecord: null, // Store the patient ID when doctor clicks on actions
             search: '', // Search bar 
             dialog: false,
-            patients: [],
             headers: [
                 { text: 'Patient Name', value: 'name' },
                 { text: 'Prescription', value: 'prescription' },
@@ -289,6 +502,16 @@ export default {
             prescriptionsPending: [],
             prescriptionsAccepted: [],
             prescriptionsDenied: [],
+
+            // Doctor Form Section
+            response: null,
+            responses: [
+                { text: 'Accepted', value: 'Accepted' },
+                { text: 'Denied', value: 'Denied' }
+            ],
+            showDenied: false,
+            reasonDenied: null,
+
 
             // Contraceptive Details
             showContraception: false,
@@ -313,7 +536,7 @@ export default {
             // Asthma Details
             showAsthma: false,
             asthmaCondition: null,
-            asthmanSeverity: null,
+            asthmaSeverity: null,
             steroids: null,
 
             // PreE Details
@@ -342,6 +565,7 @@ export default {
             this.showErecDys = false,
             this.showPreE = false
         },
+        // Access the record associated with the user by the ID of the prescription
         storeID (id) {
             this.prescriptionRecord = id
 
@@ -429,6 +653,19 @@ export default {
                     this.hideAllTreatments()
                 }
             })
+        },
+
+        responseChanges (response) {
+            if(response == "Denied"){
+                this.showDenied = true
+            }
+            else{
+                this.showDenied = false
+            }
+        },
+
+        resolveRequest () {
+            console.log("Resolve here")
         },
     },
 }

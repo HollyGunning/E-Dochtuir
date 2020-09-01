@@ -371,7 +371,7 @@
                         <v-col cols="12" md="6" lg="6">
                         <v-subheader class="overline ml-n5">How Long Have You Been Suffering From PE?</v-subheader>
                         <v-select
-                        label="Duration of Suffering"
+                        label="Time Sexually Active"
                         v-model="pe.peDuration"
                         :items="peDurationList"
                         outlined
@@ -384,7 +384,7 @@
                         <v-col cols="12" md="6" lg="6">
                         <v-subheader class="overline ml-n5">How Often Do You Experience PE?</v-subheader>
                         <v-select
-                        label="How Often"
+                        label="When is it Experienced"
                         v-model="pe.peOften"
                         :items="peOftenList"
                         outlined
@@ -397,7 +397,7 @@
                         <v-col cols="12" md="6" lg="6">
                         <v-subheader class="overline ml-n5">When Does PE Occur?</v-subheader>
                         <v-select
-                        label="Occurence"
+                        label="When does Ejaculation Occur"
                         v-model="pe.peOccur"
                         :items="peOccurList"
                         outlined
