@@ -74,7 +74,7 @@
                 <v-card-title class="primary lighten-2 white--text">
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the prescriptions -->
-                <v-icon right @click="cancelPrescription(prescription.id)">fa-trash</v-icon>
+                <!-- <v-icon right @click="cancelPrescription(prescription.id)">fa-trash</v-icon> -->
                 </v-card-title>
                 <v-card-text class="mt-6">
                 <v-row class="mt-n8">
@@ -148,7 +148,7 @@
                 <v-card-title class="primary lighten-2 white--text">
                 <v-spacer></v-spacer>
                 <!-- Cancel button for the prescriptions -->
-                <v-icon right @click="cancelPrescription(prescription.id)">fa-trash</v-icon>
+                <!-- <v-icon right @click="cancelPrescription(prescription.id)">fa-trash</v-icon> -->
                 </v-card-title>
                 <v-card-text class="mt-6">
                 <v-row class="mt-n8">
@@ -264,7 +264,7 @@ export default {
             multiLine: true,
             timeout: 5000,
             snackbarText: "",
-            // Tabs for upcoming and past
+            // Tabs for requested, accepted and denied
             tab: null,
             tabs: [
             { tabName: 'Requested' },
@@ -290,18 +290,18 @@ export default {
                     return prescription.id !=id
                 })
             })
-            // Accepted
-            db.collection("prescriptions").doc(id).delete().then(() => {
-                this.acceptedPrescriptions = this.acceptedPrescriptions.filter(prescription => {
-                    return prescription.id !=id
-                })
-            })
-            // Denied
-            db.collection("prescriptions").doc(id).delete().then(() => {
-                this.deniedPrescriptions = this.deniedPrescriptions.filter(prescription => {
-                    return prescription.id !=id
-                })
-            })
+            // // Accepted
+            // db.collection("prescriptions").doc(id).delete().then(() => {
+            //     this.acceptedPrescriptions = this.acceptedPrescriptions.filter(prescription => {
+            //         return prescription.id !=id
+            //     })
+            // })
+            // // Denied
+            // db.collection("prescriptions").doc(id).delete().then(() => {
+            //     this.deniedPrescriptions = this.deniedPrescriptions.filter(prescription => {
+            //         return prescription.id !=id
+            //     })
+            // })
             this.triggerSnackbar("Prescription Has Been Successfully Deleted!", "success")
         },
     }

@@ -6,6 +6,7 @@ import {auth} from '../firebase'
 import Admin from '@/views/Admin.vue'
 import Doctor from '@/views/Doctor.vue'
 import DoctorAppointment from '@/views/DoctorAppointment.vue'
+import DoctorPrescription from '@/views/DoctorPrescription.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Profile from '@/views/Profile.vue'
 import MedicalRecord from '@/views/MedicalRecord.vue'
@@ -45,6 +46,14 @@ const routes = [
     path: '/doctorAppointment',
     name: 'doctorAppointment',
     component: DoctorAppointment,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/doctorPrescription',
+    name: 'doctorPrescription',
+    component: DoctorPrescription,
     meta: {
       requiresAuth: true
     }
@@ -150,7 +159,7 @@ router.beforeEach((to, from, next) => {
                 path: './admin'
               })
           } else if (claims.doctor) {
-            if (to.path != '/doctor' && to.path != '/doctorAppointment' && to.path != '/doctorRooms')
+            if (to.path != '/doctor' && to.path != '/doctorAppointment' && to.path != '/doctorPrescription' && to.path != '/doctorRooms')
             return next ({
               path: './doctor'
             })
