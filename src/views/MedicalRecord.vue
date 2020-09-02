@@ -615,9 +615,6 @@ export default {
         immunisation: fieldValue.arrayRemove(immunisation)
       })
     },
-
-
-
   },
 };
 </script>

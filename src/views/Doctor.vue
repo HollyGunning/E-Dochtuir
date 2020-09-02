@@ -2,6 +2,7 @@
 <v-container>
 <DoctorNavbar />
   <v-col cols="12" s="12" sm="12" md="12" lg="12">
+    <!-- Content is wrapped with a dialog model which when opened covers page -->
     <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on, attrs }">
         <!-- Card for Patient Records Search Bar -->
@@ -26,6 +27,7 @@
           :items-per-page="10"
           class="elevation-1"
           >
+          <!-- Action field, each record corresponds to a seperate ID -->
           <template v-slot:[`item.actions`]="{ item }">
             <v-col cols="12" s="12" sm="12" md="12" lg="12">
             <v-icon
@@ -38,13 +40,11 @@
             >fa-notes-medical
             </v-icon>
             </v-col>
-            
           </template>
           </v-data-table>
         </v-card>
-
       </template>
-      <!-- Dialog opens this card where the doctor can update the patients medical record-->
+      <!-- Dialog opens this card where the doctor can update the patients medical record -->
       <v-card>
         <v-card-title class="primary white--text">
           <v-btn class="ml-0" icon dark @click="close()"> 
@@ -59,7 +59,7 @@
               <v-form @submit.prevent="updateMedicalRecord">
               <v-card-text>
                   <v-row>
-                  <!-- GENDER -->
+                  <!-- Gender Field -->
                   <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title class="overline">
@@ -77,7 +77,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-                  <!-- BLOODS -->
+                  <!-- Blood Type Field -->
                   <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title class="overline">
@@ -97,8 +97,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-
-                  <!-- WEIGHT AND HEIGHT -->
+                  <!-- Weight & Height Fields -->
                   <v-col class="mt-n3" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                     <v-card-title>                   
@@ -145,7 +144,7 @@
                       </v-card-text>
                     </v-card>
                   </v-col>
-                  <!-- Pulse -->
+                  <!-- Pulse Field -->
                   <v-col class="mt-n6" cols="12" sm="3" md="3" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -169,7 +168,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-                  <!-- Blood Pressure & Pulse -->
+                  <!-- Blood Pressure & Pulse Field -->
                   <v-col class="mt-n6" cols="12" sm="3" md="3" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -212,7 +211,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-                  <!-- Blood Glucose Level -->
+                  <!-- Blood Glucose Level Field -->
                   <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -235,7 +234,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-                  <!-- Cholesterol -->
+                  <!-- Cholesterol Fields -->
                   <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -259,7 +258,6 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-
                   <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -282,7 +280,6 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-
                   <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -305,7 +302,6 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-
                   <v-col class="mt-n6" cols="12" sm="6" md="6" lg="3">
                   <v-card flat>
                       <v-card-title>
@@ -328,7 +324,7 @@
                       </v-card-text>
                   </v-card>
                   </v-col>
-                  
+                  <!-- Tabs for Allergies, Conditions & Immunisations -->
                   <v-col class="mt-n4" cols="12">
                     <v-tabs v-model="tab">
                       <v-tab v-for="tab in tabs" :key="tab.tabName">{{ tab.tabName }}</v-tab>
@@ -438,16 +434,15 @@
                         </v-col> <!-- allergies end -->
 
                         <v-col cols="12" md="12">
+                        <!-- For every allergy in the allergies array, recognised seperately by index position -->
                         <v-card outlined class="mt-2" v-for="(allergy, index) in allergies" :key="index">
                           <v-card-title class="primary lighten-1 white--text">
                             <v-icon class="mr-4 white--text">fa-allergies</v-icon>
                             {{ allergy.allergyName }}
-                          
                           <v-subheader class="overline primary lighten-1 white--text">
                           {{ allergy.allergyType }}
                           </v-subheader>
-                            <v-spacer></v-spacer>
-                            <!--  DELETE  ALLERGY -->
+                            <v-spacer></v-spacer> <!-- deleteAllergy method called on click of icon -->
                             <v-icon right @click="deleteAllergy(allergy)">fa-trash</v-icon>
                           </v-card-title>
                             <v-card-text>
@@ -600,13 +595,13 @@
                   </v-col> <!-- conditions end -->
 
                   <v-col cols="12" md="12">
+                    <!-- For every condition in the conditions array, recognised seperately by index position -->
                     <v-card outlined class="mt-2" v-for="(condition, index) in conditions" :key="index">
                       <v-card-title class="primary lighten-1 white--text">
                         <v-icon class="mr-4 white--text">fa-file-medical-alt</v-icon>
                         {{ condition.conditionName }}
                         <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
-                        <v-spacer></v-spacer>
-                        <!--  DELETE  CONDITION -->
+                        <v-spacer></v-spacer> <!-- deleteCondition method called on click of icon -->
                         <v-icon right @click="deleteCondition(condition)">fa-trash</v-icon>
                       </v-card-title>
                         <v-card-text>
@@ -778,13 +773,13 @@
 
             
             <v-col cols="12" md="12">
+            <!-- For every immunisation in the immunisations array, recognised seperately by index position --> 
             <v-card outlined class="mt-2" v-for="(immunisation, index) in immunisations" :key="index">
               <v-card-title class="primary lighten-1 white--text">
                 <v-icon class="mr-4 white--text">fa-syringe</v-icon>
                 {{ immunisation.immunisationName }}
                 <v-subheader class="overline primary lighten-1 white--text"></v-subheader>
-                <v-spacer></v-spacer>
-                <!--  DELETE  IMMUNISATION -->
+                <v-spacer></v-spacer> <!-- deleteImmunisation method called on click of icon -->
                   <v-icon right @click="deleteImmunisation(immunisation)">fa-trash</v-icon>
               </v-card-title>
                 <v-card-text>
@@ -833,6 +828,7 @@
           </v-tab-item>
           </v-tabs-items>
           </v-col>
+          <!-- Snackbar to display any success or error messages -->         
           <v-snackbar
             :color="color"
             v-model="snackbar"
@@ -869,7 +865,6 @@ export default {
   },
   created () {
     this.currentUser = auth.currentUser.uid // Get current users ID
-
     // Gets the patients through roles by filtering only patient roles IDs
     db.collection("roles").get().then(snap => {
     snap.forEach(doc => {
@@ -897,6 +892,7 @@ export default {
 
   },
   computed: {
+    // Validation Errors
     weightError () {
       const errors = []
       if(!this.$v.medicalForm.weight.$dirty) return errors
@@ -971,10 +967,6 @@ export default {
         !this.$v.medicalForm.cholesterolTriglycerides.numeric && errors.push('Only Numeric Values Will Save')
       return errors
     },
-
-
-
-
     allergyNameErrors () {
       const errors = []
       if(!this.$v.allergyForm.allergyName.$dirty) return errors
@@ -1066,6 +1058,7 @@ export default {
       ],
       gender: null, // Gender value passes from db to buttons and highlights active one
       selectedBlood: null, // Used to store the selected blood type
+      // for blood type select
       bloods: [
         {text: 'None'},
         {text: 'A Positive'},
@@ -1077,7 +1070,7 @@ export default {
         {text: 'AB Positive'},
         {text: 'AB Negative'},
       ],
-
+      // for blood glucose level select
       bloodGlucoseLevelList: [
         { text: 'Less Than 3', value: 'Severe Hypoglycemia'},
         { text: 'Less Than 3.9', value: 'Hypoglycemia'},
@@ -1085,13 +1078,12 @@ export default {
         { text: 'Less Than 10', value: 'High (Take Action)'},
         { text: 'Above 10 - 27.7 +', value: 'Metabolic Consequences (Take Action)'}
       ],
-
+      // for total cholesterol select
       totalCholList: [
         { text: 'Less Than 200', value: 'Desirable' },
         { text: 'Between 200 & 239', value: 'Borderline High' },
         { text: '240 & Above', value: 'High' },
       ],
-
       medicalForm: {
         weight: null, // Used to store weight
         height: null, // Used to store height
@@ -1104,7 +1096,6 @@ export default {
         cholesterolHDL: null, // Used to store cholesterolHDL
         cholesterolTriglycerides: null, // Used to store cholesterolTriglycerides
       },
-
       allergies: [], // Store allergies here to display to user
       conditions: [], // Store conditions here to display to user
       immunisations: [], // Store immunisations here to display to user
@@ -1247,6 +1238,7 @@ export default {
           { name: 'Yellow Fever', abbr: 'YF', value: 'Yellow Fever', id: 25 },
           { name: 'Zoster Vaccine Live', abbr: 'ZVL', value: 'Zoster Vaccine Live', id: 26 },       
       ],
+      // reaction to immunisation
       reactionList: [
           { text: 'None', value: 'None'},
           { text: 'Pain', value: 'Pain'},
@@ -1298,7 +1290,7 @@ export default {
   },
   methods: {
     storeID (id) {
-      // Store the ID of the record of which the action is pressed on
+      // Store the ID of the record of which the action icon is selected
       this.patientID = id
       db.collection("users").doc(this.patientID).onSnapshot(doc => {
         let patientInfo = doc.data()
@@ -1631,7 +1623,7 @@ export default {
         db.collection("users").doc(this.patientID).get().then(doc => {
           let patientRecord = doc.data()
           patientRecord.id = doc.id
-        //   // Get DoB
+          // Get DoB
           this.dob = patientRecord.date
         })
         return this.dob
@@ -1643,10 +1635,12 @@ export default {
       return today.toISOString()
     },
     customFilter (item, queryText) {
+      // convert any text or abreviation input
+      // to lower case in order to query it
       const textOne = item.name.toLowerCase()
       const textTwo = item.abbr.toLowerCase()
       const searchText = queryText.toLowerCase()
-
+      // return if any letters match an item
       return textOne.indexOf(searchText) > -1 ||
         textTwo.indexOf(searchText) > -1
     },  
