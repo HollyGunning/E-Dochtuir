@@ -306,7 +306,7 @@
                                 </template>
                                 </v-checkbox>
                            </v-col>
-
+                            <!-- Ts & Cs Field -->
                              <v-dialog
                                 v-model="dialog2"
                                 absolute
@@ -491,25 +491,21 @@ export default {
     },
    data() {
     return {
-    //icons to show password
-      showPassword: false,
-      showPassword2: false,
-      // dialog and menu for forgot password
-      dialog: false,
-      dialog2: false,
-      menu: false,
-      // date for dob 
-      date: '',
-      
-      
-    //   errors: false,
-    //   empty: true,
-      showSuccess: false,
-      errorMsg: {},
-      alert1: false,
-      alert2: false,
-      alert3: false,
-      forgotForm: {
+        //icons to show password
+        showPassword: false,
+        showPassword2: false,
+        // dialog and menu for forgot password
+        dialog: false,
+        dialog2: false,
+        menu: false,
+        // date for dob 
+        date: '',
+        showSuccess: false,
+        errorMsg: {},
+        alert1: false,
+        alert2: false,
+        alert3: false,
+        forgotForm: {
         email: '',
       },
       loginForm: {
@@ -541,6 +537,7 @@ export default {
             surname: { required, minLength: minLength(3), maxLength: maxLength (15), alpha},
             ppsn: { 
                 required,
+                // Validation to check for exactly 7 alpha characters followed by 1/2 num
                 ppsnValidate(ppsn){
                     return (
                         /^[0-9]{7}[a-zA-Z]{1,2}$/.test(ppsn)
@@ -559,6 +556,8 @@ export default {
         },
     },
     methods: {
+        // Method to calculate 16 years back from todays date
+        // in order to limit calendar selection to 16s and over
         getLowestPossible () {
             let latest = new Date ()
             latest.setFullYear(latest.getFullYear() - 16)
@@ -569,9 +568,9 @@ export default {
             year = d.getFullYear();
             if (month.length < 2) month = '0' + month;
             if (day.length < 2) day = '0' + day;
-
             return [year, month, day].join('-');
         },
+        // Get the lateset possible age for the app, currently set to 90
         getEarliestPossible () {
             let latest = new Date ()
             latest.setFullYear(latest.getFullYear() - 90)
@@ -582,7 +581,6 @@ export default {
             year = d.getFullYear();
             if (month.length < 2) month = '0' + month;
             if (day.length < 2) day = '0' + day;
-
             return [year, month, day].join('-');
         },
         async resetPassword() {
@@ -595,6 +593,7 @@ export default {
                 this.errorMsg = error.message
             }
         },
+        // Reset values when user toggles between register and login
         toggleForm() {
         this.showLoginForm = !this.showLoginForm
          this.$v.$reset()
