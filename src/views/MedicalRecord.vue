@@ -592,18 +592,19 @@ export default {
     // NB. fieldValue - a sentinel value that can be used to tell server to remove
     //                  given elements from any array value that exists on the server
     // NB. arrayRemove - removes the exact item specified from the array
-
+    
     // Delete an allergy
     deleteAllergy(allergy){
       db.collection("users").doc(this.currentUser).update({
         // remove the allergy from the object allergies from array
         allergy: fieldValue.arrayRemove(allergy)
-      }) 
+      })
+      
     },
-  	// Delete a condition
+    // Delete a condition
     deleteCondition (condition) {
        db.collection("users").doc(this.currentUser).update({
-         // remove the condition from the object conditions from array
+        // remove the condition from the object conditions from array
         condition: fieldValue.arrayRemove(condition)
       })
     },
@@ -614,6 +615,9 @@ export default {
         immunisation: fieldValue.arrayRemove(immunisation)
       })
     },
+
+
+
   },
 };
 </script>
