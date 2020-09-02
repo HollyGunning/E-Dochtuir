@@ -287,6 +287,16 @@
                     @change="responseChanges(response)"
                     ></v-select>
                 </v-col>
+                <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4" v-if="showUpload">
+                    <v-file-input
+                    type="file"
+                    v-model="prescriptionFile"
+                    label="Upload prescription"
+                    outlined
+                    ></v-file-input>
+                </v-col>
+           
+
                 <v-col class="mt-n3" cols="12" sm="6" md="8" lg="8" v-if="showDenied">
                     <v-textarea
                     label="Reason"
@@ -437,7 +447,7 @@
 
 <script>
 import DoctorNavbar from '../components/Navbars/DoctorNavbar'
-import { auth, db } from '../firebase'
+import { auth, db, storage } from '../firebase'
 
 export default {
     components: {
@@ -511,6 +521,11 @@ export default {
             ],
             showDenied: false,
             reasonDenied: null,
+            showUpload: false,
+            prescriptionFile: null,
+            downloadUrl: "none",
+            prescriptionUpload: "none",
+            URL: "gs://e-dochtuir.appspot.com/prescriptions",
 
 
             // Contraceptive Details
@@ -556,6 +571,8 @@ export default {
     methods: {
         close () {
             this.dialog = false
+            this.response = null,
+            this.reasonDenied = null
         },
         hideAllTreatments () {
             this.showAdrenaline = false,
@@ -657,15 +674,49 @@ export default {
 
         responseChanges (response) {
             if(response == "Denied"){
+                this.showUpload = false
                 this.showDenied = true
             }
             else{
                 this.showDenied = false
+                this.showUpload = true
             }
         },
 
         resolveRequest () {
-            console.log("Resolve here")
+            db.collection("prescriptions").doc(this.prescriptionRecord).get().then(() => {
+                if(this.response == "Accepted"){
+                    // Get the file
+                    var file = this.prescriptionFile
+                    // Create the storage reference
+                    const storageRef = storage.ref("prescriptions/" + this.prescriptionRecord)
+                    this.prescriptionUpload = file.name
+                    this.downloadUrl = URL + file.name
+                    var uploading = storageRef.put(file)
+                    
+                    // db.collection("prescriptions").doc(this.prescriptionRecord).update({
+                    //     status: this.response
+                    // }) 
+                }
+                else if(this.response == "Denied"){
+                    console.log("Denied")
+                    // db.collection("prescriptions").doc(this.prescriptionRecord).update({
+                    //     status: this.response,
+                    //     reason: this.reasonDenied
+                    // }) 
+                }
+                else{
+                    console.log("We got problems")
+                }
+
+
+            })
+
+            // Clear the prescription from list of pending prescriptions
+            // this.prescriptionsPending = this.prescriptionsPending.filter(prescription => {
+            //     return prescription.id != this.prescriptionRecord
+            // })
+
         },
     },
 }
