@@ -582,7 +582,18 @@ export default {
             this.showErecDys = false,
             this.showPreE = false
         },
-        // Access the record associated with the user by the ID of the prescription
+        appendLeadingZeroes(n){
+            if(n <= 9){
+                return "0" + n;
+            }
+            return n
+        },
+        getTodaysDate () {
+            let today = new Date()
+            let formattedDate = today.getFullYear() + "-" + this.appendLeadingZeroes(today.getMonth() + 1) + "-" + this.appendLeadingZeroes(today.getDate()) 
+            return formattedDate
+        },
+        // Access the record associated with the user by the ID of the prescription to populate their information into variables
         storeID (id) {
             this.prescriptionRecord = id
 
@@ -690,32 +701,31 @@ export default {
                     var file = this.prescriptionFile
                     // Create the storage reference
                     const storageRef = storage.ref("prescriptions/" + this.prescriptionRecord)
-                    this.prescriptionUpload = file.name
-                    this.downloadUrl = URL + file.name
-                    var uploading = storageRef.put(file)
+                    // this.prescriptionUpload = file.name //not sure if still need these?
+                    // this.downloadUrl = URL + file.name
+                    // Store the file using the storage reference
+                    storageRef.put(file)
                     
-                    // db.collection("prescriptions").doc(this.prescriptionRecord).update({
-                    //     status: this.response
-                    // }) 
+                    db.collection("prescriptions").doc(this.prescriptionRecord).update({
+                        status: this.response,
+                        dateAccepted: this.getTodaysDate()
+                    }) 
                 }
                 else if(this.response == "Denied"){
                     console.log("Denied")
-                    // db.collection("prescriptions").doc(this.prescriptionRecord).update({
-                    //     status: this.response,
-                    //     reason: this.reasonDenied
-                    // }) 
+                    db.collection("prescriptions").doc(this.prescriptionRecord).update({
+                        status: this.response,
+                        reason: this.reasonDenied
+                    }) 
                 }
                 else{
                     console.log("We got problems")
                 }
-
-
             })
-
             // Clear the prescription from list of pending prescriptions
-            // this.prescriptionsPending = this.prescriptionsPending.filter(prescription => {
-            //     return prescription.id != this.prescriptionRecord
-            // })
+            this.prescriptionsPending = this.prescriptionsPending.filter(prescription => {
+                return prescription.id != this.prescriptionRecord
+            })
 
         },
     },

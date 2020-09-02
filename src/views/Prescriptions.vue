@@ -56,7 +56,7 @@
 
           <v-row>     
               
-            <v-col cols="12" s="6" sm="6" md="6" lg="12" v-if="showFemaleT">
+            <v-col cols="12" s="6" sm="6" md="6" lg="6" v-if="showFemaleT">
                 <v-select
                 label="Female Treatments"
                 v-model="chosenOption"
@@ -66,7 +66,7 @@
 
                 ></v-select>
             </v-col>
-            <v-col cols="12" s="6" sm="6" md="6" lg="12" v-if="showMaleT">
+            <v-col cols="12" s="6" sm="6" md="6" lg="6" v-if="showMaleT">
                 <v-select
                 label="Male Treatments"
                 v-model="chosenOption"
@@ -75,7 +75,7 @@
                 @change="setTreatmentOption(chosenOption)"
                 ></v-select>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" s="6" sm="6" md="6" lg="6">
                 <v-select 
                 name="selectDoctor"
                 v-model="chosenDoc"
@@ -829,34 +829,36 @@ export default {
             this.color = color,
             this.snackbar = true
         },
+        // Set the visible treatments v-select for the user
         setGenderOption () {
             db.collection("users").doc(this.currentUser).get().then(( snap => {
                 this.genderOption = snap.data().gender // Return the gender of the patient
                 this.name = snap.data().firstname + " " + snap.data().surname
-                if(this.genderOption == 'Male'){
-                this.hideAllTreatments()
-                this.requestBtn = true
-                this.showFemaleT = false
-                this.showMaleT = true
-                this.chosenOption = null
-                }
-                else if  (this.genderOption == 'Female'){
-                    this.requestBtn = true
+                    if(this.genderOption == 'Male'){
                     this.hideAllTreatments()
-                    this.showMaleT= false
-                    this.showFemaleT = true
+                    this.requestBtn = true
+                    this.showFemaleT = false
+                    this.showMaleT = true
                     this.chosenOption = null
-                }
-                else{
-                    // No gender defined
-                    this.requestBtn = false
-                    this.noGenderView = true
-                }
-
+                    }
+                    else if(this.genderOption == 'Female'){
+                        this.requestBtn = true
+                        this.hideAllTreatments()
+                        this.showMaleT= false
+                        this.showFemaleT = true
+                        this.chosenOption = null
+                    }
+                    else{
+                        // No gender defined, show redirect button for user to set their gender in
+                        // medical record
+                        this.requestBtn = false
+                        this.noGenderView = true
+                    }
             }))
         
 
         },
+        // Hide All Treatment Forms
         hideAllTreatments () {
             this.showAdrenaline = false,
             this.showAsthma = false,
@@ -875,6 +877,7 @@ export default {
                 this.setTreatmentOption()
             })
         },
+        // Set the Visible Form Depending on Treatment Selected, Unless Pending Already
         setTreatmentOption () {
             this.clearForms()
             if (this.chosenOption == 'Adrenaline Pen Treatment' && this.chosenDoc != null){
@@ -1025,8 +1028,7 @@ export default {
             this.thrush.thrushUrinary = null
         },
         // Submit request form
-        requestPrescription () {
-            
+        requestPrescription () { 
             if (this.chosenOption == 'Adrenaline Pen Treatment'){
                 this.$v.$touch() // used to check the state of the form fields
                 this.formTouched = !this.$v.adrenaline.$anyDirty
