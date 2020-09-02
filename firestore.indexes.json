@@ -14,6 +14,41 @@
         }
       ]
     },
+
+    {
+      "collectionGroup": "prescriptions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "doctor",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateRequested",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+
+    {
+      "collectionGroup": "prescriptions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "doctor",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateRequested",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "patientName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+
     {
       "collectionGroup": "appointments",
       "queryScope": "COLLECTION",
