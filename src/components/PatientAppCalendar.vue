@@ -51,7 +51,6 @@
             @click:event="showEvent"
             >
             </v-calendar>
-
                 <v-menu
                 v-model="selectedOpen"
                 :close-on-content-click="false"
@@ -127,12 +126,10 @@ export default {
                 week: 'Week',
                 day: 'Day',
             },
-
             selectedEvent: {},
             selectedElement: null,
             selectedOpen: false,
             events: [],
-
             doctorName: null,
         }
     },
@@ -166,20 +163,14 @@ export default {
                         this.events.push(event)
                         })
 
-                  
                     }
-                
-          
-                  
-                
                 })
             })
         },
-
         viewDay ({ date }) {
             this.focus = date
             this.type = 'day'
-      },
+        },
         setToday () {
             this.focus = ''
         },
@@ -196,14 +187,12 @@ export default {
             this.selectedElement = nativeEvent.target
             setTimeout(() => this.selectedOpen = true, 10)
             }
-
             if (this.selectedOpen) {
             this.selectedOpen = false
             setTimeout(open, 10)
             } else {
             open()
             }
-
             nativeEvent.stopPropagation()
       },
     },

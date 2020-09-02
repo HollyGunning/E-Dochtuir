@@ -211,7 +211,6 @@ export default {
                 { name: 'Yellow Fever', abbr: 'YF', value: 'Yellow Fever', id: 25 },
                 { name: 'Zoster Vaccine Live', abbr: 'ZVL', value: 'Zoster Vaccine Live', id: 26 },       
             ],
-
             reactionList: [
                 { text: 'None', value: 'None'},
                 { text: 'Pain', value: 'Pain'},
@@ -223,7 +222,6 @@ export default {
                 { text: 'Systemic Symptoms', value: 'Systemic Symptoms'},
                 
             ],
-
             immunisationForm: {
                 immunisationSelected: null,
                 immunisationDate: null,

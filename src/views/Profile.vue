@@ -1,12 +1,10 @@
 <template>
 <v-container >
 <Navbar />    
- 
     <v-row>
         <!-- Left Card - Profile -->
         <v-col cols="12" s="12" sm="6" md="6" lg="6">
             <v-card width="800" >
-    
             <div v-if="showEditForm">
                 <v-card flat>   <!-- Full Name -->
                 <v-card-title class="text-uppercase primary lighten-1 white--text">
@@ -92,7 +90,6 @@
                     </v-row> 
                     <v-divider></v-divider>
                     </v-card>
-
                     <v-card flat> <!-- MOBILE -->
                     <v-row>
                         <v-col cols="12" md="4">
@@ -112,8 +109,6 @@
                     </v-row> 
                     </v-card>
             </div>
-    
-
             <!-- EDIT FORM -->
             <v-form v-else @submit.prevent="updateProfile">
                 <v-card flat>
@@ -123,8 +118,7 @@
                     <v-icon class="mx-2" fab dark color="white--text darken-1 ">fa-window-close</v-icon>
                     <span>Cancel</span>
                     </v-btn>
-                </v-card-title>
-                
+                </v-card-title> 
                 <v-divider></v-divider>
                 <v-card-text>
                     <v-row>
@@ -141,8 +135,7 @@
                         outlined
                         @input="$v.firstname.$touch()"
                         @blur="$v.firstname.$touch()"
-                        >
-                        </v-text-field>
+                        ></v-text-field>
                     </v-col>
                     <!-- Surname Edit -->
                     <v-col class="mt-n2" cols="12" md="6" lg="6">
@@ -157,8 +150,7 @@
                         outlined 
                         @input="$v.surname.$touch()"
                         @blur="$v.surname.$touch()"
-                        >
-                        </v-text-field>
+                        ></v-text-field>
                     </v-col>
                     <!-- DOB Edit -->
                     <v-col class="mt-n2" cols="12" md="4" lg="4">
@@ -187,8 +179,7 @@
                         :min="getLowestPossible()"
                         :max="getEarliestPossible()"
                         @change="menu = false"  
-                        >
-                        </v-date-picker>
+                        ></v-date-picker>
                         </v-menu>
                     </v-col>
                     <!-- PPSN Edit -->
@@ -204,8 +195,7 @@
                         outlined
                         @input="$v.ppsn.$touch()"
                         @blur="$v.ppsn.$touch()"
-                        >
-                        </v-text-field>
+                        ></v-text-field>
                     </v-col>
                     <!-- Mobile Edit -->
                     <v-col class="mt-n2" cols="12" md="4" lg="4">
@@ -219,8 +209,7 @@
                         outlined
                         @input="$v.mobile.$touch()"
                         @blur="$v.mobile.$touch()" 
-                        >
-                        </v-text-field>
+                        ></v-text-field>
                     </v-col>                    
                     </v-row>
                     <v-card-actions>
@@ -238,7 +227,7 @@
                 </v-card>
             </v-form>
             </v-card>
-
+            <!-- Dark Mode Card -->
             <v-card width="585" height="140" class="mt-5">
                 <v-card-title class="primary lighten-1 white--text">Application Theme</v-card-title>
                 <v-card-text class="ml-15">
@@ -258,13 +247,11 @@
         <v-col cols="12" s="12" sm="6" md="6" lg="6">
             <v-card width="600">
             <v-card-text>
-                <CalendarAppointments />
+                <CalendarAppointments /> <!-- Import Calendar -->
             </v-card-text>
             </v-card>   
-
-            </v-col>
+        </v-col>
     </v-row>  
-
 </v-container>
 </template>
 
@@ -274,7 +261,6 @@ import CalendarAppointments from '../components/PatientAppCalendar'
 
 import { mapState } from 'vuex'
 import { maxLength, minLength, alpha, numeric } from "vuelidate/lib/validators"
-
 import { auth, db } from '../firebase'
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
@@ -296,8 +282,6 @@ export default {
         formattedDate () {
             return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
         },
-      
-
         // VALIDATION ERROR MESSAGES
         firstNameErrors () {
             const errors = []
@@ -343,7 +327,6 @@ export default {
             mobile: this.$store.state.userProfile.mobile,
             menu: false,
             showEditForm: true,
-
             dob: null,
         }
     },
@@ -358,13 +341,8 @@ export default {
                 },
             },
             mobile: {numeric, minLength: minLength(9), maxLength: maxLength(14)},
-
     },
     methods: {
-    //   viewDOB () {
-    //       return this.date ? format(parseISO(this.date), 'do MMM yyyy') : ''
-    //   },
-
     getEarliestPossible () {
         db.collection("users").doc(this.currentUser).onSnapshot(doc => {
             let patientRecord = doc.data()
@@ -372,7 +350,6 @@ export default {
             // Get DoB
             this.dob = patientRecord.date
         })
-    
         let latest = new Date ()
         latest.setFullYear(latest.getFullYear() - 16)
         //Filter
@@ -382,7 +359,6 @@ export default {
         year = d.getFullYear();
         if (month.length < 2) month = '0' + month;
         if (day.length < 2) day = '0' + day;
-
         return [year, month, day].join('-');
     },
     getLowestPossible () {
@@ -395,18 +371,16 @@ export default {
         year = d.getFullYear();
         if (month.length < 2) month = '0' + month;
         if (day.length < 2) day = '0' + day;
-
         return [year, month, day].join('-');
     },
     toggleEditProfile(){
         this.showEditForm = !this.showEditForm
         this.$v.$reset()
-
-            this.firstname = this.$store.state.userProfile.firstname
-            this.surname = this.$store.state.userProfile.surname
-            this.date = this.$store.state.userProfile.date
-            this.ppsn = this.$store.state.userProfile.ppsn
-            this.mobile = this.$store.state.userProfile.mobile
+        this.firstname = this.$store.state.userProfile.firstname
+        this.surname = this.$store.state.userProfile.surname
+        this.date = this.$store.state.userProfile.date
+        this.ppsn = this.$store.state.userProfile.ppsn
+        this.mobile = this.$store.state.userProfile.mobile
     },
     updateProfile(){
         this.$v.$touch()

@@ -1,7 +1,6 @@
 <template>
 <v-container>
   <Navbar />
-
      <v-container class="text-center">
        <v-card flat>
         <v-card-title class="text-uppercase primary lighten-1 white--text"><h1>Features</h1></v-card-title>
@@ -10,7 +9,6 @@
           <v-col v-for="({ icon, title, text }, i) in features" :key="i" cols="12" md="6">
             <v-card
               class="py-12 px-4"
-              
               flat
             >
               <v-theme-provider dark>
@@ -82,7 +80,6 @@
       <v-card-actions>
         <v-row align="center" justify="center">
           <v-col cols="6">
-
           <v-btn
           type="submit"
           block
@@ -103,8 +100,6 @@
       </v-snackbar>
   </v-card>
 </v-col></v-row>
-
-
 </v-container>
 </template>
 
@@ -122,10 +117,8 @@ export default {
     db.collection("users").doc(this.currentUser).onSnapshot(doc => {
       let userRecord = doc.data()
       userRecord.id = doc.id
-
       this.name = userRecord.firstname + ' ' + userRecord.surname
       this.email = userRecord.email
-      
     })
   },
   computed: {
@@ -143,12 +136,10 @@ export default {
         multiLine: true,
         timeout: 5000,
         snackbarText: "",
-
         currentUser: null,
         email: null, 
         name: null,
         message: null,
-
         features: [
           {
             icon: 'fa-book-medical',
@@ -203,7 +194,6 @@ export default {
         else{
           this.triggerSnackbar("There Were Errors With Your Form!", "error")
         }
-
     },
   },
 };
