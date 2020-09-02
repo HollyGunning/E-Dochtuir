@@ -1,7 +1,6 @@
 <template>
     <v-row class="fill-height">
         <v-col>
-
         <!-- Contains the top toolbar with the today, prev, next btn options and a menu that switches the calendar view--> 
         <v-sheet height="64">
             <v-toolbar flat>
@@ -40,7 +39,6 @@
                 </v-menu>
             </v-toolbar>
         </v-sheet>
-
         <v-sheet height="500">
             <v-calendar
             ref="calendar"
@@ -52,7 +50,6 @@
             @click:event="showEvent"
             >
             </v-calendar>
-
                 <v-menu
                 v-model="selectedOpen"
                 :close-on-content-click="false"
@@ -68,7 +65,6 @@
                 :color="selectedEvent.color"
                 dark
                 >
-          
                 <v-toolbar-title class="primary white--text" v-html="selectedEvent.name"></v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn
@@ -107,12 +103,8 @@
                 </v-col>
                 </v-row>              
                 </v-card-text>
-                <v-card-actions>
-            
-                </v-card-actions>
                 </v-card>
                 </v-menu>
-
         </v-sheet>
         </v-col>
     </v-row>
@@ -149,7 +141,6 @@ export default {
                 let appointment = snap.docChanges()
                 appointment.forEach(appointment => { 
                     let record = appointment.doc.data()
-                
                     let time = record.appointmentTime.replace(".", ":")
                     let endTime = time.substr(0, time.length -2)
                     let endTimeMinutes = time.substr(time.length -2, 2)
@@ -163,12 +154,9 @@ export default {
                         end: record.appointmentDate + " " + endTime
                     }
                     this.events.push(event)
-                  
-                
                 })
             })
         },
-
         viewDay ({ date }) {
             this.focus = date
             this.type = 'day'
@@ -182,7 +170,6 @@ export default {
         next () {
             this.$refs.calendar.next()
         },
-
         showEvent ({ nativeEvent, event }) {
             const open = () => {
             this.selectedEvent = event
@@ -196,9 +183,8 @@ export default {
             } else {
             open()
             }
-
             nativeEvent.stopPropagation()
-      },
+        },
     },
 }
 </script>

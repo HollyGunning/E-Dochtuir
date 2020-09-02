@@ -39,7 +39,7 @@
         <v-card-text>
           <v-row>     
             <v-expansion-panels flat accordion v-model="panel">
-              <!-- Personal Details -->
+              <!-- Personal Details Field -->
               <v-expansion-panel>
                 <v-expansion-panel-header>
                   <v-subheader  class="overline ml-n5">Personal Details
@@ -48,7 +48,7 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-row>
-                  <!-- Firstname -->        
+                  <!-- Firstname Field -->        
                   <v-col class="mt-n0" cols="12" md="4" lg="4">
                     <v-text-field 
                     type="text"
@@ -59,7 +59,7 @@
                     outlined  
                     ></v-text-field>
                   </v-col>
-                  <!-- Surname --> 
+                  <!-- Surname Field --> 
                   <v-col class="mt-n0" cols="12" md="4" lg="4">
                     <v-text-field 
                     type="text"
@@ -70,7 +70,7 @@
                     outlined   
                     ></v-text-field>
                   </v-col>
-                  <!-- Date of Birth -->
+                  <!-- Date of Birth Field -->
                   <v-col class="mt-n0" cols="12" md="4" lg="4">
                     <v-text-field
                     label="Date of Birth"
@@ -79,7 +79,7 @@
                     outlined
                     ></v-text-field>
                   </v-col>
-                  <!-- Email --> 
+                  <!-- Email Field --> 
                   <v-col class="mt-n2" cols="12" md="4" lg="4">
                     <v-text-field 
                     type="email"
@@ -90,7 +90,7 @@
                     outlined   
                     ></v-text-field>
                   </v-col>
-                  <!-- PPSN -->
+                  <!-- PPSN Field -->
                   <v-col class="mt-n2" cols="12" md="4" lg="4">
                     <v-text-field 
                     type="text"
@@ -101,7 +101,7 @@
                     outlined        
                     ></v-text-field>
                   </v-col>
-                  <!-- Mobile -->
+                  <!-- Mobile Field -->
                   <v-col class="mt-n2" cols="12" md="4" lg="4">
                     <v-text-field 
                     type="text"
@@ -115,7 +115,6 @@
                   </v-row>
                 </v-expansion-panel-content>
               </v-expansion-panel>
-              
               <!-- Account Details -->
               <v-expansion-panel>
                 <v-expansion-panel-header>
@@ -125,7 +124,7 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                 <v-row>
-                <!-- Appointment Type -->
+                <!-- Appointment Type Field -->
                 <v-col>
                   <v-select
                   label="Select Appointment Type"
@@ -137,7 +136,7 @@
                   @blur="$v.appointmentSelected.$touch()"
                   ></v-select>
                 </v-col>
-                <!-- Appointment Doctor -->
+                <!-- Appointment Doctor Field -->
                 <v-col class="mt-n0" cols="12" md="6">
                     <v-select 
                     name="selectDoctor"
@@ -152,15 +151,13 @@
                     @blur="$v.chosenDoc.$touch()"
                     @change="onDropdownChanged($event)"
                     ></v-select>  
-
                 </v-col>
-                <!-- Appointment Date -->
+                <!-- Appointment Date Field -->
                 <v-col class="mt-n0" cols="12" md="6">
                 <v-menu
                 v-model="menu2"
                 :close-on-content-click="false"
                 max-width="290"
-               
                 >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
@@ -175,7 +172,6 @@
                   @input="$v.appointmentDate.$touch()"
                   @blur="$v.appointmentDate.$touch()"
                   @click:clear="appointmentDate = null"
-                  
                   ></v-text-field>
                 </template>
                 <v-date-picker 
@@ -191,7 +187,7 @@
                 </v-date-picker>
                 </v-menu>
                 </v-col>
-                <!-- Appointment Details -->
+                <!-- Appointment Details Field -->
                 <v-col cols="12" md="6">
                 <v-textarea
                 auto-grow
@@ -208,14 +204,11 @@
                 @blur="$v.additionalDetails.$touch()"
                 ></v-textarea>
                 </v-col>
-
-                <!-- Appointment Time -->
+                <!-- Appointment Time Field -->
                 <v-col class="mt-0" cols="12" md="12">
                   <v-row>
                 <v-card flat v-if="showSelectTime">
-
                   <v-card-text class="mt-n4">
-
                   <span class="subheading">Select Appointment Time</span>
                   <v-chip-group
                   column
@@ -223,6 +216,7 @@
                   mandatory
                   active-class="primary--text"
                   >
+                  <!-- Displays times available -->
                   <v-chip class="mr-5" outlined default v-for="time in displayedTimeSlots" :key="time" :value="time">
                     {{ time }}
                   </v-chip>
@@ -262,7 +256,7 @@
 </v-container>
 </template>
 
-<script>// Imports; navbar, component, viewAppointments component, mapstate for profile info, auth + db for db queries, format for date, and validation libraries
+<script>
 import Navbar from '../components/Navbars/Navbar'
 import ViewAppointments from "../components/Appointments/ViewAppointments"
 import { mapState } from 'vuex'
@@ -363,7 +357,6 @@ export default {
     },
     created() {
       this.currentUser = auth.currentUser.uid // Get current users ID
-
       // This query first gets the list of users whos role is doctor from the roles collection
       db.collection("roles").where("role.doctor", "==", true).get().then(snap => {
         // For each doctor document store the doc.id, which is the same ID used for the users colection doc.id, into doctorID 
@@ -381,8 +374,7 @@ export default {
             })
           })
         })
-      })
-      
+      }) 
     },
     methods: {
       // When the cancel button is pressed, close the dialog, reset any validation errors and rest any input fields
@@ -514,7 +506,6 @@ export default {
               this.appointmentDate = null
               this.additionalDetails = null
               this.selectedTime = null
-              
             }).then(() => {
               // Select times must be hidden and the book appointment dialog closed
               this.showSelectTime = !this.showSelectTime

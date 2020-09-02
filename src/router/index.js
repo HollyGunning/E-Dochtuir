@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import {auth} from '../firebase'
-
 import Admin from '@/views/Admin.vue'
 import Doctor from '@/views/Doctor.vue'
 import DoctorAppointment from '@/views/DoctorAppointment.vue'

@@ -221,12 +221,10 @@ export default {
         }
     },
     created() {     
-        //Get the current date
-        var currentDate = new Date()
+        var currentDate = new Date() //Get the current date
         //date.get year returns the amount of years since 1900, using getFullYear instead
         var currentDateStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-        // Set current user to the currently logged in user
-        var currentUser = auth.currentUser.uid
+        var currentUser = auth.currentUser.uid   // Set current user to the currently logged in user
         // Query the db to identify any appointments connected to that user, order by date and then time, onSnapshot listens for real time updates
         db.collection("appointments").where("patientID", "==", currentUser).orderBy("appointmentDate").orderBy("appointmentTime").onSnapshot(snap => {
             let appointment = snap.docChanges()
@@ -305,8 +303,6 @@ export default {
                     this.triggerSnackbar("Appointment Has Been Successfully Deleted!", "success")
                 }
             })
-
-
         }, 
     }
 }
