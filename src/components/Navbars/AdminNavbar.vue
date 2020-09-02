@@ -9,26 +9,20 @@
             <v-icon right> exit_to_app </v-icon>
         </v-btn>
         </v-app-bar>
-  
     </nav>
 </template>
 
 <script>
 export default {
-data(){
-    return{
-    
-    }
-},
-methods: {
-    logout() {
-        this.$store.dispatch('logout')
+    data(){
+        return{
+        
+        }
+    },
+    methods: {
+        logout() {
+            this.$store.dispatch('logout')
+        }
     }
 }
-}
-
 </script>
-
-<style>
-
-</style>

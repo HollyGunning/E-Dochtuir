@@ -4,7 +4,7 @@
         <v-app-bar app class="primary">
             <v-app-bar-nav-icon large class="grey--text" @click="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title class="grey--text text-uppercase">E-Dochtúir - Doctor Portal</v-toolbar-title> 
-        <v-spacer></v-spacer> <!-- Anything after the spacer will align to the right of the page -->
+        <v-spacer></v-spacer>
         <v-btn depressed class="primary grey--text" @click="logout()">
             <span>Log Out</span>
             <v-icon right> exit_to_app </v-icon>
@@ -21,36 +21,28 @@
                         <v-list-item-title class="white--text">{{ link.text}}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                
             </v-list>
         </v-navigation-drawer>
-  
     </nav>
 </template>
 
 <script>
 export default {
-data(){
-    return{
-        drawer: false,
-
-        links: [
-            { icon: 'fa-user-injured', text: 'Patient Database', route: '/doctor'},
-            { icon: 'fa-calendar', text: 'Appointments', route: '/doctorAppointment' },
-            { icon: 'fa-file-prescription', text: 'Prescription Requests', route: '/doctorPrescription' },
-            { icon: 'fa-comment-medical', text: 'Patient Chat', route: '/doctorRooms' },
-        ]
-    }
-},
-methods: {
-    logout() {
-        this.$store.dispatch('logout')
+    data(){
+        return{
+            drawer: false,
+            links: [
+                { icon: 'fa-user-injured', text: 'Patient Database', route: '/doctor'},
+                { icon: 'fa-calendar', text: 'Appointments', route: '/doctorAppointment' },
+                { icon: 'fa-file-prescription', text: 'Prescription Requests', route: '/doctorPrescription' },
+                { icon: 'fa-comment-medical', text: 'Patient Chat', route: '/doctorRooms' },
+            ]
+        }
+    },
+    methods: {
+        logout() {
+            this.$store.dispatch('logout')
+        }
     }
 }
-}
-
 </script>
-
-<style>
-
-</style>
