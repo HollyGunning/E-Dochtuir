@@ -124,9 +124,14 @@ export default {
                             if(rooms.type == "added"){
                                 this.triggerSnackbar("Room Session Has Begun!")
                             }
-                            if(rooms.type == "removed"){
+                            else if(rooms.type == "removed"){
                                 this.triggerSnackbar("Room Session Has Ended!")
                                 this.roomID = null
+                                this.chatRoom = false
+                                this.preMessageView = true
+                            }
+                            else{
+                                console.log("new message")
                             }
                         })
 
@@ -221,12 +226,11 @@ export default {
                 let rooms = snap.docChanges()
                 // This gets the data of each doc connected to the user
                 rooms.forEach(rooms => {
-           
-                    let roomDoc = rooms.doc.data() 
-                    this.messages = roomDoc.message
 
+                    let room = rooms.doc.data() 
+                    this.messages = room.message
 
-                    this.chatRoom = true
+                    if(rooms.type == "added"){
                     // Sorting can only occur once their are messages to be sorted
                     if(this.messages != null) {
                         this.preMessageView = false
@@ -244,8 +248,16 @@ export default {
                         this.chatRoom = false
                         this.preMessageView = true
                     }
+                    }
+                    else if(rooms.type == "removed"){
+                        this.roomID = null
+                        this.chatRoom = false
+                        this.preMessageView = true
+                    }
+                  
+
                     
-                    
+                  
                 })
             })
        },
@@ -287,7 +299,6 @@ export default {
                             this.message = null
                             this.chatRoom = false
                             this.preMessageView = true
-                            // this.triggerSnackbar("Room ID No Longer Exists", "error")
                         }
 
                         })
