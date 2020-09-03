@@ -258,7 +258,7 @@ export default {
                             this.roomID = room
                         }) 
                         if(this.roomID != null){
-                            if(this.messages != null || this.message != ' ') {
+                            
                             var addMessage = {
                             patientId: this.currentUser,
                             name: this.userName,
@@ -271,12 +271,9 @@ export default {
                             }
                             
                                 db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
-                                this.message = null  
+                                this.message = null
+                            
                             })
-                            }else{
-                                this.triggerSnackbar("Empty Message!", "error")
-                            }
-
                 
                         }
                         else{
@@ -285,10 +282,7 @@ export default {
 
                     })
                     }
-                    else{
-                        // Appointment is not for today
-                        this.message = null
-                    }
+           
                 })
             })
        },
