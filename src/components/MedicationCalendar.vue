@@ -226,7 +226,7 @@
                     <v-toolbar :color="selectedEvent.color" dark>
                         <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                         <v-spacer></v-spacer>
-                        <v-btn icon @click="deleteEvent(selectedEvent.id)">
+                        <v-btn icon @click="deleteEvent(selectedEvent)">
                             <v-icon>fa-trash</v-icon>
                         </v-btn>
                         <v-btn
@@ -296,7 +296,7 @@ export default {
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
         this.loadInitial()
-        this.getMedication()
+        // this.getMedication()
     },
     computed: {
         medicationNameError () {
@@ -450,34 +450,44 @@ export default {
             })
         },
         getMedication () {
-            db.collection("users").doc(this.currentUser).onSnapshot( snap => {
-                if(snap.data().medication != null){
-                    let medication = snap.data().medication
-                    medication.forEach( medication => {
+            // db.collection("users").doc(this.currentUser).onSnapshot(snap => {
+            //     let record = snap.data()
+            //     // console.log(record)
+            //     record.forEach(record => {
+            //         let medication = record
+            //         console.log(medication.medication)
+            //     })
 
-                    if(medication.type == "added"){
-                        let medicationRecord = medication
-                        let time = medicationRecord.startTime.replace(".", ":")
-                        let event = {
-                            name: medicationRecord.medication,
-                            details: medicationRecord.details,
-                            dose: medicationRecord.dose,
-                            dosageUnit: medicationRecord.doseUnit,
-                            start: medicationRecord.dateTaken + " " + time,
-                            end: medicationRecord.dateTaken + " " + time,
-                            color: medicationRecord.color,
-                        }
-                        this.events.push(event)  
-                    }
-                    else if ( medication.type == "removed"){
-                        console.log("removed")
-                    }
-                    else{
-                        console.log("Already loaded")
-                    }      
-                    })
-                }
-            })
+
+                // if(snap.data().medication != null){
+                //     let medication = snap.data().medication
+                //     medication.forEach( medication => {
+
+                //         if(medication.type == "added"){
+                //             let medicationRecord = medication
+                //             let time = medicationRecord.startTime.replace(".", ":")
+                //             let event = {
+                //                 name: medicationRecord.medication,
+                //                 details: medicationRecord.details,
+                //                 dose: medicationRecord.dose,
+                //                 dosageUnit: medicationRecord.doseUnit,
+                //                 start: medicationRecord.dateTaken + " " + time,
+                //                 end: medicationRecord.dateTaken + " " + time,
+                //                 color: medicationRecord.color,
+                //             }
+                //             this.events.push(event)  
+                //         }
+                //         else if ( medication.type == "removed"){
+                //             console.log("removed")
+                //         }
+                //         else{
+                //             console.log("Already loaded")
+                //         }
+                        
+                        
+                //     })
+                // }
+            // })
         },
         cancel () {
             this.dialog = false
@@ -493,28 +503,27 @@ export default {
             this.medicationDetails = null
             this.picker = null
         },
-        deleteEvent (id) {
-            let toDelete = id
-            console.log("HElp me", toDelete)
-
-            db.collection("users").doc(this.currentUser).get().then(doc => {
-                let medication = doc.data().medication
-
-                console.log(medication)
-                if(medication == toDelete){
-                    
-                    
-                   
-                    console.log("To be deleted", medication)
-
-                    // db.collection("users").where("medication", "==", toDelete).delete().then(() => {
-                    //     this.events = this.events.filter(events => {
-                    //         return events.id != id
-                    //     })
-                    // })
-
-                }
+        deleteEvent (event) {
+            db.collection("users").doc(this.currentUser).update({
+                medication: fieldValue.arrayRemove(this.eventToRecord(event))
             })
+        },
+        eventToRecord (calendarEvent) {
+            let datetime = calendarEvent.start.split(" ")
+            let date = datetime[0]
+            let time = datetime[1]
+            // must match perfectly to object
+            let record = {
+                medication: calendarEvent.name,
+                details: calendarEvent.details,
+                dose: calendarEvent.dose,
+                doseUnit: calendarEvent.dosageUnit,
+                dateTaken: date,
+                startTime: time,
+                color: calendarEvent.color
+            }
+
+            return record
         },
         saveMedication () {
             this.$v.$touch() // used to check the state of the form fields
