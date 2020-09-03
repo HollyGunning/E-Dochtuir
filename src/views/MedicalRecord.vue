@@ -20,7 +20,7 @@
             v-model="gender" 
             color="primary" 
             group 
-            mandatory
+            
             @change="onGenderChange(gender)" 
             > <!-- onGenderChange method method carries over selected value -->
               <v-btn depressed x-large color="primary--text darken-1" value="Female">

@@ -129,8 +129,8 @@
                         <v-list-item-content>
                         <v-list-item-title class="overline grey--text mb-4">
                             <v-icon>fa-info</v-icon>
-                            Additional Details</v-list-item-title>
-                            <h3>{{ prescription.additionalDetails }}</h3>
+                            Prescription</v-list-item-title>
+                            <img :src="prescription.image" alt="prescriptionImage" />
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -240,9 +240,12 @@ export default {
                     else if(prescription.status == "Accepted"){
                         // Get prescription file
                         var pathReference = storage.ref("prescriptions/" + prescription.id)
-                        console.log("Path Reference: ", pathReference)
-
-                        this.acceptedPrescriptions.push(prescription)
+                        pathReference.getDownloadURL().then(url => {
+                            prescription.image = url
+                            this.acceptedPrescriptions.push(prescription)
+                        }).catch(error => {
+                            console.log(error)
+                        })
                     }
                     else if (prescription.status == "Denied"){
                         this.deniedPrescriptions.push(prescription)

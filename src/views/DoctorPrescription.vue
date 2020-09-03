@@ -316,6 +316,13 @@
                 @click.prevent="resolveRequest()">
                 <span>Resolve Request</span>
                 </v-btn>
+                <v-snackbar
+                  :color="color"
+                  v-model="snackbar"
+                  :timeout="timeout"
+                  :multi-line="multiLine"
+                >{{ snackbarText }}
+                </v-snackbar>
             </v-col>  
             </v-card-actions>
         </v-card>
@@ -492,6 +499,12 @@ export default {
     data() {
         return {
             currentUser: null,
+            // Snackbar properties
+            snackbar: false,
+            color: null,
+            multiLine: true,
+            timeout: 5000,
+            snackbarText: "",
             prescriptionRecord: null, // Store the patient ID when doctor clicks on actions
             search: '', // Search bar 
             dialog: false,
@@ -569,6 +582,12 @@ export default {
         }
     },
     methods: {
+        // Triggers the snackbar with the passed message and colour of the message
+        triggerSnackbar (message, color) {
+            this.snackbarText = message,
+            this.color = color,
+            this.snackbar = true
+        },
         close () {
             this.dialog = false
             this.response = null,
@@ -611,9 +630,6 @@ export default {
                     this.previousUsage = prescriptionInfo.previousUsage
                     this.sideEffects = prescriptionInfo.sideEffects
                     this.description = prescriptionInfo.effectsDescription
-
-
-
                 }
                 else if (prescriptionInfo.chosenType == "Thrush Treatment"){
                     // Hide all forms before showing specific one
@@ -623,9 +639,6 @@ export default {
                     this.abdominalPain = prescriptionInfo.abdominalPain
                     this.skinIssues = prescriptionInfo.skinIssues
                     this.urinaryIssue = prescriptionInfo.urinaryIssue
-
-
-
                 }
                 else if (prescriptionInfo.chosenType == "Adrenaline Pen Treatment"){
                     // Hide all forms before showing specific one
@@ -635,9 +648,6 @@ export default {
                     this.diagnosed = prescriptionInfo.adrenalineDiagnosis
                     this.trained = prescriptionInfo.trained
                     this.recogniseSymptoms = prescriptionInfo.recogniseSymptoms
-
-
-
                 }
                 else if (prescriptionInfo.chosenType == "Asthma Treatment"){
                     // Hide all forms before showing specific one
@@ -647,9 +657,6 @@ export default {
                     this.asthmaCondition = prescriptionInfo.asthmaLength
                     this.asthmaSeverity = prescriptionInfo.asthmaSeverity
                     this.steroids = prescriptionInfo.anySteroids
-
-
-
                 }
                 else if (prescriptionInfo.chosenType == "Premature Ejaculation Treatment"){
                     // Hide all forms before showing specific one
@@ -660,9 +667,6 @@ export default {
                     this.often = prescriptionInfo.howOften
                     this.occurs = prescriptionInfo.occurs
                     this.medicationRequest = prescriptionInfo.medication
-
-
-
                 }
                 else if (prescriptionInfo.chosenType == "Erectile Dysfunction Treatment"){
                     // Hide all forms before showing specific one
@@ -672,9 +676,6 @@ export default {
                     this.eDTreatment = prescriptionInfo.eDTreatment
                     this.eDDosage = prescriptionInfo.dosage
                     this.eDpreviousUsage = prescriptionInfo.previousUsage
-
-
-
                 }
                 else{
                     console.log("Treatment not recognised!")
@@ -682,7 +683,15 @@ export default {
                 }
             })
         },
-
+        clearForm () {
+            this.hideAllTreatments()
+            this.showDenied = false
+            this.showUpload = false
+            this.response = null
+            this.reasonDenied = null
+            this.prescriptionFile = null
+            this.dialog = false
+        },
         responseChanges (response) {
             if(response == "Denied"){
                 this.showUpload = false
@@ -697,36 +706,46 @@ export default {
         resolveRequest () {
             db.collection("prescriptions").doc(this.prescriptionRecord).get().then(() => {
                 if(this.response == "Accepted"){
-                    // Get the file
-                    var file = this.prescriptionFile
+                    
+                    var file = this.prescriptionFile // Get the file
                     // Create the storage reference
                     const storageRef = storage.ref("prescriptions/" + this.prescriptionRecord)
                     // this.prescriptionUpload = file.name //not sure if still need these?
                     // this.downloadUrl = URL + file.name
-                    // Store the file using the storage reference
-                    storageRef.put(file)
-                    
-                    db.collection("prescriptions").doc(this.prescriptionRecord).update({
-                        status: this.response,
-                        dateAccepted: this.getTodaysDate()
-                    }) 
+                    storageRef.put(file) // Store the file using the storage reference
+
+                        this.triggerSnackbar("Response Submitted", "success")
+                        db.collection("prescriptions").doc(this.prescriptionRecord).update({
+                            status: this.response,
+                            dateAccepted: this.getTodaysDate()
+                        }).then(() => {
+                            this.clearForm()
+                            // Clear the prescription from list of pending prescriptions
+                            this.prescriptionsPending = this.prescriptionsPending.filter(prescription => {
+                            return prescription.id != this.prescriptionRecord
+                            })
+                        })
+
                 }
                 else if(this.response == "Denied"){
-                    console.log("Denied")
+
+
+                    this.triggerSnackbar("Response Submitted", "success")
                     db.collection("prescriptions").doc(this.prescriptionRecord).update({
                         status: this.response,
                         reason: this.reasonDenied
-                    }) 
+                    }).then(() =>{
+                        this.clearForm()
+                        // Clear the prescription from list of pending prescriptions
+                        this.prescriptionsPending = this.prescriptionsPending.filter(prescription => {
+                        return prescription.id != this.prescriptionRecord
+                        })
+                    })
                 }
                 else{
                     console.log("We got problems")
                 }
             })
-            // Clear the prescription from list of pending prescriptions
-            this.prescriptionsPending = this.prescriptionsPending.filter(prescription => {
-                return prescription.id != this.prescriptionRecord
-            })
-
         },
     },
 }

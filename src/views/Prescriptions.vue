@@ -957,7 +957,7 @@ export default {
             }
             else if(this.chosenOption == 'Premature Ejaculation Treatment' && this.chosenDoc !=null){
                 this.hideAllTreatments()
-                                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
+                db.collection("prescriptions").where("patientID", "==", this.currentUser).get().then(snap => {
                     let prescriptions = snap.docChanges()
                     let show = true
                     prescriptions.forEach(prescriptions => {

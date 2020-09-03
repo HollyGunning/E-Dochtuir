@@ -17,6 +17,12 @@
         </v-card-text>
     </v-card>
 
+        <v-card v-if="chatRoom">
+            <v-card-title>Delete Chat Room History
+                <v-spacer></v-spacer>
+                <v-btn @click="destroyRoom()"><span>Delete</span></v-btn>
+            </v-card-title>
+        </v-card>
         <!-- Chat Card -->
         <v-card v-if="chatRoom" class="mt-6 mb-9">
         <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
@@ -143,6 +149,22 @@ export default {
             this.color = color,
             this.snackbar = true
         },
+        destroyRoom () {
+            if(this.roomID == null){
+                this.message = null
+                this.chatRoom = false
+                this.preMessageView = true
+            }
+            else{
+                db.collection("rooms").doc(this.roomID).delete().then(() => {
+                    this.triggerSnackbar("Room Has Been Deleted!", "success")
+                }).then(()=> {
+                    this.message = null
+                    this.chatRoom = false
+                    this.preMessageView = true
+                })
+            }
+        },
        loadMessages () {
             // Load all rooms where DoctorID is the same as the user
             db.collection("rooms").where("patientID", "==", this.currentUser).onSnapshot(snap => {
@@ -205,34 +227,15 @@ export default {
                         this.message = null  
                         })
                     })
-
+                    }
+                    else{
+                        this.triggerSnackbar("Room Is Currently InActive, No Appointment Today", "error")
+                        // Appointment is not for today
+                        this.message = null
                     }
                 })
             })
        },
-    //    uploadFile (file) {
-    //        db.collection("messages").add({
-    //            id: this.currentUser,
-    //            name: this.userName,
-    //            imageUrl: this.LOADING_IMAGE_URL,
-    //            timestamp: fieldValue.serverTimestamp(),
-    //        }).then(snap => {
-    //             var filePath = this.currentUser + '/' + snap.id + file.name
-    //             return storage.ref(filePath).put(file).then(fileSnap => {
-    //                 return fileSnap.ref.getDownloadURL().then((url) => {
-    //                     return snap.update({
-    //                         imageUrl: url,
-    //                         storageUri: fileSnap.metadata.fullPath
-    //                     })
-    //                 })
-    //             })
-    //        }).catch(error => {
-    //            console.log("There was an error uploading file to Cloud Storage", error)
-    //        })
-
-
-           
-    //    }
     },
 }
 </script>

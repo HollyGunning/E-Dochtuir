@@ -177,29 +177,17 @@
                             ></v-textarea>
                         </v-col>
 
-                      <!-- Select a Colour --> 
-                        <v-col cols="12" sm="6" md="6">
-                       <v-menu
-                        v-model="menu3"
-                        :close-on-content-click="false"
-                        max-width="290"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                        label="Select Colour*"
-                        readonly
-                        :value="picker"
-                        v-bind="attrs"
-                        v-on="on"
-                        required
-                        outlined
-                        ></v-text-field>
-                        </template>
-                        <v-color-picker
+                      <!-- Select a Colour -->
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                            label="Choose a Colour*"
                             v-model="picker"
-                            flat
-                        ></v-color-picker>
-                        </v-menu>
+                            :items="colourList"
+                            outlined
+                            :error-messages="colourError"
+                            @input="$v.picker.$touch()"
+                            @blur="$v.picker.$touch()"
+                        ></v-select>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -307,6 +295,8 @@ import { required } from 'vuelidate/lib/validators'
 export default {
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
+        this.loadInitial()
+        this.getMedication()
     },
     computed: {
         medicationNameError () {
@@ -343,6 +333,12 @@ export default {
             const errors = []
             if(!this.$v.medicationDetails.$dirty) return errors
                 !this.$v.medicationDetails.required && errors.push('Dose Details Required')
+            return errors
+        },
+        colourError () {
+            const errors = []
+            if(!this.$v.picker.$dirty) return errors
+                !this.$v.picker.required && errors.push('Colour is Required')
             return errors
         },
     },
@@ -387,7 +383,18 @@ export default {
             medDates: null, // Stored date from date=picker
             medicationDetails: null,
             menu3: false, // colour-picker
-            picker: null, // Stored colour   
+            picker: null, // Stored colour 
+            colourList: [
+                { text: "Red", value: "red"},
+                { text: "Yelllow", value: "yellow"},
+                { text: "Green", value: "green"},
+                { text: "Blue", value: "blue"},
+                { text: "Purple", value: "purple"},
+                { text: "Pink", value: "pink"},
+                { text: "Orange", value: "orange"},
+                { text: "Cyan", value: "cyan"},
+                { text: "Indigo", value: "indigo"},
+            ],
         }
     },
     validations: {
@@ -397,10 +404,11 @@ export default {
         time: { required },
         medDates: { required },
         medicationDetails: { required },
+        picker: { required },
     },
-    mounted() {
-        this.getMedication()
-    },
+    // mounted() {
+    //     this.getMedication()
+    // },
     methods: {
         appendLeadingZeroes(n){
             if(n <= 9){
@@ -418,19 +426,38 @@ export default {
             latest.setMonth(latest.getMonth() + 1)
             return latest.toISOString()
         },
-        getMedication () {
-            // Set current user to the currently logged in user
-           
+        // Load all initial records in from db
+        loadInitial () {
             db.collection("users").doc(this.currentUser).get().then( snap => {
                 if(snap.data().medication != null){
                     let medication = snap.data().medication
                     medication.forEach( medication => {
                         let medicationRecord = medication
                         let time = medicationRecord.startTime.replace(".", ":")
-                        // let endTime = time.substr(0, time.length -2)
-                        // let endTimeMinutes = time.substr(time.length -2, 2)
-                        // endTime = endTime + (parseInt(endTimeMinutes) + 25)
+                        
+                            let event = {
+                                name: medicationRecord.medication,
+                                details: medicationRecord.details,
+                                dose: medicationRecord.dose,
+                                dosageUnit: medicationRecord.doseUnit,
+                                start: medicationRecord.dateTaken + " " + time,
+                                end: medicationRecord.dateTaken + " " + time,
+                                color: medicationRecord.color,
+                            }
+                            this.events.push(event)  
+                    })
+                }
+            })
+        },
+        getMedication () {
+            db.collection("users").doc(this.currentUser).onSnapshot( snap => {
+                if(snap.data().medication != null){
+                    let medication = snap.data().medication
+                    medication.forEach( medication => {
 
+                    if(medication.type == "added"){
+                        let medicationRecord = medication
+                        let time = medicationRecord.startTime.replace(".", ":")
                         let event = {
                             name: medicationRecord.medication,
                             details: medicationRecord.details,
@@ -438,17 +465,19 @@ export default {
                             dosageUnit: medicationRecord.doseUnit,
                             start: medicationRecord.dateTaken + " " + time,
                             end: medicationRecord.dateTaken + " " + time,
-                            // color: medicationRecord.color,
+                            color: medicationRecord.color,
                         }
-                       
-                        console.log("color is: ",medicationRecord.color)
-                        this.events.push(event)
-                    
+                        this.events.push(event)  
+                    }
+                    else if ( medication.type == "removed"){
+                        console.log("removed")
+                    }
+                    else{
+                        console.log("Already loaded")
+                    }      
                     })
                 }
             })
-  
-         
         },
         cancel () {
             this.dialog = false
@@ -464,14 +493,35 @@ export default {
             this.medicationDetails = null
             this.picker = null
         },
+        deleteEvent (id) {
+            let toDelete = id
+            console.log("HElp me", toDelete)
+
+            db.collection("users").doc(this.currentUser).get().then(doc => {
+                let medication = doc.data().medication
+
+                console.log(medication)
+                if(medication == toDelete){
+                    
+                    
+                   
+                    console.log("To be deleted", medication)
+
+                    // db.collection("users").where("medication", "==", toDelete).delete().then(() => {
+                    //     this.events = this.events.filter(events => {
+                    //         return events.id != id
+                    //     })
+                    // })
+
+                }
+            })
+        },
         saveMedication () {
             this.$v.$touch() // used to check the state of the form fields
             this.formTouched = !this.$v.$anyDirty
             this.errors = this.$v.$anyError
             // If the form does not have any errors or each individual field has no invalid data 
             if (this.errors === false && this.formTouched === false){
-                console.log("All G")
-
                 var addMedication = {
                     medication: this.medicationName,
                     dose: this.dose,
@@ -481,12 +531,9 @@ export default {
                     details: this.medicationDetails,
                     color: this.picker,
                 }
-
-
                 var medicationRecord = {
                     medication: fieldValue.arrayUnion(addMedication)
                 }
-
                 db.collection("users").doc(this.currentUser).update(medicationRecord).then(() => {
                     // Clear the form values
                         this.clearForms()
@@ -500,10 +547,8 @@ export default {
             }
             else{
                 console.log("NoG")
-            }
-                
+            }   
         },
-
         viewDay ({ date }) {
             this.focus = date
             this.type = 'day'

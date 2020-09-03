@@ -5,7 +5,6 @@ admin.initializeApp() //Initialise admin server side
 const db = admin.firestore()
 
 exports.AddUserRole = functions.auth.user().onCreate(async (user) => {
-
     if (user.email) {
         const customClaims = {
           patient: true,
@@ -14,7 +13,6 @@ exports.AddUserRole = functions.auth.user().onCreate(async (user) => {
         // const customClaims = {
         //   role: 'patient',
         // };
-
         try {
           var _ = await admin.auth().setCustomUserClaims(user.uid, customClaims)
     
@@ -22,22 +20,15 @@ exports.AddUserRole = functions.auth.user().onCreate(async (user) => {
             email: user.email,
             role: customClaims
           })
-    
         } catch (error) {
           console.log(error)
         }
-    
-    
-      }
-
-
+    }
 })
 
 exports.setUserRole = functions.https.onCall(async (data, context) => {
 
     if (!context.auth.token.admin) return
-  
-  
     try {
       var _ = await admin.auth().setCustomUserClaims(data.uid, data.role)
   
@@ -48,5 +39,4 @@ exports.setUserRole = functions.https.onCall(async (data, context) => {
     } catch (error) {
       console.log(error)
     }
-  
-  });
+});

@@ -193,8 +193,6 @@ export default {
                         let room = doc.id
                         this.roomID = room
                     })
-
-
                         // There is no room and therefore one must be created
                         if(snap.docs.length == 0) {
                             // Create room collection here and add patientID and doctorID to the room for later reference
