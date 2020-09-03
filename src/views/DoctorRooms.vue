@@ -306,14 +306,11 @@ export default {
                         this.messages = this.messages.slice(len - numMessages, len)
                         this.chatRoom = true
                     }
-                    else{
-                        this.chatRoom = false
-                        this.joinRoom = true
-                    }
                     }
                     else if(rooms.type == "removed"){
                         this.roomID = null
                         this.chatRoom = false
+                        this.closeRoom = false
                         this.joinRoom = true
                     }
 

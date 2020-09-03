@@ -132,7 +132,7 @@ export default {
                             // if the room is deleted, the session has ended and ID should be cleared
                             else if(rooms.type == "removed"){
                                 this.triggerSnackbar("Room Session Has Ended!")
-                                this.roomID = null
+                                // this.roomID = null
                                 this.chatRoom = false
                                 this.preMessageView = true
                             }
@@ -200,6 +200,7 @@ export default {
             this.snackbar = true
         },
         destroyRoom () {
+            console.log("THE ROOM", this.roomID)
             if(this.roomID == null){
                 this.message = null
                 this.chatRoom = false
@@ -244,14 +245,10 @@ export default {
                     }
                     }
                     else if(rooms.type == "removed"){
-                        this.roomID = null
+                        // this.roomID = null
                         this.chatRoom = false
                         this.preMessageView = true
-                    }
-                  
-
-                    
-                  
+                    }     
                 })
             })
        },
