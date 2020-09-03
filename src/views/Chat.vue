@@ -90,23 +90,64 @@ import Navbar from '../components/Navbars/Navbar'
 import { auth, db, fieldValue } from '../firebase'
 
 export default {
-   components: {
-       Navbar,
-   },
-   computed: {
-       
-   },
-   created() {
-        this.currentUser = auth.currentUser.uid // Get current users ID
-        this.today = this.getTodaysDate(this.today)
-        // Get current users name
-        db.collection("users").doc(this.currentUser).get().then(doc => {
-            let user = doc.data()
-            this.userName = user.firstname + ' ' + user.surname
-        })
-        this.loadMessages() // Load in messages for this chat
-       
-   },
+    components: {
+        Navbar,
+    },
+    computed: {
+        
+    },
+    created() {
+            this.currentUser = auth.currentUser.uid // Get current users ID
+            this.today = this.getTodaysDate(this.today)
+            // Get current users name
+            db.collection("users").doc(this.currentUser).get().then(doc => {
+                let user = doc.data()
+                this.userName = user.firstname + ' ' + user.surname
+            })
+            // Get appointments pertaining to the current patient
+            db.collection("appointments").where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                let appointment = snap.docChanges()
+                appointment.forEach(appointment => {
+                    let doctor = appointment.doc.data()
+                    doctor.id = doctor.doctorID
+                    // Get appointments for todays date to get the specific doctor ID
+                    if(doctor.appointmentDate == this.today){
+                        console.log("Appointment today")
+                        this.chosenDoctor = doctor.id
+                        this.triggerSnackbar("Room Is Active", "success")
+                        db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).get().then(snap => {
+                        snap.forEach(doc =>{
+                            let room = doc.id
+                            this.roomID = room
+                        }) 
+
+                        this.loadMessages() // Load in messages for this chat
+                    })
+                    }
+                    else if (doctor.appointmentDate != this.today){
+                        this.snackbar = null
+                        // Appointment is not for today
+                        this.message = null
+                        this.chatRoom = false
+                        this.preMessageView = true
+                        // this.triggerSnackbar("Room Is Currently InActive, No Appointment Today", "error")
+                    }
+                    else{
+                        this.message = null
+                        this.chatRoom = false
+                        this.preMessageView = true
+                    }
+                })
+            })
+                    
+
+
+
+
+
+            
+        
+    },
     data() {
         return {
             currentUser: null,
@@ -171,9 +212,12 @@ export default {
                 let rooms = snap.docChanges()
                 // This gets the data of each doc connected to the user
                 rooms.forEach(rooms => {
+           
                     let roomDoc = rooms.doc.data() 
                     this.messages = roomDoc.message
 
+
+                    this.chatRoom = true
                     // Sorting can only occur once their are messages to be sorted
                     if(this.messages != null) {
                         this.preMessageView = false
@@ -191,6 +235,8 @@ export default {
                         this.chatRoom = false
                         this.preMessageView = true
                     }
+                    
+                    
                 })
             })
        },
@@ -200,7 +246,7 @@ export default {
                 appointment.forEach(appointment => {
                     let doctor = appointment.doc.data()
                     doctor.id = doctor.doctorID
-                    // Get appointments for todays date to get the specific doctor ID
+                    //Get appointments for todays date to get the specific doctor ID
                     if(doctor.appointmentDate == this.today){
                         this.chosenDoctor = doctor.id
                         console.log(this.chosenDoctor)
@@ -211,25 +257,35 @@ export default {
                             let room = doc.id
                             this.roomID = room
                         }) 
-                        
-                        var addMessage = {
+                        if(this.roomID != null){
+                            if(this.messages != null || this.message != ' ') {
+                            var addMessage = {
                             patientId: this.currentUser,
                             name: this.userName,
                             text: this.message,
                             timestamp: this.timestamp = new Date()
+                            }
+
+                            var messageSaved = {
+                                message: fieldValue.arrayUnion(addMessage)
+                            }
+                            
+                                db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
+                                this.message = null  
+                            })
+                            }else{
+                                this.triggerSnackbar("Empty Message!", "error")
+                            }
+
+                
+                        }
+                        else{
+                            this.triggerSnackbar("Room ID No Longer Exists", "error")
                         }
 
-                        var messageSaved = {
-                            message: fieldValue.arrayUnion(addMessage)
-                        }
-
-                        db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
-                        this.message = null  
-                        })
                     })
                     }
                     else{
-                        this.triggerSnackbar("Room Is Currently InActive, No Appointment Today", "error")
                         // Appointment is not for today
                         this.message = null
                     }
