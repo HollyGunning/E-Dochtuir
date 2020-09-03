@@ -112,14 +112,23 @@ export default {
                     doctor.id = doctor.doctorID
                     // Get appointments for todays date to get the specific doctor ID
                     if(doctor.appointmentDate == this.today){
-                        console.log("Appointment today")
                         this.chosenDoctor = doctor.id
                         this.triggerSnackbar("Room Is Active", "success")
-                        db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).get().then(snap => {
-                        snap.forEach(doc =>{
-                            let room = doc.id
-                            this.roomID = room
-                        }) 
+
+                        db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                        let rooms = snap.docChanges()
+                        rooms.forEach(rooms => {
+                            let room = rooms.doc.data()
+                            room.id = rooms.doc.id
+
+                            if(rooms.type == "added"){
+                                this.triggerSnackbar("Room Session Has Begun!")
+                            }
+                            if(rooms.type == "removed"){
+                                this.triggerSnackbar("Room Session Has Ended!")
+                                this.roomID = null
+                            }
+                        })
 
                         this.loadMessages() // Load in messages for this chat
                     })
@@ -248,10 +257,8 @@ export default {
                     doctor.id = doctor.doctorID
                     //Get appointments for todays date to get the specific doctor ID
                     if(doctor.appointmentDate == this.today){
-                        this.chosenDoctor = doctor.id
-                        console.log(this.chosenDoctor)
-                        console.log("Appointment today") 
-                    
+                        this.chosenDoctor = doctor.id // Grab the ID of the doctor of appointment
+                        // Where doctor and patient share the same room with their IDs
                         db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).get().then(snap => {
                         snap.forEach(doc =>{
                             let room = doc.id
@@ -272,15 +279,18 @@ export default {
                             
                                 db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
                                 this.message = null
-                            
+                                
                             })
                 
                         }
                         else{
-                            this.triggerSnackbar("Room ID No Longer Exists", "error")
+                            this.message = null
+                            this.chatRoom = false
+                            this.preMessageView = true
+                            // this.triggerSnackbar("Room ID No Longer Exists", "error")
                         }
 
-                    })
+                        })
                     }
            
                 })
