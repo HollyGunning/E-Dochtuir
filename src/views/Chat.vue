@@ -50,6 +50,9 @@
                         auto-grow
                         v-model="message"
                         outlined
+                        :error-messages="messageErrors"
+                        @input="$v.message.$touch()"
+                        @blur="$v.message.$touch()"
                         ></v-textarea>
                     </v-col>
                 
@@ -63,11 +66,6 @@
                     </v-btn>
                 </v-col>
                 <v-spacer></v-spacer>
-                <!-- <v-col cols="3">
-                    <v-btn icon>
-                        <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
-                    </v-btn>  
-                </v-col> -->
                 </v-row>
                 </v-card-text>
             </v-card>
@@ -88,13 +86,19 @@
 import Navbar from '../components/Navbars/Navbar'
 // import { auth, db, fieldValue, storage } from '../firebase'
 import { auth, db, fieldValue } from '../firebase'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
     components: {
         Navbar,
     },
     computed: {
-        
+        messageErrors () {
+        const errors = []
+        if(!this.$v.message.$dirty) return errors
+            !this.$v.message.required && errors.push('Enter A Message Before Sending')
+        return errors
+        },
     },
     created() {
             this.currentUser = auth.currentUser.uid // Get current users ID
@@ -114,16 +118,18 @@ export default {
                     if(doctor.appointmentDate == this.today){
                         this.chosenDoctor = doctor.id
                         this.triggerSnackbar("Room Is Active", "success")
-
+                        // Where doc and patient IDS in same room
                         db.collection("rooms").where("doctorID", "==", this.chosenDoctor).where("patientID", "==", this.currentUser).onSnapshot(snap => {
+                        // Check room for updates
                         let rooms = snap.docChanges()
                         rooms.forEach(rooms => {
                             let room = rooms.doc.data()
                             room.id = rooms.doc.id
-
+                            // Room session starts when a room is added
                             if(rooms.type == "added"){
                                 this.triggerSnackbar("Room Session Has Begun!")
                             }
+                            // if the room is deleted, the session has ended and ID should be cleared
                             else if(rooms.type == "removed"){
                                 this.triggerSnackbar("Room Session Has Ended!")
                                 this.roomID = null
@@ -131,20 +137,19 @@ export default {
                                 this.preMessageView = true
                             }
                             else{
-                                console.log("new message")
+                                this.triggerSnackbar("New Message")
                             }
                         })
-
                         this.loadMessages() // Load in messages for this chat
                     })
                     }
+                    // If no appointments no chat
                     else if (doctor.appointmentDate != this.today){
                         this.snackbar = null
                         // Appointment is not for today
                         this.message = null
                         this.chatRoom = false
                         this.preMessageView = true
-                        // this.triggerSnackbar("Room Is Currently InActive, No Appointment Today", "error")
                     }
                     else{
                         this.message = null
@@ -152,39 +157,29 @@ export default {
                         this.preMessageView = true
                     }
                 })
-            })
-                    
-
-
-
-
-
-            
-        
+            }) 
     },
     data() {
         return {
             currentUser: null,
-            userName: null,
-            today: null,
+            userName: null, // name of logged in user
+            today: null, // todays date
+            // snackbar info
             snackbar: false,
             color: null,
             multiLine: true,
             timeout: 5000,
             snackbarText: "",
-            preMessageView: true,
-            chatRoom: false,
-            roomID: null,
-            chosenDoctor: null,
-            message: null,
-            messages: [],
-         
-            //    file: [],
-            //    LOADING_IMAGE_URL: null,
+            preMessageView: true, // visibility of preChat
+            chatRoom: false, // visibilit of chat card
+            roomID: null, // room where doc and patient share
+            chosenDoctor: null, // doc of appointment
+            message: null, // message box message
+            messages: [], // stores all messages from room
         }
     },
     validations: {
-
+        message: { required },
     },
     methods: {
         // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
@@ -226,7 +221,6 @@ export default {
                 let rooms = snap.docChanges()
                 // This gets the data of each doc connected to the user
                 rooms.forEach(rooms => {
-
                     let room = rooms.doc.data() 
                     this.messages = room.message
 
@@ -277,33 +271,34 @@ export default {
                             this.roomID = room
                         }) 
                         if(this.roomID != null){
-                            
-                            var addMessage = {
-                            patientId: this.currentUser,
-                            name: this.userName,
-                            text: this.message,
-                            timestamp: this.timestamp = new Date()
+                            this.$v.$touch()
+                            this.formTouched = !this.$v.message.$anyDirty
+                            this.errors = this.$v.message.$anyError
+                            // Stop users from entering blank messages
+                            if(this.errors === false && this.formTouched === false){ 
+                               let messageToSend = this.message
+                               var addMessage = {
+                                patientId: this.currentUser,
+                                name: this.userName,
+                                text: messageToSend,
+                                timestamp: this.timestamp = new Date()
+                                }
+                                var messageSaved = {
+                                    message: fieldValue.arrayUnion(addMessage)
+                                }
+                                    db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
+                                    this.message = null
+                                    this.$v.$reset()
+                                })
                             }
-
-                            var messageSaved = {
-                                message: fieldValue.arrayUnion(addMessage)
-                            }
-                            
-                                db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
-                                this.message = null
-                                
-                            })
-                
                         }
                         else{
                             this.message = null
                             this.chatRoom = false
                             this.preMessageView = true
                         }
-
                         })
                     }
-           
                 })
             })
        },

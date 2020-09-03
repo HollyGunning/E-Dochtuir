@@ -64,16 +64,19 @@
         <v-card flat class="mt-6">
             <v-card-text>
             <v-row>
-                <v-col cols="7">
+                <v-col cols="12" sm="12" md="6">
                     <v-textarea
                     rows="1"
                     auto-grow
                     v-model="message"
                     outlined
+                    :error-messages="messageErrors"
+                    @input="$v.message.$touch()"
+                    @blur="$v.message.$touch()"
                     ></v-textarea>
                 </v-col>
             
-            <v-col cols="2">
+            <v-col cols="12" sm="12" md="2">
                 <v-btn 
                 class="primary white--text ml-6"
                 block 
@@ -83,11 +86,6 @@
                 </v-btn>
             </v-col>
             <v-spacer></v-spacer>
-            <!-- <v-col cols="3" class="ml-2">
-                <v-btn type="file" v-model="uploadFile" icon>
-                    <v-file-input type="file" multiple prepend-icon="fa-camera" hide-input v-model="file" @click="uploadFile(file)"></v-file-input>
-                </v-btn>  
-            </v-col> -->
             </v-row>
             </v-card-text>
         </v-card>
@@ -107,9 +105,19 @@
 <script>
 import DoctorNavbar from '../components/Navbars/DoctorNavbar'
 import { auth, db, fieldValue } from '../firebase'
+import { required } from 'vuelidate/lib/validators'
+
 export default {
     components: {
         DoctorNavbar,
+    },
+    computed: {
+        messageErrors () {
+        const errors = []
+        if(!this.$v.message.$dirty) return errors
+            !this.$v.message.required && errors.push('Enter A Message Before Sending')
+        return errors
+        },
     },
     created() {
         this.currentUser = auth.currentUser.uid
@@ -158,6 +166,9 @@ export default {
             message: null,
             messages: [],
         }
+    },
+    validations: {
+        message: { required },
     },
     methods: {
         // Append a 0 to month or date of number is less than or equals 9 to match to appointmentDates
@@ -244,33 +255,45 @@ export default {
                     let room = doc.id
                     this.roomID = room
                 }) 
-
-                var addMessage = {
-                    doctorId: this.currentUser,
-                    name: this.userName,
-                    text: this.message,
-                    timestamp: this.timestamp = new Date()
+                if(this.roomID != null){
+                    this.$v.$touch()
+                    this.formTouched = !this.$v.message.$anyDirty
+                    this.errors = this.$v.message.$anyError
+                    // Stop users from entering blank messages
+                    if(this.errors === false && this.formTouched === false){ 
+                        let messageToSend = this.message 
+                        var addMessage = {
+                            doctorId: this.currentUser,
+                            name: this.userName,
+                            text: messageToSend,
+                            timestamp: this.timestamp = new Date()
+                        }
+                        var messageSaved = {
+                            message: fieldValue.arrayUnion(addMessage)
+                        }
+                        db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
+                            this.message = null  
+                            this.$v.$reset()
+                        })
+                    }
                 }
-
-                var messageSaved = {
-                    message: fieldValue.arrayUnion(addMessage)
-                }
-
-                db.collection("rooms").doc(this.roomID).update(messageSaved).then(() => {
-                  this.message = null  
-                })
+                else{
+                    this.message = null
+                    this.chatRoom = false
+                    this.joinRoom = true
+                }  
             })
         },
-
         loadMessages () {
             // Load all rooms where DoctorID is the same as the user
             db.collection("rooms").where("doctorID", "==", this.currentUser).onSnapshot(snap => {
                 let rooms = snap.docChanges()
                 // This gets the data of each doc connected to the user
                 rooms.forEach(rooms => {
-                    let roomDoc = rooms.doc.data() 
-                    this.messages = roomDoc.message
+                    let room = rooms.doc.data() 
+                    this.messages = room.message
 
+                    if(rooms.type == "added"){
                     // Sorting can only occur once their are messages to be sorted
                     if(this.messages != null) {
                         this.messages.sort((a, b) => {
@@ -281,7 +304,19 @@ export default {
                         let len = this.messages.length
                         let numMessages = this.messages.length < 50 ? this.messages.length : 50
                         this.messages = this.messages.slice(len - numMessages, len)
+                        this.chatRoom = true
                     }
+                    else{
+                        this.chatRoom = false
+                        this.joinRoom = true
+                    }
+                    }
+                    else if(rooms.type == "removed"){
+                        this.roomID = null
+                        this.chatRoom = false
+                        this.joinRoom = true
+                    }
+
                 })
             })
         },  
