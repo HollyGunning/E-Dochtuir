@@ -295,8 +295,8 @@ import { required } from 'vuelidate/lib/validators'
 export default {
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
-        this.loadInitial()
-        // this.getMedication()
+        // this.loadInitial()
+        this.getMedication()
     },
     computed: {
         medicationNameError () {
@@ -428,66 +428,50 @@ export default {
         },
         // Load all initial records in from db
         loadInitial () {
-            db.collection("users").doc(this.currentUser).get().then( snap => {
-                if(snap.data().medication != null){
-                    let medication = snap.data().medication
-                    medication.forEach( medication => {
-                        let medicationRecord = medication
-                        let time = medicationRecord.startTime.replace(".", ":")
+            // db.collection("users").doc(this.currentUser).get().then( snap => {
+            //     if(snap.data().medication != null){
+            //         let medication = snap.data().medication
+            //         medication.forEach( medication => {
+            //             let medicationRecord = medication
+            //             let time = medicationRecord.startTime.replace(".", ":")
                         
-                            let event = {
-                                name: medicationRecord.medication,
-                                details: medicationRecord.details,
-                                dose: medicationRecord.dose,
-                                dosageUnit: medicationRecord.doseUnit,
-                                start: medicationRecord.dateTaken + " " + time,
-                                end: medicationRecord.dateTaken + " " + time,
-                                color: medicationRecord.color,
-                            }
-                            this.events.push(event)  
+            //                 let event = {
+            //                     name: medicationRecord.medication,
+            //                     details: medicationRecord.details,
+            //                     dose: medicationRecord.dose,
+            //                     dosageUnit: medicationRecord.doseUnit,
+            //                     start: medicationRecord.dateTaken + " " + time,
+            //                     end: medicationRecord.dateTaken + " " + time,
+            //                     color: medicationRecord.color,
+            //                 }
+            //                 this.events.push(event)  
+            //         })
+            //     }
+            // })
+        },
+        getMedication () {
+            db.collection("users").doc(this.currentUser).onSnapshot(snap => {
+                let medication = snap.data().medication
+                if(medication != null){
+                    this.events = []
+                    medication.forEach(medication => {
+                        console.log(medication)
+                        
+                        
+                        let time = medication.startTime.replace(".", ":")
+                        let event = {
+                            name: medication.medication,
+                            details: medication.details,
+                            dose: medication.dose,
+                            dosageUnit: medication.doseUnit,
+                            start: medication.dateTaken + " " + time,
+                            end: medication.dateTaken + " " + time,
+                            color: medication.color,
+                        }
+                        this.events.push(event)  
                     })
                 }
             })
-        },
-        getMedication () {
-            // db.collection("users").doc(this.currentUser).onSnapshot(snap => {
-            //     let record = snap.data()
-            //     // console.log(record)
-            //     record.forEach(record => {
-            //         let medication = record
-            //         console.log(medication.medication)
-            //     })
-
-
-                // if(snap.data().medication != null){
-                //     let medication = snap.data().medication
-                //     medication.forEach( medication => {
-
-                //         if(medication.type == "added"){
-                //             let medicationRecord = medication
-                //             let time = medicationRecord.startTime.replace(".", ":")
-                //             let event = {
-                //                 name: medicationRecord.medication,
-                //                 details: medicationRecord.details,
-                //                 dose: medicationRecord.dose,
-                //                 dosageUnit: medicationRecord.doseUnit,
-                //                 start: medicationRecord.dateTaken + " " + time,
-                //                 end: medicationRecord.dateTaken + " " + time,
-                //                 color: medicationRecord.color,
-                //             }
-                //             this.events.push(event)  
-                //         }
-                //         else if ( medication.type == "removed"){
-                //             console.log("removed")
-                //         }
-                //         else{
-                //             console.log("Already loaded")
-                //         }
-                        
-                        
-                //     })
-                // }
-            // })
         },
         cancel () {
             this.dialog = false
@@ -507,6 +491,7 @@ export default {
             db.collection("users").doc(this.currentUser).update({
                 medication: fieldValue.arrayRemove(this.eventToRecord(event))
             })
+            this.selectedOpen = false
         },
         eventToRecord (calendarEvent) {
             let datetime = calendarEvent.start.split(" ")
