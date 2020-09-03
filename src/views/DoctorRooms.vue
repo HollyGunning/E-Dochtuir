@@ -313,6 +313,9 @@ export default {
                         this.closeRoom = false
                         this.joinRoom = true
                     }
+                    else{
+                        this.triggerSnackbar("New Message")
+                    }
 
                 })
             })
