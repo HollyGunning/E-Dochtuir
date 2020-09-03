@@ -285,6 +285,9 @@
                     :items="responses"
                     outlined
                     @change="responseChanges(response)"
+                    :error-messages="responseError"
+                    @input="$v.response.$touch()"
+                    @blur="$v.response.$touch()"
                     ></v-select>
                 </v-col>
                 <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4" v-if="showUpload">
@@ -333,121 +336,6 @@
 
     </v-dialog>
 
-    <!-- <v-tabs v-model="tab">
-            <v-tab v-for="tab in tabs" :key="tab.tabName"> 
-                {{ tab.tabName }} 
-            </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tab">
-        <v-tab-item>
-        <v-card outlined class="mt-3" v-for="prescription in prescriptionsPending" :key="prescription.id">
-            <v-card-title class="primary lighten-2 white--text">Presctiptions</v-card-title>
-            <v-card-text class="mt-6">
-                <v-row class="mt-n8">
-                    <v-col cols="12" md="4">
-                    <v-list >
-                        <v-list-item :search="search">
-                            <v-list-item-content>
-                                <v-list-item-title class="overline grey--text mb-4">
-                                    <v-icon>fa-id-card</v-icon>
-                                    Request From</v-list-item-title>
-                                    <h3>{{ prescription.patientName }}</h3>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <v-list >
-                        <v-list-item>
-                            <v-list-item-content>
-                                <v-list-item-title class="overline grey--text mb-4">
-                                    <v-icon>fa-id-card</v-icon>
-                                    Prescription Type</v-list-item-title>
-                                    <h3>{{ prescription.chosenType }}</h3>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-col>
-                </v-row>
-            </v-card-text>
-        </v-card>
-        </v-tab-item>
-
-
-        <v-tab-item>
-        <v-card outlined class="mt-3" v-for="prescription in prescriptionsAccepted" :key="prescription.id">
-            <v-card-title class="primary lighten-2 white--text">Presctiptions</v-card-title>
-            <v-card-text class="mt-6">
-                <v-row class="mt-n8">
-                    <v-col cols="12" md="4">
-                    <v-list >
-                        <v-list-item>
-                            <v-list-item-content>
-                                <v-list-item-title class="overline grey--text mb-4">
-                                    <v-icon>fa-id-card</v-icon>
-                                    Request From</v-list-item-title>
-                                    <h3>{{ prescription.patientName }}</h3>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <v-list >
-                        <v-list-item>
-                            <v-list-item-content>
-                                <v-list-item-title class="overline grey--text mb-4">
-                                    <v-icon>fa-id-card</v-icon>
-                                    Prescription Type</v-list-item-title>
-                                    <h3>{{ prescription.chosenType }}</h3>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-col>
-                </v-row>
-            </v-card-text>
-        </v-card>
-        </v-tab-item>
-
-
-        <v-tab-item>
-        <v-card outlined class="mt-3" v-for="prescription in prescriptionsDenied" :key="prescription.id">
-            <v-card-title class="primary lighten-2 white--text">Presctiptions</v-card-title>
-            <v-card-text class="mt-6">
-                <v-row class="mt-n8">
-                    <v-col cols="12" md="4">
-                    <v-list >
-                        <v-list-item>
-                            <v-list-item-content>
-                                <v-list-item-title class="overline grey--text mb-4">
-                                    <v-icon>fa-id-card</v-icon>
-                                    Request From</v-list-item-title>
-                                    <h3>{{ prescription.patientName }}</h3>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <v-list >
-                        <v-list-item>
-                            <v-list-item-content>
-                                <v-list-item-title class="overline grey--text mb-4">
-                                    <v-icon>fa-id-card</v-icon>
-                                    Prescription Type</v-list-item-title>
-                                    <h3>{{ prescription.chosenType }}</h3>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-col>
-                </v-row>
-            </v-card-text>
-        </v-card>
-        </v-tab-item>
-    </v-tabs-items> -->
-
-
-
-
-
 </v-col></v-row>
 </v-container>
 </template>
@@ -455,11 +343,20 @@
 <script>
 import DoctorNavbar from '../components/Navbars/DoctorNavbar'
 import { auth, db, storage } from '../firebase'
+import { required } from "vuelidate/lib/validators"
 
 export default {
     components: {
         DoctorNavbar,
 
+    },
+    computed: {
+        responseError () {
+        const errors = []
+        if(!this.$v.response.$dirty) return errors
+          !this.$v.response.required && errors.push('A Response Is Required')
+        return errors
+      },
     },
     created() {
         this.currentUser = auth.currentUser.uid
@@ -514,14 +411,6 @@ export default {
                 { text: 'Date Requested', value: 'requestDate' },
                 { text: 'Actions', value: 'actions', sortable: false }
             ],
-            // Tabs for requested, accepted and denied
-            tab: null,
-            tabs: [
-            { tabName: 'Requested' },
-            { tabName: 'Accepted' },
-            { tabName: 'Denied' },
-            ],
-
             prescriptionsPending: [],
             prescriptionsAccepted: [],
             prescriptionsDenied: [],
@@ -580,6 +469,9 @@ export default {
             eDDosage: null,
             eDpreviousUsage: null,
         }
+    },
+    validations:{
+        response: { required }
     },
     methods: {
         // Triggers the snackbar with the passed message and colour of the message
@@ -704,7 +596,12 @@ export default {
         },
 
         resolveRequest () {
-            db.collection("prescriptions").doc(this.prescriptionRecord).get().then(() => {
+        this.$v.$touch() // used to check the state of the form fields
+        this.formTouched = !this.$v.$anyDirty
+        this.errors = this.$v.$anyError
+        // If the form does not have any errors or each individual field has no invalid data 
+        if (this.errors === false && this.formTouched === false){ 
+                        db.collection("prescriptions").doc(this.prescriptionRecord).get().then(() => {
                 if(this.response == "Accepted"){
                     
                     var file = this.prescriptionFile // Get the file
@@ -746,6 +643,12 @@ export default {
                     console.log("We got problems")
                 }
             })
+        }
+        else{
+            this.triggerSnackbar("Please Complete Form Before Submission", "error")
+        }
+
+
         },
     },
 }
