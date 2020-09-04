@@ -42,7 +42,6 @@
                 </v-menu>
             </v-toolbar>
         </v-sheet>
-
         <!-- Dialog for adding medication -->
         <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
@@ -162,7 +161,6 @@
                         </v-date-picker>
                         </v-menu>
                         </v-col>
-
                         <!-- Additional Details --> 
                         <v-col cols="12" sm="6" md="6">
                             <v-textarea 
@@ -176,7 +174,6 @@
                             @blur="$v.medicationDetails.$touch()"
                             ></v-textarea>
                         </v-col>
-
                       <!-- Select a Colour -->
                       <v-col cols="12" sm="6" md="6">
                         <v-select
@@ -204,8 +201,8 @@
         </v-form>
         </v-card>
         </v-dialog>
-
         <v-sheet height="500">
+            <!-- Calendar is inserted here -->
             <v-calendar
             ref="calendar"
             color="primary"
@@ -239,50 +236,47 @@
                         </v-btn>
                     </v-toolbar>
                     <v-card-text>
-                        <!-- <span v-html="selectedEvent.details"></span> -->
-                            <v-row class="mt-n8">
-                            <v-col cols="12" md="12" class="mt-4">
-                                <v-list >
-                                    <v-list-item>
-                                        <v-list-item-content>
-                                            <v-list-item-title class="overline grey--text mb-4">
-                                                <v-icon>fa-info</v-icon>
-                                                Medication Details</v-list-item-title>
-                                                <h3 v-html="selectedEvent.details"></h3>
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                </v-list>
-                           </v-col>
-                            <v-col cols="12" md="12" class="mt-4">
-                                <v-list >
-                                    <v-list-item>
-                                        <v-list-item-content>
-                                            <v-list-item-title class="overline grey--text mb-4">
-                                                <v-icon>fa-syringe</v-icon>
-                                                Dose</v-list-item-title>
-                                                <h3 v-html="selectedEvent.dose"></h3>
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                </v-list>
-                           </v-col>
-                            <v-col cols="12" md="12" class="mt-4">
-                                <v-list >
-                                    <v-list-item>
-                                        <v-list-item-content>
-                                            <v-list-item-title class="overline grey--text mb-4">
-                                                <v-icon>fa-pills</v-icon>
-                                                Dosage Unit</v-list-item-title>
-                                                <h3 v-html="selectedEvent.dosageUnit"></h3>
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                </v-list>
-                           </v-col>
-                           </v-row>
-                    
+                    <v-row class="mt-n8">
+                    <v-col cols="12" md="12" class="mt-4">
+                        <v-list >
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title class="overline grey--text mb-4">
+                                        <v-icon>fa-info</v-icon>
+                                        Medication Details</v-list-item-title>
+                                        <h3 v-html="selectedEvent.details"></h3>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list>
+                    </v-col>
+                    <v-col cols="12" md="12" class="mt-4">
+                        <v-list >
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title class="overline grey--text mb-4">
+                                        <v-icon>fa-syringe</v-icon>
+                                        Dose</v-list-item-title>
+                                        <h3 v-html="selectedEvent.dose"></h3>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list>
+                    </v-col>
+                    <v-col cols="12" md="12" class="mt-4">
+                        <v-list >
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title class="overline grey--text mb-4">
+                                        <v-icon>fa-pills</v-icon>
+                                        Dosage Unit</v-list-item-title>
+                                        <h3 v-html="selectedEvent.dosageUnit"></h3>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list>
+                    </v-col>
+                    </v-row>
                     </v-card-text>
                 </v-card>
                 </v-menu>
-
         </v-sheet>
         </v-col>
     </v-row>
@@ -295,8 +289,7 @@ import { required } from 'vuelidate/lib/validators'
 export default {
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
-        // this.loadInitial()
-        this.getMedication()
+        this.getMedication() // Calls the getMedication method to populate cal
     },
     computed: {
         medicationNameError () {
@@ -345,7 +338,6 @@ export default {
     data() {
         return {
             currentUser: null,
-
             focus: '',
             type: 'month',
             typeToLabel: {
@@ -353,13 +345,12 @@ export default {
                 week: 'Week',
                 day: 'Day',
             },
-
+            // selected event on the calendar
             selectedEvent: {},
             selectedElement: null,
             selectedOpen: false,
             events: [],
         
-
             dialog: false, // add medication
             menu: false, // time picker
             medicationName: null,
@@ -382,7 +373,6 @@ export default {
             menu2: false, // date-picker
             medDates: null, // Stored date from date=picker
             medicationDetails: null,
-            menu3: false, // colour-picker
             picker: null, // Stored colour 
             colourList: [
                 { text: "Red", value: "red"},
@@ -406,9 +396,6 @@ export default {
         medicationDetails: { required },
         picker: { required },
     },
-    // mounted() {
-    //     this.getMedication()
-    // },
     methods: {
         appendLeadingZeroes(n){
             if(n <= 9){
@@ -426,38 +413,15 @@ export default {
             latest.setMonth(latest.getMonth() + 1)
             return latest.toISOString()
         },
-        // Load all initial records in from db
-        loadInitial () {
-            // db.collection("users").doc(this.currentUser).get().then( snap => {
-            //     if(snap.data().medication != null){
-            //         let medication = snap.data().medication
-            //         medication.forEach( medication => {
-            //             let medicationRecord = medication
-            //             let time = medicationRecord.startTime.replace(".", ":")
-                        
-            //                 let event = {
-            //                     name: medicationRecord.medication,
-            //                     details: medicationRecord.details,
-            //                     dose: medicationRecord.dose,
-            //                     dosageUnit: medicationRecord.doseUnit,
-            //                     start: medicationRecord.dateTaken + " " + time,
-            //                     end: medicationRecord.dateTaken + " " + time,
-            //                     color: medicationRecord.color,
-            //                 }
-            //                 this.events.push(event)  
-            //         })
-            //     }
-            // })
-        },
+        // Load in medication entries
         getMedication () {
             db.collection("users").doc(this.currentUser).onSnapshot(snap => {
                 let medication = snap.data().medication
+                // so long as there are medication entried in the array in users collection
                 if(medication != null){
-                    this.events = []
+                    this.events = [] // clear on each check
                     medication.forEach(medication => {
-                        console.log(medication)
-                        
-                        
+                        // Set the values to pass to the events
                         let time = medication.startTime.replace(".", ":")
                         let event = {
                             name: medication.medication,
@@ -487,16 +451,19 @@ export default {
             this.medicationDetails = null
             this.picker = null
         },
+        // Delete a selected event by removing it from array
         deleteEvent (event) {
             db.collection("users").doc(this.currentUser).update({
                 medication: fieldValue.arrayRemove(this.eventToRecord(event))
             })
             this.selectedOpen = false
         },
+        // Every value must be passed back into its original form
+        // and will only be deleted if values are identical
         eventToRecord (calendarEvent) {
             let datetime = calendarEvent.start.split(" ")
-            let date = datetime[0]
-            let time = datetime[1]
+            let date = datetime[0] // Split datatime
+            let time = datetime[1] // to two individual values
             // must match perfectly to object
             let record = {
                 medication: calendarEvent.name,
@@ -507,7 +474,6 @@ export default {
                 startTime: time,
                 color: calendarEvent.color
             }
-
             return record
         },
         saveMedication () {
@@ -528,6 +494,7 @@ export default {
                 var medicationRecord = {
                     medication: fieldValue.arrayUnion(addMedication)
                 }
+                // Update the array with the new medication entry
                 db.collection("users").doc(this.currentUser).update(medicationRecord).then(() => {
                     // Clear the form values
                         this.clearForms()
@@ -570,7 +537,6 @@ export default {
             } else {
             open()
             }
-
             nativeEvent.stopPropagation()
       },
     },
