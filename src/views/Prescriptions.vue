@@ -2,8 +2,7 @@
 <v-container>
 <Navbar />
     <v-row><v-col cols="12">
-   
-
+    <!-- Full screen dialog overlay for forms -->
      <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
         <template v-slot:activator="{ on, attrs }">
           <!-- Viewing of appointments occurs here --> 
@@ -20,7 +19,7 @@
               <v-icon>fa-plus</v-icon>
               </v-btn>
             </v-card-title>
-              <!-- View Prescriptions Component is imported here, makes it easier to keep the code tidier --> 
+              <!-- View Prescriptions Component imported --> 
               <ViewPrescriptions />
           </v-card>
         </template>
@@ -53,9 +52,8 @@
                 </v-row>
                 </v-card-text>
             </v-card>
-
           <v-row>     
-              
+            <!-- Female Treatments -->
             <v-col cols="12" s="6" sm="6" md="6" lg="6" v-if="showFemaleT">
                 <v-select
                 label="Female Treatments"
@@ -63,9 +61,9 @@
                 :items="femaleTreatments"
                 outlined
                 @change="setTreatmentOption(chosenOption)"
-
                 ></v-select>
             </v-col>
+            <!-- Male Treatments -->
             <v-col cols="12" s="6" sm="6" md="6" lg="6" v-if="showMaleT">
                 <v-select
                 label="Male Treatments"
@@ -75,6 +73,7 @@
                 @change="setTreatmentOption(chosenOption)"
                 ></v-select>
             </v-col>
+            <!-- Select a doctor to request prescription from -->
             <v-col cols="12" s="6" sm="6" md="6" lg="6">
                 <v-select 
                 name="selectDoctor"
@@ -90,8 +89,6 @@
                 @change="onDropdownChanged($event)"
                 ></v-select>  
             </v-col>
-         
-         
             <v-col cols="12">
                 <!-- Asthma -->
                 <v-card v-if="showAsthma">
@@ -425,10 +422,6 @@
                     </v-card-text>
                 </v-card>
             </v-col>
-        
-           
-
-
           </v-row>
           <v-card-actions>
           <v-row>
@@ -452,13 +445,6 @@
         </v-form>
         </v-card> <!-- End of book appointment form within dialog --> 
       </v-dialog> 
-
-
-
-
-
-
-
     </v-col></v-row>
 </v-container>
 </template>
@@ -475,6 +461,8 @@ export default {
         ViewPrescriptions,
     },
     computed: {
+        // Validations
+
         selectDocError () {
             const errors = []
             if(!this.$v.chosenDoc.$dirty) return errors
@@ -512,7 +500,6 @@ export default {
                 !this.$v.contraceptives.sideEffectDescription.required && errors.push('A Value Is Required')
             return errors
         },
-
         // EREDYS
         ereDysTypeError () {
             const errors = []
@@ -532,7 +519,6 @@ export default {
                 !this.$v.ereDys.ereDysPrevious.required && errors.push('A Value Is Required')
             return errors
         },
-
         // Asthma
         asthmaLengthError () {
             const errors = []
@@ -552,7 +538,6 @@ export default {
                 !this.$v.asthma.asthmaSeverity.required && errors.push('Asthma Severity Is Required')
             return errors
         },
-
         // Adrenaline
         adrenalineDiagnosisError () {
             const errors = []
@@ -572,7 +557,6 @@ export default {
                 !this.$v.adrenaline.adrenalinesymptoms.required && errors.push('Adrenaline Symptoms Are Required')
             return errors
         },
-
         // PE 
         peDurationError () {
             const errors = []
@@ -598,7 +582,6 @@ export default {
                 !this.$v.pe.medication.required && errors.push('PE Medication Is Required')
             return errors
         },
-
         // Thrush
         thrushAbdoPainError () {
             const errors = []
@@ -618,8 +601,6 @@ export default {
                 !this.$v.thrush.thrushUrinary.required && errors.push('Urinary Condition Confirmation Is Required')
             return errors
         },
-
-
     },
     created() {
         this.currentUser = auth.currentUser.uid // Get current users ID
@@ -652,15 +633,14 @@ export default {
             timeout: 5000,
             snackbarText: "",
             dialog: false, // Dialog for overall dialog panel
-
             doctors: [],  // Doctors array contains a list of doctors  
             chosenDoc: null, // Chosen Doc stores the value of selected doctor, derived of onDropdownChanged()
             noGenderView: false, // Show if no gender is defined
             genderOption: null,
             name: null,
             requestBtn: false,
-            showFemaleT: false,
-            showMaleT: false,
+            showFemaleT: false, // show female treatments
+            showMaleT: false, // show male treatments
             status: "Pending Review",
             chosenOption: null,
             femaleTreatments: [
@@ -675,17 +655,13 @@ export default {
                 { text: 'Erectile Dysfunction Treatment', value: 'Erectile Dysfunction Treatment' },
                 { text: 'Premature Ejaculation Treatment', value: 'Premature Ejaculation Treatment' },
             ],
-
-
- 
-            // Showing different treatments
+            // Treatment forms
             showAdrenaline: false,
             showAsthma: false,
             showContraception: false,
             showThrush: false,
             showErecDys: false,
             showPreE: false,
-
             // Contraception Card
             contraceptives: {
                 contraceptiveType: null,
@@ -707,7 +683,6 @@ export default {
                 {text: 'Yasmin', value: "Yasmin" },
                 {text: 'Zoely ', value: "Zoely " },
             ],
-
             // EreDys
             ereDys: {
                 ereDysType: null,
@@ -728,7 +703,7 @@ export default {
                 {text: '100 MG', value: '100 MG'},
                 {text: 'Unsure', value: 'Unsure'},
             ],
-
+            // Asthma
             asthma: {
                 asthmaLength: null,
                 asthmaSteroids: null,
@@ -746,12 +721,13 @@ export default {
                 {text:'In The Last 12 Months', value: 'In The Last 12 Months'},
                 {text:'Over A Year Ago', value: 'Over A Year Ago'},
             ],
+            // Adrenaline
             adrenaline: {
                 adrenalineDiagnosis: null,
                 adrenalinetrained: null,
                 adrenalinesymptoms: null,
             },
-
+            // PE
             pe: {
                 peDuration: null,
                 peOften: null,
@@ -777,7 +753,7 @@ export default {
                 {text: 'More Than 2 Minutes After Penetration', value: 'More Than 2 Minutes After Penetration'},
  
             ],
-
+            // Thrush
             thrush: {
                thrushAbdoPain: null, 
                thrushSkinIssues: null,
@@ -820,7 +796,6 @@ export default {
             thrushSkinIssues: { required}, 
             thrushUrinary: { required },
         },
-
     },
     methods: {
         // Triggers the snackbar with the passed message and colour of the message
@@ -834,29 +809,27 @@ export default {
             db.collection("users").doc(this.currentUser).get().then(( snap => {
                 this.genderOption = snap.data().gender // Return the gender of the patient
                 this.name = snap.data().firstname + " " + snap.data().surname
-                    if(this.genderOption == 'Male'){
-                    this.hideAllTreatments()
+                if(this.genderOption == 'Male'){
+                this.hideAllTreatments()
+                this.requestBtn = true
+                this.showFemaleT = false
+                this.showMaleT = true
+                this.chosenOption = null
+                }
+                else if(this.genderOption == 'Female'){
                     this.requestBtn = true
-                    this.showFemaleT = false
-                    this.showMaleT = true
+                    this.hideAllTreatments()
+                    this.showMaleT= false
+                    this.showFemaleT = true
                     this.chosenOption = null
-                    }
-                    else if(this.genderOption == 'Female'){
-                        this.requestBtn = true
-                        this.hideAllTreatments()
-                        this.showMaleT= false
-                        this.showFemaleT = true
-                        this.chosenOption = null
-                    }
-                    else{
-                        // No gender defined, show redirect button for user to set their gender in
-                        // medical record
-                        this.requestBtn = false
-                        this.noGenderView = true
-                    }
+                }
+                else{
+                    // No gender defined, show redirect button for user to set their gender in
+                    // medical record
+                    this.requestBtn = false
+                    this.noGenderView = true
+                }
             }))
-        
-
         },
         // Hide All Treatment Forms
         hideAllTreatments () {
@@ -877,7 +850,8 @@ export default {
                 this.setTreatmentOption()
             })
         },
-        // Set the Visible Form Depending on Treatment Selected, Unless Pending Already
+        // Set the Visible Form Depending on Treatment Selected, 
+        //Unless Pending Prescription Already
         setTreatmentOption () {
             this.clearForms()
             if (this.chosenOption == 'Adrenaline Pen Treatment' && this.chosenDoc != null){
@@ -1235,7 +1209,6 @@ export default {
                 else{
                     this.triggerSnackbar("Could Not Submit Precription Request, Missing Form Data!", "error")
                 }
-               
             }
             else{
                 this.hideAllTreatments()

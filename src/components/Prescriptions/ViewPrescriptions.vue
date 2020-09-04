@@ -11,7 +11,7 @@
         <v-card outlined class="mt-3" v-for="prescription in requestedPrescriptions" :key="prescription.id">
         <v-card-title class="primary lighten-2 white--text">
         <v-spacer></v-spacer>
-        <!-- Cancel button for the prescriptions -->
+        <!-- Cancel button for pending prescriptions -->
         <v-icon right @click="cancelPrescription(prescription.id)">fa-trash</v-icon>
         </v-card-title>
         <v-card-text class="mt-6">
@@ -68,7 +68,6 @@
         </v-card-text>
         </v-card>
         </v-tab-item>
-
         <!-- Accepted -->
         <v-tab-item>
             <v-card outlined class="mt-3" v-for="prescription in acceptedPrescriptions" :key="prescription.id">
@@ -139,7 +138,6 @@
             </v-card-text>
             </v-card>
         </v-tab-item>
-
         <!-- Denied -->
         <v-tab-item>
             <v-card outlined class="mt-3" v-for="prescription in deniedPrescriptions" :key="prescription.id">
@@ -226,17 +224,21 @@ import {auth, db, storage} from '../../firebase'
 
 export default {
     created() {
-        this.currentUser = auth.currentUser.uid
+        this.currentUser = auth.currentUser.uid // Get current users uid
+        // In prescriptions, where patientID is the same as the current users, access
         db.collection("prescriptions").where("patientID", "==", this.currentUser).orderBy("dateRequested").onSnapshot(snap => {
             let prescriptions = snap.docChanges()
             prescriptions.forEach(async (prescriptions) => {
+                // if any prescriptions are added 
                 if(prescriptions.type == "added"){
                     let prescription = prescriptions.doc.data()
                     prescription.id = prescriptions.doc.id
-
+                    // pending goes into pending array
                     if(prescription.status == "Pending Review"){
                         this.requestedPrescriptions.push(prescription)
                     }
+                    // if accepted grab both the record and the uploaded prescription file
+                    // and push to the accepted prescriptions array
                     else if(prescription.status == "Accepted"){
                         // Get prescription file
                         var pathReference = storage.ref("prescriptions/" + prescription.id)
@@ -247,6 +249,7 @@ export default {
                             console.log(error)
                         })
                     }
+                    // denied goes into denied array
                     else if (prescription.status == "Denied"){
                         this.deniedPrescriptions.push(prescription)
                     }
@@ -283,7 +286,8 @@ export default {
             this.snackbarText = message,
             this.color = color,
             this.snackbar = true
-        }, 
+        },
+        // Filter any prescriptions from pending array when deleted
         cancelPrescription (id) {
             db.collection("prescriptions").doc(id).delete().then(() => {
                 this.requestedPrescriptions = this.requestedPrescriptions.filter(prescription => {

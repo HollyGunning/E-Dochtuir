@@ -38,11 +38,9 @@
             >fa-file-alt
             </v-icon>
             </v-col>
-            
           </template>
           </v-data-table>
         </v-card>
-
     </template>
     <!-- Opens info pertaining to the request -->
     <v-card>
@@ -53,7 +51,7 @@
           <span class="ml-10">Review Prescription</span>
         </v-card-title>
         <v-row><v-col cols="12" md="12" lg="12">
-            <!-- Contraception -->
+            <!-- Contraception Request -->
             <v-card flat v-if="showContraception">
                 <v-card-title class="mb-4 primary lighten-2 white--text">Contraceptive Pill & Patches Request</v-card-title>
                 <v-card-text>
@@ -101,7 +99,7 @@
                     </v-row>
                 </v-card-text>
             </v-card>
-
+            <!-- Thrush Request -->
             <v-card flat v-if="showThrush">
                 <v-card-title class="mb-4 primary lighten-2 white--text">Thrush Treatment Request</v-card-title>
                 <v-card-text>
@@ -133,7 +131,7 @@
                 </v-row>
                 </v-card-text>
             </v-card>
-
+            <!-- Adrenaline Request -->
             <v-card flat v-if="showAdrenaline">
                 <v-card-title class="mb-4 primary lighten-2 white--text">Adrenaline Pen Treatment Request</v-card-title>
                 <v-card-text>
@@ -165,7 +163,7 @@
                 </v-row>
                 </v-card-text>
             </v-card>
-
+            <!-- Asthma Request -->
             <v-card flat v-if="showAsthma">
                 <v-card-title class="mb-4 primary lighten-2 white--text">Asthma Treatment Request</v-card-title>
                 <v-card-text>
@@ -197,7 +195,7 @@
                 </v-row>
                 </v-card-text>
             </v-card>
-
+            <!-- PreE Request -->
             <v-card flat v-if="showPreE">
                 <v-card-title class="mb-4 primary lighten-2 white--text">Premature Ejaculation Treatment</v-card-title>
                 <v-card-text>
@@ -237,7 +235,7 @@
                     </v-row>
                 </v-card-text>
             </v-card>
-
+            <!-- ErecDys Request -->
             <v-card flat v-if="showErecDys">
                 <v-card-title class="mb-4 primary lighten-2 white--text">Erectile Dysfunction Treatment</v-card-title>
                 <v-card-text>
@@ -270,8 +268,7 @@
                 </v-card-text>
             </v-card>
         </v-col></v-row>
-
-        <!-- FOR DOCTOR USE --> 
+        <!-- FOR DOCTOR USE TO RESPOND --> 
         <v-card flat>
             <v-card-title>
                 <v-divider></v-divider>
@@ -290,6 +287,7 @@
                     @blur="$v.response.$touch()"
                     ></v-select>
                 </v-col>
+                <!-- If accepted, display upload box -->
                 <v-col class="mt-n3" cols="12" sm="6" md="4" lg="4" v-if="showUpload">
                     <v-file-input
                     type="file"
@@ -298,8 +296,7 @@
                     outlined
                     ></v-file-input>
                 </v-col>
-           
-
+                <!-- If denying request display response text area -->
                 <v-col class="mt-n3" cols="12" sm="6" md="8" lg="8" v-if="showDenied">
                     <v-textarea
                     label="Reason"
@@ -329,13 +326,8 @@
             </v-col>  
             </v-card-actions>
         </v-card>
-      
-
-
     </v-card>
-
     </v-dialog>
-
 </v-col></v-row>
 </v-container>
 </template>
@@ -348,7 +340,6 @@ import { required } from "vuelidate/lib/validators"
 export default {
     components: {
         DoctorNavbar,
-
     },
     computed: {
         responseError () {
@@ -359,8 +350,8 @@ export default {
       },
     },
     created() {
-        this.currentUser = auth.currentUser.uid
-
+        this.currentUser = auth.currentUser.uid // Get current user uid
+        // Access prescription requests pertaining to the current doctor and order by date request and patient name
         db.collection("prescriptions").where("doctor", "==", this.currentUser).orderBy("dateRequested").orderBy("patientName").onSnapshot(snap => {
             let prescriptionToHandle = snap.docChanges()
             prescriptionToHandle.forEach(prescriptionToHandle => {
@@ -414,7 +405,6 @@ export default {
             prescriptionsPending: [],
             prescriptionsAccepted: [],
             prescriptionsDenied: [],
-
             // Doctor Form Section
             response: null,
             responses: [
@@ -425,11 +415,8 @@ export default {
             reasonDenied: null,
             showUpload: false,
             prescriptionFile: null,
-            downloadUrl: "none",
             prescriptionUpload: "none",
-            URL: "gs://e-dochtuir.appspot.com/prescriptions",
-
-
+           
             // Contraceptive Details
             showContraception: false,
             contraceptiveType: null,
@@ -437,32 +424,27 @@ export default {
             previousUsage: null,
             sideEffects: null,
             description: null,
-            
             // Thrush Details
             showThrush: false,
             abdominalPain: null,
             skinIssues: null,
             urinaryIssue: null,
-
             // Adrenaline Details
             showAdrenaline: false,
             diagnosed: null,
             trained: null,
             recogniseSymptoms: null,
-
             // Asthma Details
             showAsthma: false,
             asthmaCondition: null,
             asthmaSeverity: null,
             steroids: null,
-
             // PreE Details
             showPreE: false,
             durationWith: null,
             often: null,
             occurs: null,
             medicationRequest: null,
-
             // ErecDys Details
             showErecDys: false,
             eDTreatment: null,
@@ -507,11 +489,11 @@ export default {
         // Access the record associated with the user by the ID of the prescription to populate their information into variables
         storeID (id) {
             this.prescriptionRecord = id
-
             db.collection("prescriptions").doc(this.prescriptionRecord).onSnapshot(snap => {
                 let prescriptionInfo = snap.data()
                 prescriptionInfo.id = snap.id
-
+                // determine which type of prescription request and populate
+                // the appropriate fields
                 if (prescriptionInfo.chosenType == "Contraception"){
                     // Hide all forms before showing specific one
                     this.hideAllTreatments()
@@ -584,6 +566,8 @@ export default {
             this.prescriptionFile = null
             this.dialog = false
         },
+        // Used to hide or display the denied response
+        // and the upload prescription box
         responseChanges (response) {
             if(response == "Denied"){
                 this.showUpload = false
@@ -594,7 +578,7 @@ export default {
                 this.showUpload = true
             }
         },
-
+        // Resolve the prescription request
         resolveRequest () {
         this.$v.$touch() // used to check the state of the form fields
         this.formTouched = !this.$v.$anyDirty
@@ -603,12 +587,9 @@ export default {
         if (this.errors === false && this.formTouched === false){ 
                         db.collection("prescriptions").doc(this.prescriptionRecord).get().then(() => {
                 if(this.response == "Accepted"){
-                    
                     var file = this.prescriptionFile // Get the file
                     // Create the storage reference
                     const storageRef = storage.ref("prescriptions/" + this.prescriptionRecord)
-                    // this.prescriptionUpload = file.name //not sure if still need these?
-                    // this.downloadUrl = URL + file.name
                     storageRef.put(file) // Store the file using the storage reference
 
                         this.triggerSnackbar("Response Submitted", "success")
@@ -622,11 +603,8 @@ export default {
                             return prescription.id != this.prescriptionRecord
                             })
                         })
-
                 }
                 else if(this.response == "Denied"){
-
-
                     this.triggerSnackbar("Response Submitted", "success")
                     db.collection("prescriptions").doc(this.prescriptionRecord).update({
                         status: this.response,
@@ -647,8 +625,6 @@ export default {
         else{
             this.triggerSnackbar("Please Complete Form Before Submission", "error")
         }
-
-
         },
     },
 }
