@@ -16,60 +16,59 @@
         </v-row>
         </v-card-text>
     </v-card>
-
-        <v-card v-if="chatRoom">
-            <v-card-title>Delete Chat Room History
-                <v-spacer></v-spacer>
-                <v-btn @click="destroyRoom()"><span>Delete</span></v-btn>
-            </v-card-title>
-        </v-card>
-        <!-- Chat Card -->
-        <v-card v-if="chatRoom" class="mt-6 mb-9">
-        <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
-        <v-container>
-        <v-card outlined class="messages">
-            <v-card-text class="chat-message" v-for="(message, index) in messages" :key="index">
-            <div class="right-bubble" v-if="message.name === userName ">
-                <div class="subtitle-1">{{ message.name }}&nbsp;</div>
-                <span class="green-text">{{ message.text }}</span>  
-            </div>  
-           <div class="left-bubble right-align" v-if="message.name !== userName">
-                <div class="subtitle-1">{{ message.name }}&nbsp;</div>
-                <span class="green-text">{{ message.text }}</span>
-            </div>
-           
-            </v-card-text>
-        </v-card>
-
-            <v-card flat class="mt-4">
-                <v-card-text>
-                <v-row>
-                    <v-col cols="12" sm="12" md="6">
-                        <v-textarea
-                        rows="1"
-                        auto-grow
-                        v-model="message"
-                        outlined
-                        :error-messages="messageErrors"
-                        @input="$v.message.$touch()"
-                        @blur="$v.message.$touch()"
-                        ></v-textarea>
-                    </v-col>
-                
-                <v-col cols="12" sm="12" md="2">
-                    <v-btn 
-                    class="primary white--text ml-6"
-                    block 
-                    @click="sendMessage()"
-                    >
-                    Send
-                    </v-btn>
-                </v-col>
-                <v-spacer></v-spacer>
-                </v-row>
-                </v-card-text>
-            </v-card>
-        </v-container>
+    <!-- Card for displaying the message area and delete room option -->
+    <v-card v-if="chatRoom">
+        <v-card-title>End Session
+            <v-spacer></v-spacer>
+            <v-btn @click="destroyRoom()"><span>Delete</span></v-btn>
+        </v-card-title>
+    </v-card>
+    <!-- Chat Card, css is used to display messages in correct format -->
+    <v-card v-if="chatRoom" class="mt-6 mb-9">
+    <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
+    <v-container>
+    <v-card outlined class="messages">
+        <v-card-text class="chat-message" v-for="(message, index) in messages" :key="index">
+        <div class="right-bubble" v-if="message.name === userName ">
+            <div class="subtitle-1">{{ message.name }}&nbsp;</div>
+            <span class="green-text">{{ message.text }}</span>  
+        </div>  
+        <div class="left-bubble right-align" v-if="message.name !== userName">
+            <div class="subtitle-1">{{ message.name }}&nbsp;</div>
+            <span class="green-text">{{ message.text }}</span>
+        </div>
+        </v-card-text>
+    </v-card>
+    <v-card flat class="mt-4">
+        <v-card-text>
+        <v-row>
+        <!-- Area to type messages -->
+        <v-col cols="12" sm="12" md="6">
+            <v-textarea
+            rows="1"
+            auto-grow
+            v-model="message"
+            outlined
+            :error-messages="messageErrors"
+            @input="$v.message.$touch()"
+            @blur="$v.message.$touch()"
+            ></v-textarea>
+        </v-col>
+        <!-- Button to send messages -->
+        <v-col cols="12" sm="12" md="2">
+            <v-btn 
+            class="primary white--text ml-6"
+            block 
+            @click="sendMessage()"
+            >
+            Send
+            </v-btn>
+        </v-col>
+        <v-spacer></v-spacer>
+        </v-row>
+        </v-card-text>
+    </v-card>
+    </v-container>
     </v-card> 
         <v-snackbar
         :color="color"
@@ -93,6 +92,7 @@ export default {
         Navbar,
     },
     computed: {
+        // Validation of message box
         messageErrors () {
         const errors = []
         if(!this.$v.message.$dirty) return errors
@@ -102,7 +102,7 @@ export default {
     },
     created() {
             this.currentUser = auth.currentUser.uid // Get current users ID
-            this.today = this.getTodaysDate(this.today)
+            this.today = this.getTodaysDate(this.today) // get today
             // Get current users name
             db.collection("users").doc(this.currentUser).get().then(doc => {
                 let user = doc.data()
@@ -129,7 +129,7 @@ export default {
                             if(rooms.type == "added"){
                                 this.triggerSnackbar("Room Session Has Begun!")
                             }
-                            // if the room is deleted, the session has ended and ID should be cleared
+                            // if the room is deleted, the session has ended 
                             else if(rooms.type == "removed"){
                                 this.triggerSnackbar("Room Session Has Ended!")
                                 // this.roomID = null
@@ -199,6 +199,7 @@ export default {
             this.color = color,
             this.snackbar = true
         },
+        // Allows user to delete the room in the rooms collection
         destroyRoom () {
             console.log("THE ROOM", this.roomID)
             if(this.roomID == null){
@@ -216,6 +217,7 @@ export default {
                 })
             }
         },
+        // Loads in all messages pertaining to the session
        loadMessages () {
             // Load all rooms where DoctorID is the same as the user
             db.collection("rooms").where("patientID", "==", this.currentUser).onSnapshot(snap => {
@@ -224,7 +226,6 @@ export default {
                 rooms.forEach(rooms => {
                     let room = rooms.doc.data() 
                     this.messages = room.message
-
                     if(rooms.type == "added"){
                     // Sorting can only occur once their are messages to be sorted
                     if(this.messages != null) {
@@ -233,7 +234,7 @@ export default {
                         if(a.timestamp > b.timestamp) return 1
                         if(a.timestamp < b.timestamp) return -1
                         })
-
+                        // Only show the last 50 messages
                         let len = this.messages.length
                         let numMessages = this.messages.length < 50 ? this.messages.length : 50
                         this.messages = this.messages.slice(len - numMessages, len)
@@ -327,7 +328,6 @@ export default {
   min-height: 40px;
   word-wrap: break-word;
   margin-bottom: 10px;
-
 }
 .right-bubble {
   background: #dcf8c6;

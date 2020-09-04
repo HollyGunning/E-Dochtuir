@@ -5,6 +5,8 @@
         <v-card-title></v-card-title>
         <v-card-text>
         <v-row>
+            <!-- Allow doctor to view all patients with 
+                appointments on this day -->
             <v-col cols="12" sm="6" md="6" lg="6">
             <v-select 
             label="Todays Patients"
@@ -27,7 +29,7 @@
         </v-row>
         </v-card-text>
     </v-card>
-
+    <!-- Card with close room button -->
     <v-card v-if="closeRoom">
         <v-card-text>
             <v-row>
@@ -43,8 +45,7 @@
             </v-row>
         </v-card-text>
     </v-card>
-  
-    <!-- Chat Card -->
+    <!-- Chat Card, css is used to display messages in correct format -->
     <v-card v-if="chatRoom" class="mt-6 mb-9">
         <v-card-title class="primary lighten-1 white--text">Online Consultation</v-card-title>
         <v-container>
@@ -60,22 +61,22 @@
             </div>
             </v-card-text>
         </v-card>
-
         <v-card flat class="mt-6">
             <v-card-text>
             <v-row>
-                <v-col cols="12" sm="12" md="6">
-                    <v-textarea
-                    rows="1"
-                    auto-grow
-                    v-model="message"
-                    outlined
-                    :error-messages="messageErrors"
-                    @input="$v.message.$touch()"
-                    @blur="$v.message.$touch()"
-                    ></v-textarea>
-                </v-col>
-            
+            <!-- Area to type messages -->
+            <v-col cols="12" sm="12" md="6">
+                <v-textarea
+                rows="1"
+                auto-grow
+                v-model="message"
+                outlined
+                :error-messages="messageErrors"
+                @input="$v.message.$touch()"
+                @blur="$v.message.$touch()"
+                ></v-textarea>
+            </v-col>
+            <!-- Button to send messages -->
             <v-col cols="12" sm="12" md="2">
                 <v-btn 
                 class="primary white--text ml-6"
@@ -112,6 +113,7 @@ export default {
         DoctorNavbar,
     },
     computed: {
+        // Validation of message box
         messageErrors () {
         const errors = []
         if(!this.$v.message.$dirty) return errors
@@ -128,12 +130,14 @@ export default {
             this.userName = 'Dr. ' + doctor.firstname + ' ' + doctor.surname
         })
          this.loadMessages() // Load in the messages for this chat
-        // Gets all the appointments for the doctor that is signed in on load
+        // Gets all the appointments for the doctor
          db.collection("appointments").where("doctorID", "==", this.currentUser).onSnapshot( snap => { 
             let appointment = snap.docChanges()
             appointment.forEach( appointment => {   
                 let patient = appointment.doc.data()
                 patient.id = patient.patientID
+                // Push any patients into patients array, 
+                // if they have an appointment on current day
                 if(patient.appointmentDate == this.today){
                     if(patient.appointmentType == "Online"){
                             this.patients.push({
@@ -158,13 +162,12 @@ export default {
             chatRoom: false,
             joinRoom: true,
             closeRoom: false,
-            
             patients: [], // Patient array containing list of patients for todays date
             chosenPatient: null,
             roomID: null,
             timestamp: null,
-            message: null,
-            messages: [],
+            message: null, // Message being sent
+            messages: [], // Contains all messages between doc & patient
         }
     },
     validations: {
@@ -193,6 +196,7 @@ export default {
            this.chosenPatient = value
            console.log(this.chosenPatient)
         },
+        // Create a room to chat
         createRoom (){
             if(this.chosenPatient == null){
                 this.triggerSnackbar("Select A Patient To Create A Room For", "error")
@@ -204,39 +208,37 @@ export default {
                         let room = doc.id
                         this.roomID = room
                     })
-                        // There is no room and therefore one must be created
-                        if(snap.docs.length == 0) {
-                            // Create room collection here and add patientID and doctorID to the room for later reference
-                            db.collection("rooms").add({
-                                doctorID: this.currentUser,
-                                patientID: this.chosenPatient,
-                            }).then( () => {
-                                this.joinRoom = false
-                                this.closeRoom = true
-                                this.chatRoom = true
-                            }).catch(error => {
-                                console.log("Error with Room Creation", error)
-                            })
-                            this.triggerSnackbar("New Room Created!", "success")
-                            
-                        }
-                        // There is already a room with chosenPatients and doctors/currentUsers ID
-                        else{
-                            this.triggerSnackbar("Chat Room Opened")
-                            // Open the "chat" to this room as a card to test
+                    // There is no room and therefore one must be created
+                    if(snap.docs.length == 0) {
+                        // Create room collection here and add patientID and doctorID to the room for later reference
+                        db.collection("rooms").add({
+                            doctorID: this.currentUser,
+                            patientID: this.chosenPatient,
+                        }).then( () => {
                             this.joinRoom = false
                             this.closeRoom = true
                             this.chatRoom = true
-                            this.loadMessages()
-                        }
-
-
-
+                        }).catch(error => {
+                            console.log("Error with Room Creation", error)
+                        })
+                        this.triggerSnackbar("New Room Created!", "success")
+                        
+                    }
+                    // There is already a room with chosenPatients and doctors/currentUsers ID
+                    else{
+                        this.triggerSnackbar("Chat Room Opened")
+                        // Open the "chat" to this room as a card to test
+                        this.joinRoom = false
+                        this.closeRoom = true
+                        this.chatRoom = true
+                        this.loadMessages()
+                    }
                 }).catch(error => {
                     console.log("Rooms error", error)
                 })
             }
         },
+        // End session and destroy room in rooms collection
         destroyRoom () {
             db.collection("rooms").doc(this.roomID).delete().then(() => {
                 this.triggerSnackbar("Room Has Been Deleted!", "success")
@@ -250,6 +252,7 @@ export default {
             })
         },
         sendMessage () {
+            // Get rooms where patient and doctor exist in the same
             db.collection("rooms").where("patientID", "==", this.chosenPatient).where("doctorID", "==", this.currentUser).get().then(snap => {
                 snap.forEach(doc =>{
                     let room = doc.id
@@ -316,11 +319,9 @@ export default {
                     else{
                         this.triggerSnackbar("New Message")
                     }
-
                 })
             })
         },  
-
     },
 }
 </script>
@@ -349,7 +350,6 @@ export default {
   min-height: 40px;
   word-wrap: break-word;
   margin-bottom: 10px;
-
 }
 .right-bubble {
   background: #dcf8c6;
